@@ -1,0 +1,35 @@
+# ================================
+# Frontend (Next.js / pnpm)
+# ================================
+frontend/.next/
+frontend/node_modules/
+frontend/dist/
+frontend/.pnpm-store/
+frontend/.env
+frontend/.env.local
+
+# ================================
+# Backend (Python / uv)
+# ================================
+backend/**/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+backend/.cache/
+backend/.env
+backend/.venv/
+
+# ================================
+# Environment (shared)
+# ================================
+.env
+.venv/
+
+# ================================
+# Editor / IDE
+# ================================
+.vscode/
+
+# ================================
+# OS / logs
+# ================================
+*.log

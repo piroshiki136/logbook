@@ -1,0 +1,113 @@
+# 08. コーディングガイドライン（Coding Guidelines / Minimal Version）
+
+本ガイドラインは logbook プロジェクトのコーディング方針であり、Next.js / React / Python の公式ガイドラインに準拠しつつ、本プロジェクト特有のルールのみ最小限で追加する。必要になった場合は後から詳細を追記する。
+
+---
+
+# 1. 公式ガイドラインの準拠範囲
+
+## フロントエンド（Next.js / TypeScript）
+- Next.js 公式ドキュメントに準拠
+  https://nextjs.org/docs/app/building-your-application
+- React Hooks のルールに準拠
+  https://react.dev/reference/rules
+- TypeScript 公式ガイドに準拠
+  https://www.typescriptlang.org/docs/
+- shadcn/ui の公式ガイドに準拠
+  https://ui.shadcn.com/
+
+## バックエンド（FastAPI / Python）
+- Python は PEP8 に準拠
+  https://peps.python.org/pep-0008/
+- FastAPI の公式スタイルに準拠
+  https://fastapi.tiangolo.com/
+- SQLAlchemy 2.0 スタイルに準拠
+  https://docs.sqlalchemy.org/en/20/
+
+---
+
+# 2. ツールとフォーマッタ
+
+## フロントエンド
+- フォーマッタ: Biome
+- パッケージ管理: pnpm
+- 型チェック: TypeScript
+- Lint: Biome（JS/TS/React/Tailwind）
+
+## バックエンド
+- フォーマッタと Linter: Ruff
+- 依存管理: uv
+- コードスタイル: PEP8 準拠
+- import 整形も Ruff に従う
+
+---
+
+# 3. ディレクトリ構成の基本方針
+
+## frontend（Next.js）
+- app/ : ページとルーティング
+- features/ : 機能単位のまとまり（blog, admin など）
+- components/ : 共通コンポーネント
+- hooks/ : カスタム hooks
+- lib/ : util、APIクライアントなど
+
+## backend（FastAPI）
+- api/ : ルーター（エンドポイント）
+- models/ : SQLAlchemy モデル
+- schemas/ : Pydantic スキーマ
+- services/ : ビジネスロジック
+- core/ : 設定、DB接続、認証ミドルウェア
+
+---
+
+# 4. 命名規則
+
+## フロント（TypeScript / React）
+- コンポーネント: PascalCase
+- hooks: useXxx
+- 変数と関数: camelCase
+- 型: UpperCamelCase
+- 定数: UPPER_SNAKE_CASE
+- any は使わない
+
+## バック（Python）
+- 関数と変数: snake_case
+- クラス: PascalCase
+- ファイル名: snake_case
+- Pydantic スキーマは Create / Update / Response に分ける
+- モジュール名は短く意味がわかるものにする
+
+---
+
+# 5. Next.js / React のルール
+- 基本的に Server Component を使う
+- UI 操作が必要な場合のみ "use client" を付ける
+- データ取得はサーバー側 fetch を使う
+- JSX が長くなる場合はコンポーネントに分割する
+- APIレスポンスは型を定義して扱う
+
+---
+
+# 6. Tailwind / shadcn のルール
+- className は次の順で記述する
+  1. レイアウト（flex, grid, width など）
+  2. 見た目（color, border, background など）
+  3. 余白（padding, margin）
+- 長くなる場合は cn() を使う
+- UI コンポーネントは基本的に shadcn/ui を使う
+- 独自 CSS は必要最小限にする
+
+---
+
+# 7. FastAPI のルール
+- router、schema、service、models を分けて管理する
+- DB session は依存注入で扱う
+- schema は Create、Update、Response に分離する
+- 例外処理には HTTPException を使う
+- API レスポンスは camelCase に変換して返す（フロントの表記に合わせる）
+
+---
+
+# 9. 拡張方針
+- 必要になった場合に詳細なガイドラインを追記する
+- プロジェクト拡大時は詳細版への拡張を行う
