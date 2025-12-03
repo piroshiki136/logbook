@@ -20,11 +20,11 @@
 
 # 1. 記事一覧 GET /api/articles
 ## クエリ
-- limit?: number
-- offset?: number
+- page?: number（デフォルト: 1）
+- limit?: number（デフォルト: 10、最大: 50）
 - tags?: string（例: "nextjs,fastapi"）
 - categories?: string
-- draft?: boolean（true の場合は認証必須）
+- draft?: boolean（管理APIのみ指定可。公開APIでは false 固定）
 
 ## 200レスポンス
 {
@@ -40,7 +40,9 @@
       "isDraft": false
     }
   ],
-  "total": 42
+  "total": 42,
+  "page": 1,
+  "limit": 10
 }
 
 ---
@@ -119,3 +121,62 @@ file: image/png など
   "url": "/uploads/abc.png"
 }
 
+---
+
+# 8. 前後の記事取得 GET /api/articles/{id}/prev-next
+- id を基準に前後の記事を返す（公開APIでは isDraft=false のみ）
+- 管理APIでは認証が必要、ドラフトも取得可能
+
+## 200レスポンス
+{
+  "prev": {
+    "id": 11,
+    "slug": "prev-article",
+    "title": "前の記事",
+    "createdAt": "...",
+    "isDraft": false
+  },
+  "next": {
+    "id": 13,
+    "slug": "next-article",
+    "title": "次の記事",
+    "createdAt": "...",
+    "isDraft": false
+  }
+}
+
+prev/next が存在しない場合は null を返す。
+
+---
+
+# 認証・権限制御（初心者向けの流れ）
+- 何を検証する？  
+  - フロント（NextAuth）が発行する JWT が正しいサインか、期限切れでないか、誰向けか（aud を例えば `logbook` に固定）を確認する。
+- 鍵の扱い  
+  - JWT の署名方式: HS256。鍵は `NEXTAUTH_SECRET`。フロント（NextAuth）と FastAPI で同じものを使う。
+- 送信方法  
+  - 管理系 API ではヘッダーに `Authorization: Bearer <JWT>` を必ず付ける。
+- 管理者の決め方  
+  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切りで列挙。  
+  - JWT の email がこの中にあり、admin_users に未登録なら初回アクセス時に自動で作成。  
+  - 含まれないメールなら 403。
+- エラー時の返し方  
+  - JWT 不正/期限切れ → 401  
+  - メールが許可されていない → 403
+
+---
+
+# セキュリティ対策（ブラウザ向けヘッダ）
+- HSTS: 一度 HTTPS でアクセスしたら、次回以降も必ず HTTPS を使うようブラウザに指示する（盗聴や改ざんリスク低減）。
+- X-Frame-Options: SAMEORIGIN で、他ドメインの iframe 埋め込みを防ぐ（クリックジャッキング対策）。
+- X-Content-Type-Options: nosniff で、ブラウザが勝手にファイルタイプを推測しないようにする。
+- Referrer-Policy: strict-origin-when-cross-origin で、外部サイトへ送るリファラ情報を最小限（オリジンのみ）にする。
+- 実装イメージ: FastAPI/Starlette のミドルウェアで上記ヘッダをレスポンスに付与。
+
+---
+
+# レートリミット（目安）
+- Cloudflare（無料枠）のWAF/レートリミットを有効化した上で、FastAPI 側でも Redis + fastapi-limiter で二重に制御する。
+- 公開 API: 1 IP あたり 60 回/分
+- 管理 API: 1 IP あたり 30 回/分
+- 閾値は運用状況に応じて調整し、Cloudflare とアプリ側で設定を同期する。

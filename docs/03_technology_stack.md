@@ -32,6 +32,18 @@
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
 - フロントエンドデプロイ：Vercel
 - バックエンドデプロイ：Railway / Render / Fly.io
+- CDN/WAF/Rate Limit: Cloudflare（無料プラン）を利用し、WAF + IP ごとのレートリミットを有効化する。バックエンドでは Redis を用いた `fastapi-limiter` で公開 API 60 req/min、管理 API 30 req/min を設定する。
+
+### ストレージ / バックアップ方針
+- 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用。配信用カスタムドメイン（例: `https://assets.logbook.example`）を割り当て、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。
+- 画像アップロード（開発）: FastAPI が `/uploads` を静的配信し、`backend/uploads` ディレクトリを Docker ボリュームで永続化する。
+- 認可/公開: バケットは public read。書き込みは管理API経由のみ許可し、NextAuth JWT を必須とする。
+- 環境変数例: `S3_ENDPOINT`（R2エンドポイント）, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`（画像用）, `ASSET_BASE_URL`（公開URLベース）。
+- 容量/バリデーション: 1ファイル上限 5MB、許可 MIME は `image/png` / `image/jpeg` / `image/webp`。フロントと FastAPI の双方で検証する。
+- DB バックアップ（本番）: Cloudflare R2 のバックアップ専用バケットに `pg_dump` を毎日 UTC 03:00 取得し、7日保持。バックアップ用 IAM キーは専用に分離し、権限は対象バケットへの `PutObject` / `ListBucket` / `GetObject` のみに限定する。
+- DB バックアップ（開発）: 自動バックアップなし。必要に応じて手動 `pg_dump` をローカル保存またはバックアップバケットへアップロード。
+- 環境変数例（バックアップ用）: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `DATABASE_URL`（バックアップ元）。
+- セキュリティ: バックアップ専用キーは画像用キーと分離し、公開アクセス無効。鍵は 90〜180 日でローテーションし、失効手順を `infra/backup.md` に記載予定。
 
 ## 開発ツール
 - Git（バージョン管理）
@@ -39,3 +51,27 @@
 - GitHub Copilot（補完）
 - codex CLI（コード生成・作業効率化）
 - VS Code（エディタ）
+
+## 環境変数（ローカル/本番で共通化するキー）
+### フロントエンド（frontend/.env.local）
+- `NEXTAUTH_SECRET`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `NEXTAUTH_URL`（例: `http://localhost:3000`）
+- `BACKEND_API_BASE`（例: `http://localhost:8000`）
+- `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
+
+### バックエンド（backend/.env）
+- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`NEXTAUTH_SECRET`（フロントと共有）、`ADMIN_ALLOWED_EMAILS`
+- 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
+- バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
+
+## ポート設計（ローカル/コンテナで共通化）
+- Next.js (frontend): 3000
+- FastAPI (backend): 8000
+- PostgreSQL: 5432
+- Redis: 6379
+
+## メモ（段階的導入）
+- Redis はレートリミット用に利用するが、初期ローカル開発では未起動でも動作できるようにし、接続設定（`REDIS_URL`）は先に用意しておく。
+- Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db/redis、ボリューム（DB/`backend/uploads`）、ポートを整理する。
