@@ -5,9 +5,9 @@
 - 参照した docs/0x_xxx.md の章やセクションを列挙
 
 ## 実行したコマンド
-- [ ] pnpm lint --filter frontend
-- [ ] pnpm test --filter frontend（該当テストがあれば）
-- [ ] uv run pytest backend/tests
+- [ ] cd frontend && pnpm lint
+- [ ] cd frontend && pnpm test（該当テストがあれば）
+- [ ] cd backend && uv run pytest tests
 - [ ] その他: （あれば追記）
 
 ## スクリーンショット
