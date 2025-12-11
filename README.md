@@ -32,7 +32,7 @@ cd backend
 uv sync
 uv run fastapi dev
 ```
-テスト: `cd backend && uv run pytest backend/tests`
+テスト: `cd backend && uv run pytest tests`
 
 ## ディレクトリ構成メモ
 - `frontend/` Next.js 15 App Router、Tailwind、shadcn/ui（予定）
