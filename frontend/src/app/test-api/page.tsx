@@ -7,5 +7,5 @@ export default async function Page() {
       <h1 className="text-2xl font-bold">Next.js ⇔ FastAPI 接続テスト</h1>
       <pre className="mt-4">{JSON.stringify(data, null, 2)}</pre>
     </div>
-  )
+  );
 }
