@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": ["**/*.{js,jsx,ts,tsx,json,md,css}"]
   },
   "formatter": {
     "enabled": true,
