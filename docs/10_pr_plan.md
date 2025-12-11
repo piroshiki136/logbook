@@ -4,7 +4,7 @@
 
 ## PR1: ドキュメント/環境整備
 - [x] README に起動手順・依存関係を追記し、docs/todo の未決事項を整理
-- [ ] frontend テンプレ UI の初期表示を削除し、globals.css を土台化
+- [x] frontend テンプレ UI の初期表示を削除し、globals.css を土台化
 - [ ] `pnpm lint --filter frontend` / `uv run fastapi dev` で起動確認
 
 ## PR2: バックエンド基盤
