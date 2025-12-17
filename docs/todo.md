@@ -9,6 +9,7 @@
 - Alembic 初期マイグレーションとサンプルデータ投入手順を用意する。
 
 ## PR2
+- FastAPI の設定層（core/settings/security）、DB セッション、共通レスポンス/例外ハンドラを `app/main.py` に組み込んで認証トークン検証を行う。
 - `app/main.py` に共通レスポンス/例外ハンドラを登録し、FastAPI 起動時に有効化する。
 - `app/models/` に `articles/tags/article_tags/admin_users` を SQLAlchemy で定義し、対応する Pydantic スキーマを `app/schemas/` に追加して API ルータから参照可能にする。
 - `backend/migrations/` に Alembic の初期マイグレーションを生成し、`backend/tests/` へ Pytest の設定と最初の smoke テストを配置して CI で動かす。
