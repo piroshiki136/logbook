@@ -60,7 +60,8 @@
 - models/ : SQLAlchemy モデル
 - schemas/ : Pydantic スキーマ
 - services/ : ビジネスロジック
-- core/ : 設定、DB接続、認証ミドルウェア
+- core/ : 設定、共通レスポンス/例外、認証ミドルウェア
+- db/ : DB 接続設定や Session 管理（SQLAlchemy Engine/SessionLocal など）
 
 ---
 

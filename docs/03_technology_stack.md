@@ -32,7 +32,7 @@
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
 - フロントエンドデプロイ：Vercel
 - バックエンドデプロイ：Railway / Render / Fly.io
-- CDN/WAF/Rate Limit: Cloudflare（無料プラン）を利用し、WAF + IP ごとのレートリミットを有効化する。バックエンドでは Redis を用いた `fastapi-limiter` で公開 API 60 req/min、管理 API 30 req/min を設定する。
+- CDN/WAF/Rate Limit: Cloudflare（無料プラン）で WAF + IP ごとのレートリミットを有効化し、本番/ステージングでは FastAPI 側でも Redis + `fastapi-limiter` による 60 req/min（公開 API）・30 req/min（管理 API）の制限を二重に掛ける。ローカル開発の初期段階では `fastapi-limiter` は無効化し、将来的に Redis を起動した段階でトグルできるようにする。
 
 ### ストレージ / バックアップ方針
 - 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用。配信用カスタムドメイン（例: `https://assets.logbook.example`）を割り当て、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。
@@ -73,5 +73,5 @@
 - Redis: 6379
 
 ## メモ（段階的導入）
-- Redis はレートリミット用に利用するが、初期ローカル開発では未起動でも動作できるようにし、接続設定（`REDIS_URL`）は先に用意しておく。
+- Redis はレートリミット用に利用するが、初期ローカル開発では `fastapi-limiter` を OFF にしても API が動くようにし、将来 Redis を導入するタイミングで `REDIS_URL` と「レートリミット有効化フラグ（例: `ENABLE_RATE_LIMITER`）」を設定して切り替える。
 - Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db/redis、ボリューム（DB/`backend/uploads`）、ポートを整理する。

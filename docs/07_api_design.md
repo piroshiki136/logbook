@@ -176,7 +176,6 @@ prev/next が存在しない場合は null を返す。
 ---
 
 # レートリミット（目安）
-- Cloudflare（無料枠）のWAF/レートリミットを有効化した上で、FastAPI 側でも Redis + fastapi-limiter で二重に制御する。
-- 公開 API: 1 IP あたり 60 回/分
-- 管理 API: 1 IP あたり 30 回/分
+- 本番/ステージング: Cloudflare（無料枠）の WAF/レートリミットを有効化した上で、FastAPI 側でも Redis + `fastapi-limiter` で二重に制御する（公開 API 60 req/min、管理 API 30 req/min）。
+- ローカル開発の初期段階: Redis を起動せずに Cloudflare 相当の制御も掛からないため、`fastapi-limiter` を無効化したまま動かす。Redis を導入したタイミングで有効化フラグを切り替えられるように実装する。
 - 閾値は運用状況に応じて調整し、Cloudflare とアプリ側で設定を同期する。
