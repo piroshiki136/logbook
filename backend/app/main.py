@@ -1,42 +1,38 @@
+from app.api import health
+from app.core.exceptions import setup_exception_handlers
+from app.core.settings import get_settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+settings = get_settings()
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        debug=settings.debug,
+    )
+
+    # ---- CORS ----
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_allow_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    # ---- Exception Handlers ----
+    setup_exception_handlers(app)
+
+    # ---- Routers ----
+    app.include_router(
+        health.router,
+        prefix=settings.api_v1_prefix,
+        tags=["health"],
+    )
+
+    return app
 
 
-@app.get("/hello")
-def say_hello():
-    return {"message": "Hello from FastAPI!"}
-
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-
-# fastapiの起動時読み込み
-# from fastapi import FastAPI
-# from fastapi.exceptions import HTTPException
-
-# from app.core.exceptions import (
-#     http_exception_handler,
-#     unhandled_exception_handler,
-# )
-
-# app = FastAPI()
-
-# app.add_exception_handler(HTTPException, http_exception_handler)
-# app.add_exception_handler(Exception, unhandled_exception_handler)
+app = create_app()

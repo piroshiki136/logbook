@@ -2,7 +2,7 @@ import logging
 
 from app.core.response import ApiResponse
 from app.core.settings import get_settings
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
@@ -44,3 +44,9 @@ def unhandled_exception_handler(request: Request, exc: Exception) -> JSONRespons
             message="Internal Server Error",
         ).model_dump(),
     )
+
+
+def setup_exception_handlers(app: FastAPI) -> None:
+    """FastAPI アプリケーションに例外ハンドラを設定する。"""
+    app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(Exception, unhandled_exception_handler)
