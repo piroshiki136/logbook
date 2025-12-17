@@ -30,7 +30,7 @@ Follow the branching model from `docs/09_git_workflow.md`: keep `main` productio
 
 ## Commit & Pull Request Guidelines
 Beyond the prefixes above, follow Conventional Commits with ≤72-character subjects referencing the related spec (e.g., `feat: add /articles pagination per doc04`). PRs must outline scope, link the relevant doc section, include screenshots for UI changes, and confirm `pnpm lint`, front-end tests, and `uv run pytest` were executed. Highlight unresolved spec gaps in a "Known Issues" block.
-Always provide commit message examples and suggestions in Japanese when communicating with the user.
+Provide commit message examples and suggestions only when the user explicitly asks, and when responding include the Conventional Commit prefix (feat/fix/refactor/docs/chore) followed by Japanese text for the subject/body.
 
 ## Security & Configuration
 Store secrets in `.env.local` (frontend) and `.env` (backend); required keys include `NEXTAUTH_SECRET`, Google OAuth credentials, `DATABASE_URL`, and `JWT_SECRET`. Enforce NextAuth session checks on every `/admin` and article mutation endpoint, ensuring draft content (`is_draft=true`) never leaks via unauthenticated queries. Database backups, media storage, and rate limiting policies are still undecided—document decisions in `docs/` once defined.
