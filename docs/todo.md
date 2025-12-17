@@ -7,7 +7,12 @@
 ## 開発初期〜機能実装中
 - Redis を導入するか、一時的にレートリミットを無効化するかを決める（接続先設定は残す）。
 - Alembic 初期マイグレーションとサンプルデータ投入手順を用意する。
-- Next.js / FastAPI 起動スクリプトを pnpm / uv で統一する。
+
+## PR2
+- `app/main.py` に共通レスポンス/例外ハンドラを登録し、FastAPI 起動時に有効化する。
+- `app/models/` に `articles/tags/article_tags/admin_users` を SQLAlchemy で定義し、対応する Pydantic スキーマを `app/schemas/` に追加して API ルータから参照可能にする。
+- `backend/migrations/` に Alembic の初期マイグレーションを生成し、`backend/tests/` へ Pytest の設定と最初の smoke テストを配置して CI で動かす。
+- モデル/API 仕様変更に応じて `docs/05_data_model.md` と `docs/07_api_design.md` を更新し、PR2 の完了条件を満たす。
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
