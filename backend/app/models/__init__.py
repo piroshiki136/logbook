@@ -1,13 +1,13 @@
-from .admin_users import AdminUsers
-from .article_tags import ArticleTags
-from .articles import Articles
-from .categories import Categories
-from .tags import Tags
+from .admin_user import AdminUser
+from .article import Article
+from .article_tag import ArticleTag
+from .category import Category
+from .tag import Tag
 
 __all__ = [
-    "Articles",
-    "Categories",
-    "Tags",
-    "ArticleTags",
-    "AdminUsers",
+    "Article",
+    "Category",
+    "Tag",
+    "ArticleTag",
+    "AdminUser",
 ]

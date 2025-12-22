@@ -3,7 +3,7 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-class AdminUsers(Base):
+class AdminUser(Base):
     """
     NextAuth と連携する管理ユーザーテーブル（docs/05 の admin_users）。
     許可済みメールと Google OAuth の provider_id を同期し、記事とは紐付けない。

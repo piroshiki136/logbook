@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-class ArticleTags(Base):
+class ArticleTag(Base):
     """
     記事とタグを結ぶ N:N 中間テーブル。
     article_id と tag_id の複合主キーで同じタグの重複付与を防ぐ（docs/05）。
