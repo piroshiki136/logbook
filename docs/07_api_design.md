@@ -153,7 +153,7 @@ prev/next が存在しない場合は null を返す。
 - 何を検証する？  
   - フロント（NextAuth）が発行する JWT が正しいサインか、期限切れでないか、誰向けか（aud を例えば `logbook` に固定）を確認する。
 - 鍵の扱い  
-  - JWT の署名方式: HS256。鍵は `NEXTAUTH_SECRET`。フロント（NextAuth）と FastAPI で同じものを使う。
+  - JWT の署名方式: RS256。NextAuth 側に秘密鍵（PEM）を保持し、FastAPI 側は `.env` の `JWT_PUBLIC_KEY`（公開鍵）を使って検証する。改行は `\n` で表現して良い。アルゴリズムは `JWT_ALGORITHM=RS256` を既定とする。
 - 送信方法  
   - 管理系 API ではヘッダーに `Authorization: Bearer <JWT>` を必ず付ける。
 - 管理者の決め方  

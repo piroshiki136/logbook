@@ -8,8 +8,8 @@
 - [x] `cd frontend && pnpm lint` / `cd backend && uv run fastapi dev` で起動確認
 
 ## PR2: バックエンド基盤
-- [ ] FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
-- [ ] SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
+- [x] FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
+- [x] SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
 - [ ] Alembic 初期マイグレーション、`backend/tests` の土台
 - [ ] docs/05, docs/07 に差分が出た場合は更新
 

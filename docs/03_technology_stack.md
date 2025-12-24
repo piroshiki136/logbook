@@ -18,7 +18,7 @@
 - SQLAlchemy 2.0 系
 - Alembic 1.13
 - python-dotenv
-- python-jose
+- PyJWT
 - passlib[bcrypt]
 - uvicorn 0.30
 - uv 0.9+
@@ -62,7 +62,7 @@
 - `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
 
 ### バックエンド（backend/.env）
-- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`NEXTAUTH_SECRET`（フロントと共有）、`ADMIN_ALLOWED_EMAILS`
+- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
 - 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
 - バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
 
