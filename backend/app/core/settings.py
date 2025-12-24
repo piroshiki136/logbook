@@ -47,9 +47,10 @@ class Settings(BaseSettings):
     database_url: str = Field(..., validation_alias="DATABASE_URL")
 
     # ---- Security / Auth ----
-    nextauth_secret: str = Field(..., validation_alias="NEXTAUTH_SECRET")
+    jwt_public_key: str = Field(..., validation_alias="JWT_PUBLIC_KEY")
     jwt_issuer: str = Field("logbook", validation_alias="JWT_ISSUER")
     jwt_audience: str = Field("logbook", validation_alias="JWT_AUDIENCE")
+    jwt_algorithm: str = Field("RS256", validation_alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = 60
     admin_allowed_emails: list[str] = Field(
         default_factory=list, validation_alias="ADMIN_ALLOWED_EMAILS"
@@ -64,7 +65,16 @@ class Settings(BaseSettings):
             return []
         return [email.strip() for email in value.split(",") if email.strip()]
 
-    asset_base_url: str = Field("http://localhost:8000/uploads", validation_alias="ASSET_BASE_URL")
+    @field_validator("jwt_public_key", mode="before")
+    @classmethod
+    def normalize_public_key(cls, value: str | None):
+        if not value:
+            raise ValueError("JWT_PUBLIC_KEY is required")
+        return value.replace("\\n", "\n").strip()
+
+    asset_base_url: str = Field(
+        "http://localhost:8000/uploads", validation_alias="ASSET_BASE_URL"
+    )
 
     # ---- Logging ----
     @computed_field

@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.122.0",
     "pydantic-settings>=2.12.0",
+    "pyjwt[crypto]>=2.9.0",
     "sqlalchemy>=2.0.45",
 ]
 
@@ -14,4 +15,3 @@ dependencies = [
 dev = [
     "ruff>=0.14.9",
 ]
-

@@ -1,10 +1,11 @@
 import logging
 from typing import Any
 
+import jwt
 from app.core.settings import get_settings
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import JWTError, jwt
+from jwt import PyJWTError
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
@@ -20,14 +21,14 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
     try:
         payload = jwt.decode(
             token,
-            settings.nextauth_secret,
-            algorithms=["HS256"],
-            audience=settings.nextauth_audience,  # 誰向けのトークンか
-            issuer=settings.nextauth_issuer,  # 発行者
+            settings.jwt_public_key,
+            algorithms=[settings.jwt_algorithm],
+            audience=settings.jwt_audience,  # 誰向けのトークンか
+            issuer=settings.jwt_issuer,  # 発行者
         )
         return payload
 
-    except JWTError as e:
+    except PyJWTError as e:
         # 開発・運用のためにログには詳細を残す
         logger.warning("JWT validation failed", exc_info=e)
 
