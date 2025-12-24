@@ -72,9 +72,7 @@ class Settings(BaseSettings):
             raise ValueError("JWT_PUBLIC_KEY is required")
         return value.replace("\\n", "\n").strip()
 
-    asset_base_url: str = Field(
-        "http://localhost:8000/uploads", validation_alias="ASSET_BASE_URL"
-    )
+    asset_base_url: str = Field("http://localhost:8000/uploads", validation_alias="ASSET_BASE_URL")
 
     # ---- Logging ----
     @computed_field

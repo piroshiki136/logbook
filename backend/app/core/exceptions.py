@@ -1,10 +1,11 @@
 import logging
 
-from app.core.response import ApiResponse
-from app.core.settings import get_settings
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
+
+from app.core.response import ApiResponse
+from app.core.settings import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

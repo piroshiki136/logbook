@@ -1,6 +1,7 @@
-from app.db.base import Base
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
+
+from app.db.base import Base
 
 
 class ArticleTag(Base):

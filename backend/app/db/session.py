@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session, sessionmaker
 
 settings = get_settings()
 
+print("Database URL:", settings.database_url)  # デバッグ用にデータベースURLを出力
+
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,  # 接続が切れている場合に自動的に再接続するため

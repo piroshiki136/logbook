@@ -2,10 +2,11 @@ import logging
 from typing import Any
 
 import jwt
-from app.core.settings import get_settings
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt import PyJWTError
+
+from app.core.settings import get_settings
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
