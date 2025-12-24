@@ -36,7 +36,7 @@ Format: `cd frontend && pnpm format`
 ```bash
 cd backend
 uv sync
-uv run fastapi dev
+uv run fastapi dev app.main:app
 ```
 テスト: `cd backend && uv run pytest tests`
 Lint: `cd backend && uv run ruff check app tests`
@@ -53,4 +53,4 @@ Format check: `cd backend && uv run ruff format --check app tests`
 - README に起動手順と依存前提を追記する
 - docs/todo の未決事項を整理し、関連 docs を同期する
 - frontend のテンプレ UI を削除し、`globals.css` を土台スタイルにする
-- `pnpm lint --filter frontend` と `uv run fastapi dev` で起動確認する（結果を記録）
+- `pnpm lint --filter frontend` と `uv run fastapi dev app.main:app` で起動確認する（結果を記録）
