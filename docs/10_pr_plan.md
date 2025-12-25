@@ -5,13 +5,13 @@
 ## PR1: ドキュメント/環境整備
 - [x] README に起動手順・依存関係を追記し、docs/todo の未決事項を整理
 - [x] frontend テンプレ UI の初期表示を削除し、globals.css を土台化
-- [x] `cd frontend && pnpm lint` / `cd backend && uv run fastapi dev` で起動確認
+- [x] `cd frontend && pnpm lint` / `cd backend && uv run fastapi dev app.main:app` で起動確認
 
 ## PR2: バックエンド基盤
-- [ ] FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
-- [ ] SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
-- [ ] Alembic 初期マイグレーション、`backend/tests` の土台
-- [ ] docs/05, docs/07 に差分が出た場合は更新
+- [x] FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
+- [x] SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
+- [x] Alembic 初期マイグレーション、`backend/tests` の土台
+- [x] docs/05, docs/07 に差分が出た場合は更新（今回は差分なしのため追記不要）
 
 ## PR3: 記事系 API 完成
 - [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
