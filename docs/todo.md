@@ -5,8 +5,9 @@
 ## ローカル開発開始前（最優先）
 
 ## 開発初期〜機能実装中
-- サンプルデータ投入手順をまとめ、`README` か `docs/05` に追記する。
-- GitHub Actions で backend ディレクトリを working-directory にして `uv sync` → `uv run pytest tests` を自動実行するワークフローを追加し、Secrets で必要な環境変数を渡す。
+- Redis を導入するか、一時的にレートリミットを無効化するかを決める（接続先設定は残す）。
+- Alembic 初期マイグレーションとサンプルデータ投入手順を用意する。
+- Next.js / FastAPI 起動スクリプトを pnpm / uv で統一する。
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
@@ -15,18 +16,3 @@
 ## 本番準備
 - Cloudflare WAF/レートリミットの具体値を FastAPI 側と同期させる運用手順を docs に追記する。
 - R2 バケット名・リージョンなど固定値と、バックアップ用ジョブの実行環境（例: GitHub Actions）の鍵管理手順を `infra/backup.md` にまとめる。
-- allow_methods, allow_headersを絞る
-例:
-```py
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_allow_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allow_headers=[
-        "Authorization",
-        "Content-Type",
-        "Accept",
-    ],
-)
-```

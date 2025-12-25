@@ -32,17 +32,13 @@
 - フォーマッタ: Biome
 - パッケージ管理: pnpm
 - 型チェック: TypeScript
-- Lint: Biome（JS/TS/React/Tailwind）、コマンド例：`pnpm lint`
-- Format: Biome、コマンド例：`pnpm format`
+- Lint: Biome（JS/TS/React/Tailwind）
 
 ## バックエンド
 - フォーマッタと Linter: Ruff
 - 依存管理: uv
 - コードスタイル: PEP8 準拠
-- インデントは 4 スペース、文字列リテラルはダブルクォートに統一
 - import 整形も Ruff に従う
-- Ruff の設定（`backend/.ruff.toml`）では対象ディレクトリを `app` / `tests` に限定し、line-length=100・target-version=py312・ルールセット `["E","F","I","B","UP"]` を有効化する
-- コマンド例: `uv run ruff check app tests`（Lint） / `uv run ruff format app tests`（整形） / `uv run ruff format --check app tests`（整形チェック）
 
 ---
 
@@ -60,8 +56,7 @@
 - models/ : SQLAlchemy モデル
 - schemas/ : Pydantic スキーマ
 - services/ : ビジネスロジック
-- core/ : 設定、共通レスポンス/例外、認証ミドルウェア
-- db/ : DB 接続設定や Session 管理（SQLAlchemy Engine/SessionLocal など）
+- core/ : 設定、DB接続、認証ミドルウェア
 
 ---
 

@@ -7,7 +7,6 @@
   "javascript.format.enable": false,
   "typescript.format.enable": false,
 
-  // ---- Frontend (Biome) ----
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
@@ -25,12 +24,5 @@
   },
   "[css]": {
     "editor.defaultFormatter": "biomejs.biome"
-  },
-
-  // ---- Backend (Ruff) ----
-  "[python]": {
-    "editor.tabSize": 4,
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnSave": true
-  },
+  }
 }

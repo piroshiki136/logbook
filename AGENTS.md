@@ -20,7 +20,7 @@ Implementation will be split between `frontend` (Next.js + TypeScript + Tailwind
 - `docker compose up frontend backend db` (planned) should align local PostgreSQL with the ERD in `docs/05`.
 
 ## Coding Style & Naming Conventions
-Use Biome defaults (2-space indent, single quotes, trailing commas) and PascalCase filenames for React components, camelCase for hooks, kebab-case for slugs as stored in `articles.slug`. Tailwind classes should be grouped layout → spacing → color to stay consistent with `docs/06`. Python relies on Ruff for lint/format, with 4-space indents, snake_case functions, PascalCase Pydantic schemas, and double-quoted strings. Keep API JSON fields camelCase (`createdAt`, `isDraft`) even though DB columns are snake_case per `docs/05`.
+Use Biome defaults (2-space indent, single quotes, trailing commas) and PascalCase filenames for React components, camelCase for hooks, kebab-case for slugs as stored in `articles.slug`. Tailwind classes should be grouped layout → spacing → color to stay consistent with `docs/06`. Python relies on Ruff for lint/format, with 4-space indents, snake_case functions, and PascalCase Pydantic schemas. Keep API JSON fields camelCase (`createdAt`, `isDraft`) even though DB columns are snake_case per `docs/05`.
 
 ## Testing Guidelines
 Front-end tests (Vitest + Testing Library) belong near the relevant routes/components (e.g., article listing filters described in `docs/02` and `docs/04`). Backend tests (Pytest + httpx) must assert slug generation, tag/category filtering, draft separation, and auth protection of admin endpoints. Target ≥80% statement coverage and run Alembic migrations before DB-dependent suites. Capture assumptions in tests/docstrings whenever specs are incomplete.
@@ -30,7 +30,6 @@ Follow the branching model from `docs/09_git_workflow.md`: keep `main` productio
 
 ## Commit & Pull Request Guidelines
 Beyond the prefixes above, follow Conventional Commits with ≤72-character subjects referencing the related spec (e.g., `feat: add /articles pagination per doc04`). PRs must outline scope, link the relevant doc section, include screenshots for UI changes, and confirm `pnpm lint`, front-end tests, and `uv run pytest` were executed. Highlight unresolved spec gaps in a "Known Issues" block.
-Provide commit message examples and suggestions only when the user explicitly asks, and when responding include the Conventional Commit prefix (feat/fix/refactor/docs/chore) followed by Japanese text for the subject/body.
 
 ## Security & Configuration
-Store secrets in `.env.local` (frontend) and `.env` (backend); required keys include `NEXTAUTH_SECRET`, Google OAuth credentials, `DATABASE_URL`, and the RS256 `JWT_PUBLIC_KEY`. Enforce NextAuth session checks on every `/admin` and article mutation endpoint, ensuring draft content (`is_draft=true`) never leaks via unauthenticated queries. Database backups, media storage, and rate limiting policies are still undecided—document decisions in `docs/` once defined.
+Store secrets in `.env.local` (frontend) and `.env` (backend); required keys include `NEXTAUTH_SECRET`, Google OAuth credentials, `DATABASE_URL`, and `JWT_SECRET`. Enforce NextAuth session checks on every `/admin` and article mutation endpoint, ensuring draft content (`is_draft=true`) never leaks via unauthenticated queries. Database backups, media storage, and rate limiting policies are still undecided—document decisions in `docs/` once defined.
