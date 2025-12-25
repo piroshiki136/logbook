@@ -1,8 +1,0 @@
-src = ["app", "tests"]
-line-length = 100
-target-version = "py312"
-
-[lint]
-select = ["E", "F", "I", "B", "UP"]
-
-# formatはデフォルトで十分なので指定しない
