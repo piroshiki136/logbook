@@ -5,11 +5,8 @@
 ## ローカル開発開始前（最優先）
 
 ## 開発初期〜機能実装中
-- Alembic 初期マイグレーションとサンプルデータ投入手順を用意する。
-
-## PR2
-- Alembic/Tests: `backend/migrations/` に Alembic env/script をセットアップし、上記モデルを反映した初期リビジョンを作成。`backend/tests/` へ pytest.ini / conftest.py / DB セッションフィクスチャ / health + DB smoke テストを追加し、CI で `uv run pytest` が動く状態にする。
-- Docs Sync: モデル/API 仕様の変更点は `docs/05_data_model.md` と `docs/07_api_design.md` に即時反映し、完了済みの TODO を本リストから削除する。
+- サンプルデータ投入手順をまとめ、`README` か `docs/05` に追記する。
+- GitHub Actions で backend ディレクトリを working-directory にして `uv sync` → `uv run pytest tests` を自動実行するワークフローを追加し、Secrets で必要な環境変数を渡す。
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
