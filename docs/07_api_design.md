@@ -153,11 +153,11 @@ prev/next が存在しない場合は null を返す。
 - 何を検証する？  
   - フロント（NextAuth）が発行する JWT が正しいサインか、期限切れでないか、誰向けか（aud を例えば `logbook` に固定）を確認する。
 - 鍵の扱い  
-  - JWT の署名方式: HS256。鍵は `NEXTAUTH_SECRET`。フロント（NextAuth）と FastAPI で同じものを使う。
+  - JWT の署名方式: RS256。NextAuth 側に秘密鍵（PEM）を保持し、FastAPI 側は `.env` の `JWT_PUBLIC_KEY`（公開鍵）を使って検証する。改行は `\n` で表現して良い。アルゴリズムは `JWT_ALGORITHM=RS256` を既定とする。
 - 送信方法  
   - 管理系 API ではヘッダーに `Authorization: Bearer <JWT>` を必ず付ける。
 - 管理者の決め方  
-  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切りで列挙。  
+  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切り（推奨）で列挙する。JSON 配列（例: `["admin@example.com","editor@example.com"]`）でも可。  
   - JWT の email がこの中にあり、admin_users に未登録なら初回アクセス時に自動で作成。  
   - 含まれないメールなら 403。
 - エラー時の返し方  
@@ -176,7 +176,6 @@ prev/next が存在しない場合は null を返す。
 ---
 
 # レートリミット（目安）
-- Cloudflare（無料枠）のWAF/レートリミットを有効化した上で、FastAPI 側でも Redis + fastapi-limiter で二重に制御する。
-- 公開 API: 1 IP あたり 60 回/分
-- 管理 API: 1 IP あたり 30 回/分
+- 本番/ステージング: Cloudflare（無料枠）の WAF/レートリミットを有効化した上で、FastAPI 側でも Redis + `fastapi-limiter` で二重に制御する（公開 API 60 req/min、管理 API 30 req/min）。
+- ローカル開発の初期段階: Redis を起動せずに Cloudflare 相当の制御も掛からないため、`fastapi-limiter` を無効化したまま動かす。Redis を導入したタイミングで有効化フラグを切り替えられるように実装する。
 - 閾値は運用状況に応じて調整し、Cloudflare とアプリ側で設定を同期する。
