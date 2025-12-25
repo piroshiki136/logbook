@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     # ---- CORS ----
     # 例: CORS_ALLOW_ORIGINS='["http://localhost:3000"]'
     cors_allow_origins: list[str] = Field(
-        default_factory=list, validation_alias="CORS_ALLOW_ORIGINS"
+        default_factory=lambda: ["http://localhost:3000"],
+        validation_alias="CORS_ALLOW_ORIGINS",
     )
 
     @field_validator("cors_allow_origins", mode="before")
@@ -53,7 +54,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = Field("RS256", validation_alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = 60
     admin_allowed_emails: list[str] = Field(
-        default_factory=list, validation_alias="ADMIN_ALLOWED_EMAILS"
+        ...,
+        validation_alias="ADMIN_ALLOWED_EMAILS",
     )
 
     @field_validator("admin_allowed_emails", mode="before")

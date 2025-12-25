@@ -27,4 +27,8 @@ class Article(Base):
         onupdate=func.now(),
     )
 
-    is_draft: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_draft: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        server_default=func.true(),
+    )

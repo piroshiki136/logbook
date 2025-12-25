@@ -1,12 +1,23 @@
 from collections.abc import Generator
+from logging import getLogger
 
-from app.core.settings import get_settings
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import Session, sessionmaker
 
-settings = get_settings()
+from app.core.settings import get_settings
 
-print("Database URL:", settings.database_url)  # デバッグ用にデータベースURLを出力
+logger = getLogger(__name__)
+
+settings = get_settings()
+sanitized_url = make_url(
+    settings.database_url
+)  # 文字列をオブジェクトにして扱う。情報をマスクできる。
+logger.debug(
+    "Connecting to database host=%s db=%s",
+    sanitized_url.host,
+    sanitized_url.database,
+)
 
 engine = create_engine(
     settings.database_url,

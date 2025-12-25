@@ -72,8 +72,7 @@ def require_admin(
     管理者のみ通す Depends
     """
     email = user.get("email")
-
-    if email not in settings.admin_allowed_emails:
+    if email is None or email not in settings.admin_allowed_emails:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin permission required",

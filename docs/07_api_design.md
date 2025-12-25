@@ -157,7 +157,7 @@ prev/next が存在しない場合は null を返す。
 - 送信方法  
   - 管理系 API ではヘッダーに `Authorization: Bearer <JWT>` を必ず付ける。
 - 管理者の決め方  
-  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切りで列挙。  
+  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切り（推奨）で列挙する。JSON 配列（例: `["admin@example.com","editor@example.com"]`）でも可。  
   - JWT の email がこの中にあり、admin_users に未登録なら初回アクセス時に自動で作成。  
   - 含まれないメールなら 403。
 - エラー時の返し方  

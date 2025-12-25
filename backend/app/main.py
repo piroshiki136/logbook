@@ -1,8 +1,9 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api import health
 from app.core.exceptions import setup_exception_handlers
 from app.core.settings import get_settings
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 settings = get_settings()
 

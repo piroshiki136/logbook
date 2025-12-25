@@ -37,11 +37,15 @@ class ArticleCreate(SchemaBase):
     def validate_slug(cls, v: str) -> str:
         """MVP では slug のざっくり制約のみを行う。"""
 
-        v = v.strip()
+        v = v.strip().lower()
         if not v:
             raise ValueError("slug は必須です")
         if " " in v:
             raise ValueError("slug に空白は使えません")
+        if len(v) > 150:
+            raise ValueError("slug は150文字以内で指定してください")
+        if not v.replace("-", "").isalnum():
+            raise ValueError("slug は小文字英数字とハイフンのみ利用できます")
         return v
 
 
