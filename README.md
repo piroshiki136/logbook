@@ -36,6 +36,7 @@ Format: `cd frontend && pnpm format`
 ```bash
 cd backend
 uv sync
+uv run alembic upgrade head  # 初回のみ、DB にテーブルを作成する
 uv run fastapi dev app.main:app
 ```
 テスト: `cd backend && uv run pytest tests`
