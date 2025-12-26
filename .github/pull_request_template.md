@@ -6,7 +6,10 @@
 
 ## 実行したコマンド
 - [ ] cd frontend && pnpm lint
+- [ ] cd frontend && pnpm format（必要に応じて）
 - [ ] cd frontend && pnpm test（該当テストがあれば）
+- [ ] cd backend && uv run ruff check app tests
+- [ ] cd backend && uv run ruff format --check app tests（必要に応じて）
 - [ ] cd backend && uv run pytest tests
 - [ ] その他: （あれば追記）
 

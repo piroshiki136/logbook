@@ -11,23 +11,28 @@
 - [x] FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
 - [x] SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
 - [x] Alembic 初期マイグレーション、`backend/tests` の土台
-- [x] docs/05, docs/07 に差分が出た場合は更新（今回は差分なしのため追記不要）
+- [x] docs/05, docs/07 に差分が出た場合は更新
 
-## PR3: 記事系 API 完成
+## PR3: CI・サンプルデータ整備
+- [ ] GitHub Actions で backend ディレクトリを working-directory にし、`uv sync` → `uv run pytest tests` を自動実行するワークフローを追加
+- [ ] テスト用 Secrets（`DATABASE_URL`, `JWT_PUBLIC_KEY` など）の扱いを決めて Team Docs に記す
+- [ ] サンプルデータ投入手順を `README` か `docs/05` にまとめる
+
+## PR4: 記事系 API 完成
 - [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
 - [ ] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
 - [ ] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
 
-## PR4: フロント基盤
+## PR5: フロント基盤
 - [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
 - [ ] 共通 UI（primitives, ナビ/フッタ）、テーマ、API クライアント/型定義を整備
 - [ ] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
 
-## PR5: 公開画面実装
+## PR6: 公開画面実装
 - [ ] トップの Hero/最新記事カード、記事一覧のフィルタ+ページネーション、記事詳細の Markdown 表示とタグ/カテゴリリンク、前後記事ナビ
 - [ ] Vitest + Testing Library でフィルタ/ページネーションのユースケーステスト
 
-## PR6: 管理画面・認証
+## PR7: 管理画面・認証
 - [ ] NextAuth (Google) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
 - [ ] バリデーションと slug 編集、ドラフト切り替え。主要ハンドラの単体テストを追加
 

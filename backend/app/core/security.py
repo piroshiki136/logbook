@@ -48,7 +48,7 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
 
 
 def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),  # noqa: B008
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
 ) -> dict[str, Any]:
     """
     認証済みユーザーを取得する Depends
@@ -66,7 +66,7 @@ def get_current_user(
 
 
 def require_admin(
-    user: dict[str, Any] = Depends(get_current_user),  # noqa: B008
+    user: dict[str, Any] = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
     管理者のみ通す Depends
