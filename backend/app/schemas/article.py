@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from pydantic import Field, field_validator
@@ -44,8 +45,10 @@ class ArticleCreate(SchemaBase):
             raise ValueError("slug に空白は使えません")
         if len(v) > 150:
             raise ValueError("slug は150文字以内で指定してください")
-        if not v.replace("-", "").isalnum():
-            raise ValueError("slug は小文字英数字とハイフンのみ利用できます")
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", v):
+            raise ValueError(
+                "slug は英小文字・数字・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
+            )
         return v
 
 

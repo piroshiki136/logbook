@@ -1,8 +1,8 @@
-"""init
+"""initial schema
 
-Revision ID: 4b5fe33c8c1e
+Revision ID: e1f2f726ab4a
 Revises: 
-Create Date: 2025-12-25 15:46:15.581114
+Create Date: 2025-12-26 13:56:29.657022
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4b5fe33c8c1e'
+revision: str = 'e1f2f726ab4a'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,7 +32,7 @@ def upgrade() -> None:
     sa.UniqueConstraint('provider_id')
     )
     op.create_table('categories',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('slug', sa.String(length=100), nullable=False),
     sa.Column('color', sa.String(length=50), nullable=True),
@@ -56,7 +56,7 @@ def upgrade() -> None:
     sa.Column('content', sa.Text(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), server_onupdate=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('is_draft', sa.Boolean(), server_default=sa.text('true'), nullable=False),
     sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -67,8 +67,7 @@ def upgrade() -> None:
     sa.Column('tag_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
     sa.ForeignKeyConstraint(['tag_id'], ['tags.id'], ),
-    sa.PrimaryKeyConstraint('article_id', 'tag_id'),
-    sa.UniqueConstraint('article_id', 'tag_id')
+    sa.PrimaryKeyConstraint('article_id', 'tag_id')
     )
     # ### end Alembic commands ###
 
