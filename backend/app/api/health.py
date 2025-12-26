@@ -24,7 +24,7 @@ def health_check():
     "/health/db",
     response_model=ApiResponse[HealthData],
 )
-def health_check_db(db: Session = Depends(get_db)):  # noqa: B008
+def health_check_db(db: Session = Depends(get_db)):
     # 実際に DB に触る（これが重要）
     db.execute(text("SELECT 1"))
 

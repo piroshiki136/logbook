@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -23,12 +23,11 @@ class Article(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        server_onupdate=func.now(),
         onupdate=func.now(),
     )
 
     is_draft: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
-        server_default=func.true(),
+        server_default=text("true"),
     )
