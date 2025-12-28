@@ -17,6 +17,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
       ADMIN_ALLOWED_EMAILS: ${{ secrets.ADMIN_ALLOWED_EMAILS }}
+      ENV: test
 
     defaults:
       run:

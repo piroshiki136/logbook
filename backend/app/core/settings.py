@@ -91,16 +91,6 @@ class Settings(BaseSettings):
             email.strip() for email in self.admin_allowed_emails_raw.split(",") if email.strip()
         ]
 
-    # TODO: 動いたら消す
-    # @field_validator("admin_allowed_emails", mode="before")
-    # @classmethod
-    # def split_admin_emails(cls, value: str | list[str]):
-    #     if isinstance(value, list):
-    #         return [email.strip() for email in value if email.strip()]
-    #     if not value:
-    #         return []
-    #     return [email.strip() for email in value.split(",") if email.strip()]
-
     @field_validator("jwt_public_key", mode="before")
     @classmethod
     def normalize_public_key(cls, value: str | None):

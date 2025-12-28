@@ -3,7 +3,7 @@
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 
 # PR4
-- github側でciの設定をする(PR3時点ではコミットしていなくてできないため)
+- GitHub 側で Branch Protection の「Require status checks」を設定する（PR3 時点では CI ワークフローがコミットされていないため未設定）
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。

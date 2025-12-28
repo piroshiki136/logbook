@@ -23,7 +23,7 @@
 - [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
 - [ ] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
 - [ ] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
-- - FastAPI の Depends(get_db) をテストで使う方法
+- [ ] FastAPI の Depends(get_db) をテストで使う方法
 
 ## PR5: フロント基盤
 - [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
