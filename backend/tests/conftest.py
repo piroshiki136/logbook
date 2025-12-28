@@ -12,8 +12,8 @@ from app.core.settings import get_settings
 
 get_settings.cache_clear()
 
-from app.db.base import Base
-from app.main import app
+from app.db.base import Base  # noqa: E402  # SQLAlchemy の metadata を初期化するために必要
+from app.main import app  # noqa: E402  # FastAPI アプリを初期化するために必要
 
 TEST_DB_PATH = pathlib.Path("test.db")
 
