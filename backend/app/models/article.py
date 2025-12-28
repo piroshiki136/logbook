@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from .category import Category
+    from .tag import Tag
 
 
 class Article(Base):
@@ -15,6 +22,12 @@ class Article(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
 
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
+    category: Mapped[Category] = relationship(back_populates="articles")
+
+    tags: Mapped[list[Tag]] = relationship(
+        secondary="article_tags",
+        back_populates="articles",
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
