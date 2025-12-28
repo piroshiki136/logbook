@@ -41,7 +41,7 @@
 - コードスタイル: PEP8 準拠
 - インデントは 4 スペース、文字列リテラルはダブルクォートに統一
 - import 整形も Ruff に従う
-- Ruff の設定（`backend/.ruff.toml`）では対象ディレクトリを `app` / `tests` に限定し、line-length=100・target-version=py312・ルールセット `["E","F","I","B","UP"]` を有効化する
+- Ruff の設定（`backend/.ruff.toml`）では line-length=100・target-version=py312・ルールセット `["E","F","I","B","UP"]` を有効化し、`alembic` を除外する
 - コマンド例: `uv run ruff check .`（Lint） / `uv run ruff format app tests`（整形） / `uv run ruff format --check app tests`（整形チェック）
 - pytest 実行時は自動で `ENV=test` を設定し、`backend/.env.test` に `DATABASE_URL` / `JWT_PUBLIC_KEY` / `ADMIN_ALLOWED_EMAILS` を設定する
 
