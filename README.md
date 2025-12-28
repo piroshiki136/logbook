@@ -29,8 +29,8 @@ cd frontend
 pnpm install
 pnpm dev
 ```
-Lint: `cd frontend && pnpm lint`
-Format: `cd frontend && pnpm format`
+- Lint: `cd frontend && pnpm lint`
+- Format: `cd frontend && pnpm format`
 
 ### backend
 ```bash
@@ -39,10 +39,28 @@ uv sync
 uv run alembic upgrade head  # 初回のみ、DB にテーブルを作成する
 uv run fastapi dev app.main:app
 ```
-テスト: `cd backend && uv run pytest tests`
-Lint: `cd backend && uv run ruff check app tests`
-Format: `cd backend && uv run ruff format app tests`
-Format check: `cd backend && uv run ruff format --check app tests`
+開発用サンプルデータ（任意）:
+```
+uv run python -m scripts.seed
+```
+- テスト: `cd backend && uv run pytest tests`
+- Lint: `cd backend && uv run ruff check app tests`
+- Format: `cd backend && uv run ruff format app tests`
+- Format check: `cd backend && uv run ruff format --check app tests`
+
+### テスト用環境変数（backend）
+pytest 実行時は自動で `ENV=test` を設定し、`backend/.env.test` を参照する。最低限以下を用意する。
+```
+DATABASE_URL=sqlite+pysqlite:///./test.db
+JWT_PUBLIC_KEY=dummy
+ADMIN_ALLOWED_EMAILS=["test@example.com"]
+```
+
+## CI（GitHub Actions）
+backend の CI では以下の Repository Secrets を参照する。
+- `DATABASE_URL`
+- `JWT_PUBLIC_KEY`
+- `ADMIN_ALLOWED_EMAILS`
 
 ## ディレクトリ構成メモ
 - `frontend/` Next.js 15 App Router、Tailwind、shadcn/ui（予定）
@@ -55,3 +73,15 @@ Format check: `cd backend && uv run ruff format --check app tests`
 - docs/todo の未決事項を整理し、関連 docs を同期する
 - frontend のテンプレ UI を削除し、`globals.css` を土台スタイルにする
 - `pnpm lint --filter frontend` と `uv run fastapi dev app.main:app` で起動確認する（結果を記録）
+
+## PR2 作業チェック（概要）
+- FastAPI の設定層（core/settings/auth）、DB セッション、共通レスポンス/例外処理を追加
+- SQLAlchemy モデル（articles/categories/tags/article_tags/admin_users）と Pydantic スキーマの雛形
+- Alembic 初期マイグレーション、`backend/tests` の土台
+- docs/05, docs/07 に差分が出た場合は更新
+
+## PR3 作業チェック（概要）
+- GitHub Actions で backend/frontend の CI を追加（`.github/workflows/ci-backend.yml` / `ci-frontend.yml`）
+- テスト用 Secrets（`DATABASE_URL`, `JWT_PUBLIC_KEY` など）の扱いを決めて Team Docs に記す
+- サンプルデータ投入スクリプト（`backend/scripts/seed.py`）を整備する
+- サンプルデータ投入手順を `README` と `docs/05` にまとめる

@@ -6,7 +6,7 @@ Never output English in the final answer.
 # Repository Guidelines
 
 ## Current State & Specs
-The repository currently contains planning documents only (`docs/01_product_overview.md`–`09_git_workflow.md`). They outline the product concept, MVP scope, routing, data model, screens, high-level API sketch, coding rules, and Git workflow for a Next.js 15 (App Router) frontend plus FastAPI backend. Treat these docs as the starting point but not exhaustive—flag gaps before coding and update the docs alongside implementation.
+The repository includes both planning docs (`docs/01_product_overview.md`–`09_git_workflow.md`) and initial implementation: backend foundation (settings/db/models/tests/seed), and GitHub Actions workflows for frontend/backend. The docs outline the product concept, MVP scope, routing, data model, screens, API sketch, coding rules, and Git workflow for a Next.js 15 (App Router) frontend plus FastAPI backend. Treat these docs as the starting point but not exhaustive—flag gaps before coding and update the docs alongside implementation.
 
 ## Project Structure & Module Organization
 Implementation will be split between `frontend` (Next.js + TypeScript + Tailwind + shadcn/ui) and `backend` (FastAPI + SQLAlchemy + Alembic). Keep shared UI primitives under `frontend/src/components/ui/`, feature routes in the App Router hierarchy, and markdown helpers near the article pages described in `docs/06`. Backend models reflecting `articles`, `tags`, `article_tags`, and `admin_users` from `docs/05` live in `backend/app/models/`, with routers mirroring the paths in `docs/04`. Place Alembic migrations in `backend/migrations/`, tests in `backend/tests/`, and Docker/seed scripts under `infra/`.
@@ -15,8 +15,8 @@ Implementation will be split between `frontend` (Next.js + TypeScript + Tailwind
 - `pnpm install && pnpm dev --filter frontend` boots the Next.js dev server for the public + admin screens.
 - `pnpm build --filter frontend` outputs the bundle for Vercel deployments.
 - `pnpm lint --filter frontend` runs Biome formatting/linting across TS/TSX files.
-- `uv sync && uv run fastapi dev` installs Python deps and serves FastAPI routes (`/api/articles`, `/api/tags`, `/api/upload-image`, etc.).
-- `uv run pytest backend/tests` executes backend tests.
+- `cd backend && uv sync && uv run fastapi dev app.main:app` installs Python deps and serves FastAPI routes (`/api/articles`, `/api/tags`, `/api/upload-image`, etc.).
+- `cd backend && uv run pytest` executes backend tests (tests set `ENV=test` automatically).
 - `docker compose up frontend backend db` (planned) should align local PostgreSQL with the ERD in `docs/05`.
 
 ## Coding Style & Naming Conventions
@@ -33,4 +33,4 @@ Beyond the prefixes above, follow Conventional Commits with ≤72-character subj
 Provide commit message examples and suggestions only when the user explicitly asks, and when responding include the Conventional Commit prefix (feat/fix/refactor/docs/chore) followed by Japanese text for the subject/body.
 
 ## Security & Configuration
-Store secrets in `.env.local` (frontend) and `.env` (backend); required keys include `NEXTAUTH_SECRET`, Google OAuth credentials, `DATABASE_URL`, and the RS256 `JWT_PUBLIC_KEY`. Enforce NextAuth session checks on every `/admin` and article mutation endpoint, ensuring draft content (`is_draft=true`) never leaks via unauthenticated queries. Database backups, media storage, and rate limiting policies are still undecided—document decisions in `docs/` once defined.
+Store secrets in `.env.local` (frontend) and `.env` (backend); required keys include `NEXTAUTH_SECRET`, Google OAuth credentials, `DATABASE_URL`, `ADMIN_ALLOWED_EMAILS`, and the RS256 `JWT_PUBLIC_KEY`. Enforce NextAuth session checks on every `/admin` and article mutation endpoint, ensuring draft content (`is_draft=true`) never leaks via unauthenticated queries. Database backups, media storage, and rate limiting policies are still undecided—document decisions in `docs/` once defined.

@@ -14,14 +14,16 @@
 - [x] docs/05, docs/07 に差分が出た場合は更新
 
 ## PR3: CI・サンプルデータ整備
-- [ ] GitHub Actions で backend ディレクトリを working-directory にし、`uv sync` → `uv run pytest tests` を自動実行するワークフローを追加
-- [ ] テスト用 Secrets（`DATABASE_URL`, `JWT_PUBLIC_KEY` など）の扱いを決めて Team Docs に記す
-- [ ] サンプルデータ投入手順を `README` か `docs/05` にまとめる
+- [x] GitHub Actions で backend/frontend の CI を追加（`.github/workflows/ci-backend.yml` / `ci-frontend.yml`）
+- [x] テスト用 Secrets（`DATABASE_URL`, `JWT_PUBLIC_KEY` など）の扱いを決めて Team Docs に記す
+- [x] サンプルデータ投入スクリプト（`backend/scripts/seed.py`）を整備する
+- [x] サンプルデータ投入手順を `README` と `docs/05` にまとめる
 
 ## PR4: 記事系 API 完成
 - [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
 - [ ] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
 - [ ] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
+- - FastAPI の Depends(get_db) をテストで使う方法
 
 ## PR5: フロント基盤
 - [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
