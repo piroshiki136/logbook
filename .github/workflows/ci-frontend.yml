@@ -1,40 +1,12 @@
-name: Frontend CI
+# TODO: front開発時に再度設定する
+
+name: Frontend CI (disabled)
 
 on:
-  pull_request:
-    paths:
-      - "frontend/**"
-  push:
-    branches: [dev, main]
-    paths:
-      - "frontend/**"
+  workflow_dispatch: # 手動実行のみ（実行しなければ動かない）
 
 jobs:
-  frontend:
+  noop:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-          cache-dependency-path: frontend/pnpm-lock.yaml
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Type check
-        run: pnpm typecheck
+      - run: echo "This workflow is disabled"

@@ -23,12 +23,13 @@
 - [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
 - [ ] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
 - [ ] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
-- [ ] FastAPI の Depends(get_db) をテストで使う方法
+- [ ] TestClient で `get_db` を dependency_overrides し、テスト用 DB セッションを使う
 
 ## PR5: フロント基盤
 - [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
 - [ ] 共通 UI（primitives, ナビ/フッタ）、テーマ、API クライアント/型定義を整備
 - [ ] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
+- [ ] workflowsのfrontのciを設定
 
 ## PR6: 公開画面実装
 - [ ] トップの Hero/最新記事カード、記事一覧のフィルタ+ページネーション、記事詳細の Markdown 表示とタグ/カテゴリリンク、前後記事ナビ

@@ -42,8 +42,9 @@
 - インデントは 4 スペース、文字列リテラルはダブルクォートに統一
 - import 整形も Ruff に従う
 - Ruff の設定（`backend/.ruff.toml`）では line-length=100・target-version=py312・ルールセット `["E","F","I","B","UP"]` を有効化し、`alembic` を除外する
-- コマンド例: `uv run ruff check .`（Lint） / `uv run ruff format app tests`（整形） / `uv run ruff format --check app tests`（整形チェック）
-- pytest 実行時は自動で `ENV=test` を設定し、`backend/.env.test` に `DATABASE_URL` / `JWT_PUBLIC_KEY` / `ADMIN_ALLOWED_EMAILS` を設定する
+- コマンド例: `uv run ruff check .`（backend 配下の Python を Lint。`.ruff.toml` の `exclude` により `alembic` などは対象外） / `uv run ruff format app tests`（整形） / `uv run ruff format --check app tests`（整形チェック）
+- `APP_MODE` は `local` / `dev` / `stg` / `prod` を想定し、debug/log レベル判定に使う
+- pytest 実行時は自動で `SETTINGS_ENV=test` を設定し、`backend/.env.test` に `DATABASE_URL` / `JWT_PUBLIC_KEY` / `ADMIN_ALLOWED_EMAILS` を設定する
 
 ---
 

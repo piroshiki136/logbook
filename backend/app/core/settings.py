@@ -9,10 +9,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 def _env_file() -> str:
     """
-    ENV=test なら .env.test
+    SETTINGS_ENV=test なら .env.test
     それ以外は .env.local があればそれ、なければ .env
     """
-    env = os.getenv("ENV", "local").lower()
+    env = os.getenv("SETTINGS_ENV", "local").lower()
 
     if env == "test":
         return ".env.test"
@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     app_name: str = "LogBook"
     env: Literal["local", "dev", "stg", "prod"] = Field(
         default="local",
-        validation_alias="APP_ENV",
+        validation_alias="APP_MODE",
     )
     api_v1_prefix: str = "/api"
 
@@ -110,10 +110,12 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     s = Settings()
-    env = os.getenv("ENV", "local").lower()
+    env = os.getenv("SETTINGS_ENV", "local").lower()
 
     if env == "test" and s.database_url.startswith("postgres"):
-        raise RuntimeError("ENV=test のときに PostgreSQL に接続しようとしています（事故防止）")
+        raise RuntimeError(
+            "SETTINGS_ENV=test のときに PostgreSQL に接続しようとしています（事故防止）"
+        )
 
     return s
 

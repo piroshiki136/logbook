@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
-os.environ["ENV"] = "test"
+os.environ["SETTINGS_ENV"] = "test"
 
 from app.core.settings import get_settings
 
