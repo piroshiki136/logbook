@@ -28,6 +28,9 @@ def engine():
     engine = create_engine(
         settings.database_url,
         future=True,
+        connect_args={"check_same_thread": False}
+        if str(settings.database_url).startswith("sqlite")
+        else {},
     )
 
     Base.metadata.create_all(bind=engine)

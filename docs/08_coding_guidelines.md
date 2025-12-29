@@ -41,10 +41,38 @@
 - コードスタイル: PEP8 準拠
 - インデントは 4 スペース、文字列リテラルはダブルクォートに統一
 - import 整形も Ruff に従う
-- Ruff の設定（`backend/.ruff.toml`）では line-length=100・target-version=py312・ルールセット `["E","F","I","B","UP"]` を有効化し、`alembic` を除外する
-- コマンド例: `uv run ruff check .`（backend 配下の Python を Lint。`.ruff.toml` の `exclude` により `alembic` などは対象外） / `uv run ruff format app tests`（整形） / `uv run ruff format --check app tests`（整形チェック）
-- `APP_MODE` は `local` / `dev` / `stg` / `prod` を想定し、debug/log レベル判定に使う
-- pytest 実行時は自動で `SETTINGS_ENV=test` を設定し、`backend/.env.test` に `DATABASE_URL` / `JWT_PUBLIC_KEY` / `ADMIN_ALLOWED_EMAILS` を設定する
+
+### Ruff 設定
+- 設定ファイル: `backend/.ruff.toml`
+- line-length: 100
+- target-version: py312
+- 有効ルールセット: `["E","F","I","B","UP"]`
+- `alembic` ディレクトリは `exclude` により対象外とする
+
+### コマンド例
+- Lint (backend 配下の Python をチェック)
+```bash
+uv run ruff check .
+```
+※ `.ruff.toml` の `exclude` により `alembic` などは対象外
+- Format (アプリケーションコードのみ整形)
+```bash
+uv run ruff format app tests
+```
+- Format チェック
+```bash
+uv run ruff format --check app tests
+```
+
+### 実行環境・設定ルール
+- `APP_MODE` は `local` / `dev` / `stg` / `prod` を想定し、  
+  debug/log レベル判定に使用する
+- pytest 実行時は自動で `SETTINGS_ENV=test` を設定する  
+  テスト用の環境変数は `backend/.env.test` に定義し、
+  以下を含める：
+  - `DATABASE_URL`
+  - `JWT_PUBLIC_KEY`
+  - `ADMIN_ALLOWED_EMAILS`
 
 ---
 

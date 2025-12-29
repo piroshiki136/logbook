@@ -5,6 +5,8 @@
     uv run python -m scripts.seed
 """
 
+from sqlalchemy import select
+
 from app.db.session import SessionLocal
 from app.models.admin_user import AdminUser
 from app.models.article import Article
@@ -13,7 +15,7 @@ from app.models.tag import Tag
 
 
 def get_or_create_category(session, *, name: str, slug: str, color: str | None, icon: str | None):
-    category = session.query(Category).filter_by(slug=slug).first()
+    category = session.scalar(select(Category).where(Category.slug == slug))
     if category:
         return category
 
@@ -28,7 +30,7 @@ def get_or_create_category(session, *, name: str, slug: str, color: str | None, 
 
 
 def get_or_create_tag(session, *, name: str, slug: str):
-    tag = session.query(Tag).filter_by(slug=slug).first()
+    tag = session.scalar(select(Tag).where(Tag.slug == slug))
     if tag:
         return tag
 
@@ -63,7 +65,7 @@ def main():
         )
 
         # ---- Articles ----
-        article = session.query(Article).filter_by(slug="hello-logbook").first()
+        article = session.scalar(select(Article).where(Article.slug == "hello-logbook"))
         if not article:
             article = Article(
                 title="Hello LogBook",
@@ -82,7 +84,7 @@ def main():
                     article.tags.append(tag)
 
         # ---- Admin Users ----
-        admin = session.query(AdminUser).filter_by(email="admin@example.com").first()
+        admin = session.scalar(select(AdminUser).where(AdminUser.email == "admin@example.com"))
         if not admin:
             session.add(
                 AdminUser(
