@@ -1,10 +1,11 @@
 from logging.config import fileConfig
 
+from sqlalchemy import create_engine, pool
+
 import app.models  # noqa: F401  # Base.metadataへモデル定義を登録する副作用目的のimport
 from alembic import context
 from app.core.settings import get_settings
 from app.db.base import Base
-from sqlalchemy import create_engine, pool
 
 # Alembic Config オブジェクト。alembic.ini の値へアクセスするインターフェース。
 config = context.config

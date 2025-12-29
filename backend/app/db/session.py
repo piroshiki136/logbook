@@ -19,9 +19,17 @@ logger.debug(
     sanitized_url.database,
 )
 
+engine_kwargs: dict = {
+    "pool_pre_ping": True,  # 接続が切れている場合に自動的に再接続するため
+}
+
+# SQLite の場合、check_same_thread を False に設定する必要がある。
+if sanitized_url.drivername.startswith("sqlite"):
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
+
 engine = create_engine(
     settings.database_url,
-    pool_pre_ping=True,  # 接続が切れている場合に自動的に再接続するため
+    **engine_kwargs,
 )
 
 SessionLocal = sessionmaker(

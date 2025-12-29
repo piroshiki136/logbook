@@ -1,0 +1,45 @@
+name: Backend CI
+
+on:
+  pull_request:  # feature→dev, dev→main の PR で実行
+    paths:
+      - "backend/**"
+  push:
+    branches: [dev, main]  # dev / main に commit が入ったとき
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci-backend.yml"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+      ADMIN_ALLOWED_EMAILS: ${{ secrets.ADMIN_ALLOWED_EMAILS }}
+      SETTINGS_ENV: test
+      APP_MODE: local
+
+    defaults:
+      run:
+        working-directory: backend  # run: のコマンドは backend/ 配下で実行
+
+    steps:
+      - uses: actions/checkout@v4  # リポジトリを runner に checkout（ルートに展開）
+
+      - uses: actions/setup-python@v5  # Python をセットアップ
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Lint (ruff)
+        run: uv run ruff check .
+
+      - name: Test (pytest)
+        run: uv run pytest

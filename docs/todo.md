@@ -2,17 +2,8 @@
 
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 
-## PR3（CI・サンプルデータ整備）
-- サンプルデータ投入手順
-  1. `docs/05_data_model.md` のテーブル定義をもとに、カテゴリ/タグ/記事の INSERT 例（SQL or seed スクリプト）を作成する。
-  2. サンプル投入を実行するコマンド（例: `cd backend && uv run python scripts/seed.py`）を決め、README の「Development」章へ追記する。
-  3. 上記手順がローカル DB（PostgreSQL or SQLite）で再現できるか検証し、注意点を docs に残す。
-- GitHub Actions で pytest を自動実行
-  1. `.github/workflows/backend.yml` を新規作成し、トリガーを `push/pull_request`（dev/main）に設定する。
-  2. ジョブ内で `defaults.run.working-directory: backend` を指定し、`checkout` → `uv sync` → `uv run pytest tests` の順に実行する。
-  3. リポジトリ Secrets に `DATABASE_URL`（テスト用 SQLite 文字列など）と `JWT_PUBLIC_KEY`（ダミー鍵）を登録し、`env:` で読み込む。
-  4. 必要であれば lint/format/build コマンドを追加ステップとして設定し、docs/08（Coding Guidelines）と整合させる。
-- Require status checks to passの設定
+# PR4
+- GitHub 側で Branch Protection の「Require status checks」を設定する（PR3 時点では CI ワークフローがコミットされていないため未設定）
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
