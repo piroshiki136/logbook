@@ -1,0 +1,12 @@
+# TODO: front開発時に再度設定する
+
+name: Frontend CI (disabled)
+
+on:
+  workflow_dispatch: # 手動実行のみ（実行しなければ動かない）
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This workflow is disabled"

@@ -1,4 +1,5 @@
 import json
+import os
 from functools import lru_cache
 from typing import Literal
 
@@ -6,17 +7,36 @@ from pydantic import Field, computed_field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _env_file() -> str:
+    """
+    SETTINGS_ENV=test なら .env.test
+    それ以外は .env.local があればそれ、なければ .env
+    """
+    env = os.getenv("SETTINGS_ENV", "local").lower()
+
+    if env == "test":
+        return ".env.test"
+
+    if os.path.exists(".env.local"):
+        return ".env.local"
+
+    return ".env"
+
+
 class Settings(BaseSettings):
     # extra="ignore" は「.env に余計な変数があっても落とさない」ための保険
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_env_file(),
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
     # ---- App ----
     app_name: str = "LogBook"
-    env: Literal["local", "dev", "stg", "prod"] = "local"
+    env: Literal["local", "dev", "stg", "prod"] = Field(
+        default="local",
+        validation_alias="APP_MODE",
+    )
     api_v1_prefix: str = "/api"
 
     @computed_field
@@ -53,19 +73,23 @@ class Settings(BaseSettings):
     jwt_audience: str = Field("logbook", validation_alias="JWT_AUDIENCE")
     jwt_algorithm: str = Field("RS256", validation_alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = 60
-    admin_allowed_emails: list[str] = Field(
+    admin_allowed_emails_raw: str = Field(
         ...,
         validation_alias="ADMIN_ALLOWED_EMAILS",
     )
 
-    @field_validator("admin_allowed_emails", mode="before")
-    @classmethod
-    def split_admin_emails(cls, value: str | list[str]):
-        if isinstance(value, list):
-            return [email.strip() for email in value if email.strip()]
-        if not value:
-            return []
-        return [email.strip() for email in value.split(",") if email.strip()]
+    @computed_field
+    @property
+    def admin_allowed_emails(self) -> list[str]:
+        """
+        ADMIN_ALLOWED_EMAILS を
+        "a@example.com,b@example.com"
+        → ["a@example.com", "b@example.com"]
+        に変換する
+        """
+        return [
+            email.strip() for email in self.admin_allowed_emails_raw.split(",") if email.strip()
+        ]
 
     @field_validator("jwt_public_key", mode="before")
     @classmethod
@@ -85,7 +109,15 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    s = Settings()
+    env = os.getenv("SETTINGS_ENV", "local").lower()
+
+    if env == "test" and s.database_url.startswith("postgres"):
+        raise RuntimeError(
+            "SETTINGS_ENV=test のときに PostgreSQL に接続しようとしています（事故防止）"
+        )
+
+    return s
 
 
 settings = get_settings()
