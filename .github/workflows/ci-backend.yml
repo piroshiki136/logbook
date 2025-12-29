@@ -8,6 +8,7 @@ on:
     branches: [dev, main]  # dev / main に commit が入ったとき
     paths:
       - "backend/**"
+      - ".github/workflows/ci-backend.yml"
 
 jobs:
   backend:

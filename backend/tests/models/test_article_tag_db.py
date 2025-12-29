@@ -38,10 +38,13 @@ def test_article_tag_relation_and_unique_pair(db_session):
     assert joined_tag.name == "fastapi"
 
     # --- UNIQUE（複合主キー）制約の確認 ---
+    # 既存の ORM インスタンスを Session から切り離す前に ID を退避
+    article_id = article.id
+    tag_id = tag.id
     # 既存の ORM インスタンスを Session から切り離す
     db_session.expunge_all()
 
-    duplicate_link = ArticleTag(article_id=article.id, tag_id=tag.id)
+    duplicate_link = ArticleTag(article_id=article_id, tag_id=tag_id)
     db_session.add(duplicate_link)
 
     with pytest.raises(IntegrityError):
