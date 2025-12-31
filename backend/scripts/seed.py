@@ -5,6 +5,8 @@
     uv run python -m scripts.seed
 """
 
+from datetime import datetime
+
 from sqlalchemy import select
 
 from app.db.session import SessionLocal
@@ -73,6 +75,7 @@ def main():
                 content="# Hello LogBook\n\nこれはサンプル記事です。",
                 category=programming,
                 is_draft=False,
+                published_at=datetime.now(datetime.UTC),
             )
             article.tags.extend([python, fastapi])
             session.add(article)

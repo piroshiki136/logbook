@@ -1,11 +1,12 @@
 import logging
+from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
-from app.core.response import ApiResponse
 from app.core.settings import get_settings
+from app.schemas.error import ErrorResponse
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -18,18 +19,57 @@ PUBLIC_STATUS_CODES = {
 }
 
 
+class AppError(Exception):
+    def __init__(self, *, code: str, message: str, status_code: int = 400):
+        self.code = code
+        self.message = message
+        self.status_code = status_code
+        super().__init__(message)
+
+
+def _build_error_body(detail: Any, status_code: int) -> tuple[str, str]:
+    if isinstance(detail, dict):
+        code = str(detail.get("code", "REQUEST_FAILED"))
+        message = str(detail.get("message", "Request failed"))
+    else:
+        code = "REQUEST_FAILED"
+        message = str(detail)
+
+    if not settings.debug and status_code not in PUBLIC_STATUS_CODES:
+        message = "Request failed"
+
+    return code, message
+
+
 def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """HTTPException を統一レスポンス形式で返す。"""
-    if settings.debug or exc.status_code in PUBLIC_STATUS_CODES:
-        message = exc.detail
-    else:
-        message = "Request failed"
+    code, message = _build_error_body(exc.detail, exc.status_code)
 
     return JSONResponse(
         status_code=exc.status_code,
-        content=ApiResponse(
-            success=False,
-            message=message,
+        content=ErrorResponse(
+            error={
+                "code": code,
+                "message": message,
+            },
+        ).model_dump(),
+    )
+
+
+def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
+    """AppError を統一レスポンス形式で返す。"""
+    code, message = _build_error_body(
+        {"code": exc.code, "message": exc.message},
+        exc.status_code,
+    )
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorResponse(
+            error={
+                "code": code,
+                "message": message,
+            },
         ).model_dump(),
     )
 
@@ -40,9 +80,11 @@ def unhandled_exception_handler(request: Request, exc: Exception) -> JSONRespons
 
     return JSONResponse(
         status_code=500,
-        content=ApiResponse(
-            success=False,
-            message="Internal Server Error",
+        content=ErrorResponse(
+            error={
+                "code": "INTERNAL_SERVER_ERROR",
+                "message": "Internal Server Error",
+            },
         ).model_dump(),
     )
 
@@ -50,4 +92,5 @@ def unhandled_exception_handler(request: Request, exc: Exception) -> JSONRespons
 def setup_exception_handlers(app: FastAPI) -> None:
     """FastAPI アプリケーションに例外ハンドラを設定する。"""
     app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(AppError, app_error_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)

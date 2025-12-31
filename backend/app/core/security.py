@@ -37,13 +37,19 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
             # 開発環境：原因が分かるようにする
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Invalid token: {e}",
+                detail={
+                    "code": "AUTH_INVALID_TOKEN",
+                    "message": f"Invalid token: {e}",
+                },
             ) from None
 
         # 本番環境：詳細は隠す
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
+            detail={
+                "code": "AUTH_INVALID_TOKEN",
+                "message": "認証に失敗しました",
+            },
         ) from None
 
 
@@ -56,7 +62,10 @@ def get_current_user(
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authorization header missing",
+            detail={
+                "code": "AUTH_INVALID_TOKEN",
+                "message": "認証に失敗しました",
+            },
         )
 
     token = credentials.credentials
@@ -65,17 +74,37 @@ def get_current_user(
     return payload
 
 
+def get_optional_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security_scheme),
+) -> dict[str, Any] | None:
+    """
+    任意認証の Depends（未認証なら None を返す）
+    """
+    if credentials is None:
+        return None
+
+    token = credentials.credentials
+    return verify_jwt_token(token)
+
+
+def is_admin_user(user: dict[str, Any]) -> bool:
+    email = user.get("email")
+    return email is not None and email in settings.admin_allowed_emails
+
+
 def require_admin(
     user: dict[str, Any] = Depends(get_current_user),
 ) -> dict[str, Any]:
     """
     管理者のみ通す Depends
     """
-    email = user.get("email")
-    if email is None or email not in settings.admin_allowed_emails:
+    if not is_admin_user(user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin permission required",
+            detail={
+                "code": "AUTH_FORBIDDEN",
+                "message": "権限がありません",
+            },
         )
 
     return user
