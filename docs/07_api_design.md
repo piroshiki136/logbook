@@ -170,13 +170,24 @@
 - 認証必須
 
 ## Multipart FormData
-file: image/png など
+file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
 
 ## 保存ルール
 - 画像は `UPLOAD_ROOT` で指定したディレクトリ配下に保存する（デフォルトは `backend/uploads`）
 - 保存先は `{UPLOAD_ROOT}/articles/{YYYY}/{MM}/`
 - ファイル名は UUID を用いる
 - 元ファイル名は URL やパスに使用しない
+- 1ファイル上限は 5MB（`UPLOAD_IMAGE_MAX_BYTES` で変更可能）
+
+## エラーレスポンス（サイズ超過）
+ステータス: 413
+{
+  "success": false,
+  "error": {
+    "code": "REQUEST_FAILED",
+    "message": "画像ファイルのサイズが上限を超えています"
+  }
+}
 
 ## 201レスポンス
 {

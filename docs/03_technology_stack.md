@@ -38,8 +38,8 @@
 - 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用。配信用カスタムドメイン（例: `https://assets.logbook.example`）を割り当て、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。
 - 画像アップロード（開発）: FastAPI が `/uploads` を静的配信し、`backend/uploads` ディレクトリを Docker ボリュームで永続化する。
 - 認可/公開: バケットは public read。書き込みは管理API経由のみ許可し、NextAuth JWT を必須とする。
-- 環境変数例: `S3_ENDPOINT`（R2エンドポイント）, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`（画像用）, `ASSET_BASE_URL`（公開URLベース）。
-- 容量/バリデーション: 1ファイル上限 5MB、許可 MIME は `image/png` / `image/jpeg` / `image/webp`。フロントと FastAPI の双方で検証する。
+- 環境変数例: `S3_ENDPOINT`（R2エンドポイント）, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`（画像用）, `ASSET_BASE_URL`（公開URLベース）, `UPLOAD_IMAGE_MAX_BYTES`（例: `5242880`）。
+- 容量/バリデーション: 1ファイル上限 5MB、許可 MIME は `image/png` / `image/jpeg` / `image/webp` / `image/gif`。フロントと FastAPI の双方で検証する。
 - DB バックアップ（本番）: Cloudflare R2 のバックアップ専用バケットに `pg_dump` を毎日 UTC 03:00 取得し、7日保持。バックアップ用 IAM キーは専用に分離し、権限は対象バケットへの `PutObject` / `ListBucket` / `GetObject` のみに限定する。
 - DB バックアップ（開発）: 自動バックアップなし。必要に応じて手動 `pg_dump` をローカル保存またはバックアップバケットへアップロード。
 - 環境変数例（バックアップ用）: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `DATABASE_URL`（バックアップ元）。
@@ -63,7 +63,7 @@
 
 ### バックエンド（backend/.env）
 - 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
-- 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
+- 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`, `UPLOAD_IMAGE_MAX_BYTES`
 - バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
 
 ## ポート設計（ローカル/コンテナで共通化）

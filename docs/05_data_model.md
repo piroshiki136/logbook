@@ -133,11 +133,10 @@ API レスポンスは tags を配列形式に変換して返す。
   → Next.js の SSG/SSR で HTML へ変換するため DB に HTML を保存しない
 - slug はタイトルからの自動生成＋手動修正可能（上記ルールでバリデーション）
 - 画像保存: 本番は Cloudflare R2（S3 互換）に保存し、公開 read のバケットをカスタムドメイン（例: `https://assets.logbook.example`）で配信する。オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}`。開発環境では従来通り FastAPI が `/uploads`（Docker で永続化）を配信し、`ASSET_BASE_URL=http://localhost:8000/uploads` を想定する。
-- 画像バリデーション: 許可 MIME は `image/png` / `image/jpeg` / `image/webp`、上限 5MB。フロントと API 両方でチェックする。
+- 画像バリデーション: 許可 MIME は `image/png` / `image/jpeg` / `image/webp` / `image/gif`、上限 5MB。フロントと API 両方でチェックする。
 
 ### 6.3 開発用サンプルデータ（seed）
 - `backend/scripts/seed.py` でカテゴリ/タグ/記事/記事タグ/管理ユーザーを最小構成で投入する。
 - 実行: `cd backend && uv run python -m scripts.seed`
 - 例: Category=Programming、Tag=Python/FastAPI、Article=Hello LogBook、AdminUser=admin@example.com
-
 
