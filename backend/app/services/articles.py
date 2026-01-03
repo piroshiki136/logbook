@@ -342,9 +342,10 @@ def _apply_slug_rules(
     session: Session, *, title: str, slug: str | None, article_id: int | None = None
 ) -> str:
     if slug:
-        exists = session.scalar(
-            select(Article.id).where(Article.slug == slug, Article.id != article_id)
-        )
+        conditions = [Article.slug == slug]
+        if article_id is not None:
+            conditions.append(Article.id != article_id)
+        exists = session.scalar(select(Article.id).where(*conditions))
         if exists:
             raise AppError(
                 code="SLUG_ALREADY_EXISTS",
