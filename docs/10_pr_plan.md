@@ -33,6 +33,7 @@
 - [ ] 共通 UI（primitives, ナビ/フッタ）、テーマ、API クライアント/型定義を整備
 - [ ] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
 - [ ] workflowsのfrontのciを設定、GitHub 側で Branch Protection の「Require status checks」の「Status checks that are required」を設定する
+- [ ] プルリクのコマンド見直す
 
 ## PR6: 公開画面実装
 - [ ] トップの Hero/最新記事カード、記事一覧のフィルタ+ページネーション、記事詳細の Markdown 表示とタグ/カテゴリリンク、前後記事ナビ

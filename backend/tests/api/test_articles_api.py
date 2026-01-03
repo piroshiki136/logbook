@@ -4,6 +4,7 @@ import pytest
 from fastapi import status
 
 from app.core.security import get_optional_user
+from app.core.settings import get_settings
 from app.main import app
 from app.models.article import Article
 from app.models.category import Category
@@ -129,7 +130,8 @@ async def test_list_articles_includes_drafts_for_admin(client, db_session):
     )
     _commit(db_session)
 
-    _set_override(get_optional_user, lambda: {"email": "test@example.com"})
+    settings = get_settings()
+    _set_override(get_optional_user, lambda: {"email": settings.admin_allowed_emails[0]})
     try:
         res = await client.get("/api/articles?draft=true")
     finally:
@@ -285,7 +287,8 @@ async def test_get_article_draft_visible_for_admin(client, db_session):
     )
     _commit(db_session)
 
-    _set_override(get_optional_user, lambda: {"email": "test@example.com"})
+    settings = get_settings()
+    _set_override(get_optional_user, lambda: {"email": settings.admin_allowed_emails[0]})
     try:
         res = await client.get("/api/articles/draft-article")
     finally:
