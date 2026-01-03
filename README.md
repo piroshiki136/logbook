@@ -50,7 +50,7 @@ uv run python -m scripts.seed
 - backend の API テストは httpx の AsyncClient + pytest-anyio で非同期実行する
 - Lint: `cd backend && uv run ruff check .`
 - Format: `cd backend && uv run ruff format .`
-- Format check: `cd backend && uv run ruff format .`
+- Format check: `cd backend && uv run ruff format --check .`
 
 ### テスト用環境変数（backend）
 pytest 実行時は自動で `SETTINGS_ENV=test` を設定し、`backend/.env.test` を参照する。最低限以下を用意する。
