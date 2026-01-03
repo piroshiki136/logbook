@@ -28,7 +28,7 @@ class ArticleListQuery(SchemaBase):
 
         items = []
         for raw in raw_items:
-            if raw is None or repr(raw) == "<factory>":
+            if raw is None or raw is PydanticUndefined:
                 continue
             for part in str(raw).split(","):
                 part = part.strip()

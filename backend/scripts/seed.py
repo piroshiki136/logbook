@@ -5,7 +5,7 @@
     uv run python -m scripts.seed
 """
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 
@@ -75,7 +75,7 @@ def main():
                 content="# Hello LogBook\n\nこれはサンプル記事です。",
                 category=programming,
                 is_draft=False,
-                published_at=datetime.now(datetime.UTC),
+                published_at=datetime.now(UTC),
             )
             article.tags.extend([python, fastapi])
             session.add(article)
