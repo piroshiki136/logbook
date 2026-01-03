@@ -20,4 +20,4 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=tests_leagacy"
+addopts = "--ignore=tests_legacy"
