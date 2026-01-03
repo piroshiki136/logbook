@@ -1,8 +1,8 @@
 import os
 import pathlib
 
+import httpx
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
@@ -13,6 +13,7 @@ from app.core.settings import get_settings
 get_settings.cache_clear()
 
 from app.db.base import Base  # noqa: E402  # SQLAlchemy の metadata を初期化するために必要
+from app.db.session import get_db  # noqa: E402  # dependency_overrides で必要
 from app.main import app  # noqa: E402  # FastAPI アプリを初期化するために必要
 
 TEST_DB_PATH = pathlib.Path("test.db")
@@ -42,11 +43,19 @@ def engine():
         TEST_DB_PATH.unlink()
 
 
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+
 @pytest.fixture(scope="function")
 def db_session(engine):
     """
     各テスト用 DB セッション（テストごとにトランザクションを張り rollback で元に戻す）
     """
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
     connection = engine.connect()
     transaction = connection.begin()
 
@@ -74,8 +83,21 @@ def db_session(engine):
 
 
 @pytest.fixture
-def client():
+async def client(db_session):
     """
-    FastAPI の TestClient
+    FastAPI の httpx client
     """
-    return TestClient(app)
+
+    def override_get_db():
+        yield db_session
+
+    app.dependency_overrides[get_db] = override_get_db
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(
+        transport=transport,
+        base_url="http://test",
+    ) as test_client:
+        yield test_client
+
+    app.dependency_overrides.clear()
