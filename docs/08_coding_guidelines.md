@@ -73,6 +73,8 @@ uv run ruff format --check app tests
   - `DATABASE_URL`
   - `JWT_PUBLIC_KEY`
   - `ADMIN_ALLOWED_EMAILS`
+- backend の API テストは `httpx` の ASGITransport を使い、FastAPI アプリを直接叩く
+- backend の API テストは `pytest-anyio` を使った `async def` で実装する
 
 ---
 
@@ -138,7 +140,9 @@ uv run ruff format --check app tests
 - router、schema、service、models を分けて管理する
 - DB session は依存注入で扱う
 - schema は Create、Update、Response に分離する
-- 例外処理には HTTPException を使う
+- API 層は薄く保ち、ドメイン処理は services に集約する
+- services は AppError など HTTP を知らない例外を投げる
+- 例外変換はアプリ共通のハンドラで HTTP レスポンスに統一する
 - API レスポンスは camelCase に変換して返す（フロントの表記に合わせる）
 
 ---

@@ -20,16 +20,19 @@
 - [x] サンプルデータ投入手順を `README` と `docs/05` にまとめる
 
 ## PR4: 記事系 API 完成
-- [ ] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
-- [ ] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
-- [ ] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
-- [ ] TestClient で `get_db` を dependency_overrides し、テスト用 DB セッションを使う
+- [x] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
+- [x] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
+- [x] タグ入力の正規化（表記ゆれ防止のため slug を正規化キーとして統一）
+- [x] TestClient で `get_db` を dependency_overrides し、テスト用 DB セッションを使う
+- [x] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
+- [x] docs/07 の API 仕様を具体化（publishedAt/slug/画像/テスト項目/エラーコード）
+- [x] `uv run pytest` で backend テスト全件通過
 
 ## PR5: フロント基盤
 - [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
 - [ ] 共通 UI（primitives, ナビ/フッタ）、テーマ、API クライアント/型定義を整備
 - [ ] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
-- [ ] workflowsのfrontのciを設定
+- [ ] workflowsのfrontのciを設定、GitHub 側で Branch Protection の「Require status checks」の「Status checks that are required」を設定する
 
 ## PR6: 公開画面実装
 - [ ] トップの Hero/最新記事カード、記事一覧のフィルタ+ページネーション、記事詳細の Markdown 表示とタグ/カテゴリリンク、前後記事ナビ
@@ -37,6 +40,8 @@
 
 ## PR7: 管理画面・認証
 - [ ] NextAuth (Google) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
+- [ ] タグの表示名（name）を編集できる管理 UI と更新 API を追加する
+- [ ] タグのタイポ修正（name 更新）とカテゴリの新規追加を管理画面から行えるようにする
 - [ ] バリデーションと slug 編集、ドラフト切り替え。主要ハンドラの単体テストを追加
 
 ## 未決事項（着手前に確定する）
