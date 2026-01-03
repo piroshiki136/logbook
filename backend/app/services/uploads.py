@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shutil
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
@@ -13,6 +13,7 @@ from app.core.settings import get_settings
 from app.schemas.upload import UploadImageResponse
 
 settings = get_settings()
+
 
 def _resolve_upload_root() -> Path:
     root = Path(settings.upload_root).expanduser()
@@ -43,9 +44,7 @@ def save_article_image(*, file: UploadFile) -> ApiResponse[UploadImageResponse]:
     with target_path.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    url = _build_asset_url(
-        f"articles/{now.strftime('%Y')}/{now.strftime('%m')}/{filename}"
-    )
+    url = _build_asset_url(f"articles/{now.strftime('%Y')}/{now.strftime('%m')}/{filename}")
 
     return ApiResponse(
         success=True,
@@ -59,4 +58,4 @@ def _build_asset_url(path: str) -> str:
 
 
 def _now() -> datetime:
-    return datetime.now(datetime.UTC)
+    return datetime.now(UTC)

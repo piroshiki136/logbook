@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.core.response import ApiResponse
@@ -22,10 +22,21 @@ router = APIRouter()
     response_model=ApiResponse[ArticleListResponse],
 )
 def list_articles(
-    query: ArticleListQuery = Depends(),
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=50),
+    tags: list[str] | None = Query(default=None),
+    categories: list[str] | None = Query(default=None),
+    draft: bool | None = Query(default=None),
     db: Session = Depends(get_db),
     user: dict | None = Depends(get_optional_user),
 ):
+    query = ArticleListQuery(
+        page=page,
+        limit=limit,
+        tags=tags or [],
+        categories=categories or [],
+        draft=draft,
+    )
     return article_service.list_articles(query=query, db=db, user=user)
 
 

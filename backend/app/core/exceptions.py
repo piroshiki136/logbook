@@ -2,7 +2,7 @@ import logging
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.exceptions import HTTPException
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core.settings import get_settings
@@ -89,8 +89,35 @@ def unhandled_exception_handler(request: Request, exc: Exception) -> JSONRespons
     )
 
 
+def _validation_error_message(exc: RequestValidationError) -> str:
+    if not settings.debug:
+        return "入力内容が正しくありません"
+    errors = exc.errors()
+    if not errors:
+        return "入力内容が正しくありません"
+    first = errors[0]
+    detail = first.get("msg", "")
+    if detail:
+        return f"入力内容が正しくありません: {detail}"
+    return "入力内容が正しくありません"
+
+
+def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    """RequestValidationError を統一レスポンス形式で返す。"""
+    return JSONResponse(
+        status_code=422,
+        content=ErrorResponse(
+            error={
+                "code": "REQUEST_VALIDATION_ERROR",
+                "message": _validation_error_message(exc),
+            },
+        ).model_dump(),
+    )
+
+
 def setup_exception_handlers(app: FastAPI) -> None:
     """FastAPI アプリケーションに例外ハンドラを設定する。"""
     app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(AppError, app_error_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)

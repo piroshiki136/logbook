@@ -1,4 +1,7 @@
 from pydantic import Field, field_validator
+from pydantic_core import PydanticUndefined
+
+from app.core.normalization import normalize_tag_key
 
 from .base import SchemaBase
 
@@ -16,12 +19,32 @@ class ArticleListQuery(SchemaBase):
     @classmethod
     def split_csv(cls, v):
         """カンマ区切り文字列をリストへ変換する。"""
-
-        if v is None:
+        if v is None or v is PydanticUndefined:
             return []
         if isinstance(v, list):
-            return v
-        s = str(v).strip()
-        if not s:
-            return []
-        return [x.strip() for x in s.split(",") if x.strip()]
+            raw_items = v
+        else:
+            raw_items = [v]
+
+        items = []
+        for raw in raw_items:
+            if raw is None or repr(raw) == "<factory>":
+                continue
+            for part in str(raw).split(","):
+                part = part.strip()
+                if part:
+                    items.append(part)
+        return items
+
+    @field_validator("tags")
+    @classmethod
+    def normalize_tags(cls, v: list[str]):
+        normalized: list[str] = []
+        seen: set[str] = set()
+        for raw in v:
+            key = normalize_tag_key(raw)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            normalized.append(key)
+        return normalized

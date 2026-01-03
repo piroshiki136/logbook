@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.exceptions import AppError
+from app.core.normalization import normalize_tag_key
 from app.core.response import ApiResponse
 from app.core.security import is_admin_user
 from app.core.slug import ensure_unique_slug, slugify
@@ -74,9 +75,7 @@ def list_articles(
     )
 
 
-def get_article(
-    *, slug: str, db: Session, user: dict | None
-) -> ApiResponse[ArticleDetail]:
+def get_article(*, slug: str, db: Session, user: dict | None) -> ApiResponse[ArticleDetail]:
     is_admin = user is not None and is_admin_user(user)
     stmt = (
         select(Article)
@@ -271,7 +270,7 @@ def get_prev_next(
 
 
 def _now() -> datetime:
-    return datetime.now(datetime.UTC)
+    return datetime.now(UTC)
 
 
 def _article_summary(article: Article) -> ArticleSummary:
@@ -311,13 +310,28 @@ def _get_or_create_tags(session: Session, slugs: list[str]) -> list[Tag]:
     if not slugs:
         return []
 
-    tags = session.scalars(select(Tag).where(Tag.slug.in_(slugs))).all()
+    normalized_pairs: list[tuple[str, str]] = []
+    seen: set[str] = set()
+
+    for raw in slugs:
+        normalized = normalize_tag_key(raw)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        normalized_pairs.append((normalized, raw.strip()))
+
+    if not normalized_pairs:
+        return []
+
+    normalized_slugs = [slug for slug, _ in normalized_pairs]
+    tags = session.scalars(select(Tag).where(Tag.slug.in_(normalized_slugs))).all()
     existing = {tag.slug for tag in tags}
 
-    for slug in slugs:
+    for slug, raw in normalized_pairs:
         if slug in existing:
             continue
-        tag = Tag(name=slug, slug=slug)
+        name = raw or slug
+        tag = Tag(name=name, slug=slug)
         session.add(tag)
         tags.append(tag)
 
