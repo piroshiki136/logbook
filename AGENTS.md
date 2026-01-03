@@ -3,6 +3,12 @@ You must think only in English.
 You must output only in Japanese.
 Never output English in the final answer.
 
+# Proposal Guidelines
+- When making suggestions, propose best practices or de facto standards.
+- If no best practice or de facto standard exists, offer other options.
+- Always state what you proposed.
+- Example: "この修正は Next.js のベストプラクティスに基づきます。ベストプラクティス、デファクトスタンダードがありませんでした。"
+
 # Repository Guidelines
 
 ## Current State & Specs
@@ -16,11 +22,11 @@ Implementation will be split between `frontend` (Next.js + TypeScript + Tailwind
 - `pnpm build --filter frontend` outputs the bundle for Vercel deployments.
 - `pnpm lint --filter frontend` runs Biome formatting/linting across TS/TSX files.
 - `cd backend && uv sync && uv run fastapi dev app.main:app` installs Python deps and serves FastAPI routes (`/api/articles`, `/api/tags`, `/api/upload-image`, etc.).
-- `cd backend && uv run pytest` executes backend tests (tests set `ENV=test` automatically).
+- `cd backend && uv run pytest` executes backend tests (tests set `SETTINGS_ENV=test` automatically).
 - `docker compose up frontend backend db` (planned) should align local PostgreSQL with the ERD in `docs/05`.
 
 ## Coding Style & Naming Conventions
-Use Biome defaults (2-space indent, single quotes, trailing commas) and PascalCase filenames for React components, camelCase for hooks, kebab-case for slugs as stored in `articles.slug`. Tailwind classes should be grouped layout → spacing → color to stay consistent with `docs/06`. Python relies on Ruff for lint/format, with 4-space indents, snake_case functions, PascalCase Pydantic schemas, and double-quoted strings. Keep API JSON fields camelCase (`createdAt`, `isDraft`) even though DB columns are snake_case per `docs/05`.
+Use Biome defaults (2-space indent, single quotes, trailing commas) and PascalCase filenames for React components, camelCase for hooks, kebab-case for slugs as stored in `articles.slug`. Tailwind classes should be grouped layout → spacing → color to stay consistent with `docs/06`. Python relies on Ruff for lint/format, with 4-space indents, snake_case functions, PascalCase Pydantic schemas, and double-quoted strings. Use SQLAlchemy 2.0 style APIs consistently. Keep API JSON fields camelCase (`createdAt`, `isDraft`) even though DB columns are snake_case per `docs/05`.
 
 ## Testing Guidelines
 Front-end tests (Vitest + Testing Library) belong near the relevant routes/components (e.g., article listing filters described in `docs/02` and `docs/04`). Backend tests (Pytest + httpx) must assert slug generation, tag/category filtering, draft separation, and auth protection of admin endpoints. Target ≥80% statement coverage and run Alembic migrations before DB-dependent suites. Capture assumptions in tests/docstrings whenever specs are incomplete.
