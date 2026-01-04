@@ -5,7 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.models.article import Article
 
-_SLUG_CLEAN_RE = re.compile(r"[^0-9a-zぁ-んァ-ン一-龯ー々ヶゝゞ]+")
+_SLUG_CHAR_CLASS = r"0-9a-zぁ-んァ-ヶ一-龯ー々ゝゞ"
+_SLUG_CLEAN_PATTERN = rf"[^{_SLUG_CHAR_CLASS}]+"
+SLUG_VALIDATE_PATTERN = rf"[{_SLUG_CHAR_CLASS}]+(?:-[{_SLUG_CHAR_CLASS}]+)*"
+_SLUG_CLEAN_RE = re.compile(_SLUG_CLEAN_PATTERN)
 
 
 def slugify(value: str) -> str:

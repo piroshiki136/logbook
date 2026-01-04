@@ -3,6 +3,8 @@ from datetime import datetime
 
 from pydantic import Field, field_validator
 
+from app.core.slug import SLUG_VALIDATE_PATTERN
+
 from .base import SchemaBase, TimestampMixin
 
 
@@ -50,7 +52,7 @@ class ArticleCreate(SchemaBase):
         if len(v) > 150:
             raise ValueError("slug は150文字以内で指定してください")
         if not re.fullmatch(
-            r"[0-9a-zぁ-んァ-ン一-龯ー々ヶゝゞ]+(?:-[0-9a-zぁ-んァ-ン一-龯ー々ヶゝゞ]+)*",
+            SLUG_VALIDATE_PATTERN,
             v,
         ):
             raise ValueError(
@@ -84,10 +86,7 @@ class ArticlePatch(SchemaBase):
             raise ValueError("slug に空白は使えません")
         if len(v) > 150:
             raise ValueError("slug は150文字以内で指定してください")
-        if not re.fullmatch(
-            r"[0-9a-zぁ-んァ-ン一-龯ー々ヶゝゞ]+(?:-[0-9a-zぁ-んァ-ン一-龯ー々ヶゝゞ]+)*",
-            v,
-        ):
+        if not re.fullmatch(SLUG_VALIDATE_PATTERN, v):
             raise ValueError(
                 "slug は英小文字・数字・日本語・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
             )
