@@ -68,15 +68,15 @@ id を使用し、slug 編集を許容する。
 
 ### 記事一覧（フィルタ・ページネーション）
 
-GET /api/articles?limit=&offset=&tags=&categories=
+GET /api/articles?page=&limit=&tags=&categories=
 
+- page（ページ番号）
 - limit（1ページあたり件数）
-- offset（ページ開始位置）
 - tags（複数タグ指定）
 - categories（複数カテゴリ指定）
 
 ### 記事詳細
-GET /api/articles/{id_or_slug}
+GET /api/articles/{slug}
 
 ### 記事作成
 POST /api/articles
@@ -89,6 +89,12 @@ DELETE /api/articles/{id}
 
 ### 画像アップロード
 POST /api/upload-image
+
+### タグ一覧
+GET /api/tags
+
+### カテゴリ一覧
+GET /api/categories
 
 ---
 

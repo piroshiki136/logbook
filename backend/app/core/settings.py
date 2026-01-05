@@ -98,7 +98,12 @@ class Settings(BaseSettings):
             raise ValueError("JWT_PUBLIC_KEY is required")
         return value.replace("\\n", "\n").strip()
 
+    upload_root: str = Field("uploads", validation_alias="UPLOAD_ROOT")
     asset_base_url: str = Field("http://localhost:8000/uploads", validation_alias="ASSET_BASE_URL")
+    upload_image_max_bytes: int = Field(
+        5 * 1024 * 1024,
+        validation_alias="UPLOAD_IMAGE_MAX_BYTES",
+    )
 
     # ---- Logging ----
     @computed_field

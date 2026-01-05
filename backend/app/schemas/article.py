@@ -3,6 +3,8 @@ from datetime import datetime
 
 from pydantic import Field, field_validator
 
+from app.core.slug import SLUG_VALIDATE_PATTERN
+
 from .base import SchemaBase, TimestampMixin
 
 
@@ -14,6 +16,7 @@ class ArticleSummary(TimestampMixin):
     title: str
     category: str
     tags: list[str] = Field(default_factory=list)
+    published_at: datetime | None = None
     is_draft: bool
 
 
@@ -27,7 +30,7 @@ class ArticleCreate(SchemaBase):
     """作成（POST）用スキーマ。"""
 
     title: str
-    slug: str
+    slug: str | None = None
     content: str
     category: str
     tags: list[str] = Field(default_factory=list)
@@ -35,8 +38,11 @@ class ArticleCreate(SchemaBase):
 
     @field_validator("slug")
     @classmethod
-    def validate_slug(cls, v: str) -> str:
+    def validate_slug(cls, v: str | None) -> str | None:
         """MVP では slug のざっくり制約のみを行う。"""
+
+        if v is None:
+            return None
 
         v = v.strip().lower()
         if not v:
@@ -45,9 +51,12 @@ class ArticleCreate(SchemaBase):
             raise ValueError("slug に空白は使えません")
         if len(v) > 150:
             raise ValueError("slug は150文字以内で指定してください")
-        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", v):
+        if not re.fullmatch(
+            SLUG_VALIDATE_PATTERN,
+            v,
+        ):
             raise ValueError(
-                "slug は英小文字・数字・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
+                "slug は英小文字・数字・日本語・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
             )
         return v
 
@@ -61,6 +70,27 @@ class ArticlePatch(SchemaBase):
     category: str | None = None
     tags: list[str] | None = None
     is_draft: bool | None = None
+
+    @field_validator("slug")
+    @classmethod
+    def validate_slug(cls, v: str | None) -> str | None:
+        """slug のざっくり制約のみを行う。"""
+
+        if v is None:
+            return None
+
+        v = v.strip().lower()
+        if not v:
+            raise ValueError("slug は必須です")
+        if " " in v:
+            raise ValueError("slug に空白は使えません")
+        if len(v) > 150:
+            raise ValueError("slug は150文字以内で指定してください")
+        if not re.fullmatch(SLUG_VALIDATE_PATTERN, v):
+            raise ValueError(
+                "slug は英小文字・数字・日本語・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
+            )
+        return v
 
 
 class ArticleListResponse(SchemaBase):
@@ -79,6 +109,7 @@ class ArticleNeighbor(SchemaBase):
     slug: str
     title: str
     created_at: datetime
+    published_at: datetime | None = None
     is_draft: bool
 
 
