@@ -10,21 +10,15 @@ from fastapi import UploadFile
 
 from app.core.exceptions import AppError
 from app.core.response import ApiResponse
-from app.core.settings import get_settings
+from app.core.settings import Settings, get_settings
 from app.schemas.upload import UploadImageResponse
 
-settings = get_settings()
 
-
-def _resolve_upload_root() -> Path:
+def _resolve_upload_root(settings: Settings) -> Path:
     root = Path(settings.upload_root).expanduser()
     if not root.is_absolute():
         root = Path(__file__).resolve().parents[2] / root
     return root
-
-
-UPLOAD_ROOT = _resolve_upload_root()
-UPLOAD_IMAGE_MAX_BYTES = settings.upload_image_max_bytes
 ALLOWED_IMAGE_TYPES: dict[str, str] = {
     "image/png": ".png",
     "image/jpeg": ".jpg",
@@ -41,10 +35,12 @@ def save_article_image(*, file: UploadFile) -> ApiResponse[UploadImageResponse]:
             status_code=400,
         )
 
-    _ensure_file_size(file=file, max_bytes=UPLOAD_IMAGE_MAX_BYTES)
+    settings = get_settings()
+    _ensure_file_size(file=file, max_bytes=settings.upload_image_max_bytes)
 
     now = _now()
-    target_dir = UPLOAD_ROOT / "articles" / now.strftime("%Y") / now.strftime("%m")
+    upload_root = _resolve_upload_root(settings)
+    target_dir = upload_root / "articles" / now.strftime("%Y") / now.strftime("%m")
     target_dir.mkdir(parents=True, exist_ok=True)
 
     suffix = ALLOWED_IMAGE_TYPES[file.content_type]
@@ -54,7 +50,10 @@ def save_article_image(*, file: UploadFile) -> ApiResponse[UploadImageResponse]:
     with target_path.open("wb") as f:
         shutil.copyfileobj(file.file, f)
 
-    url = _build_asset_url(f"articles/{now.strftime('%Y')}/{now.strftime('%m')}/{filename}")
+    url = _build_asset_url(
+        f"articles/{now.strftime('%Y')}/{now.strftime('%m')}/{filename}",
+        base_url=settings.asset_base_url,
+    )
 
     return ApiResponse(
         success=True,
@@ -62,8 +61,8 @@ def save_article_image(*, file: UploadFile) -> ApiResponse[UploadImageResponse]:
     )
 
 
-def _build_asset_url(path: str) -> str:
-    base = settings.asset_base_url.rstrip("/")
+def _build_asset_url(path: str, *, base_url: str) -> str:
+    base = base_url.rstrip("/")
     return f"{base}/{path.lstrip('/')}"
 
 

@@ -84,7 +84,10 @@ def get_optional_user(
         return None
 
     token = credentials.credentials
-    return verify_jwt_token(token)
+    try:
+        return verify_jwt_token(token)
+    except HTTPException:
+        return None
 
 
 def is_admin_user(user: dict[str, Any]) -> bool:

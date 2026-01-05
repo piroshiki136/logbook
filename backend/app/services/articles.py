@@ -193,8 +193,6 @@ def delete_article(*, article_id: int, db: Session) -> None:
     db.delete(article)
     db.commit()
 
-    return None
-
 
 def get_prev_next(
     *, article_id: int, db: Session, user: dict | None
@@ -327,11 +325,10 @@ def _get_or_create_tags(session: Session, slugs: list[str]) -> list[Tag]:
     tags = session.scalars(select(Tag).where(Tag.slug.in_(normalized_slugs))).all()
     existing = {tag.slug for tag in tags}
 
-    for slug, raw in normalized_pairs:
+    for slug, name in normalized_pairs:
         if slug in existing:
             continue
-        name = raw or slug
-        tag = Tag(name=name, slug=slug)
+        tag = Tag(name=name or slug, slug=slug)
         session.add(tag)
         tags.append(tag)
 

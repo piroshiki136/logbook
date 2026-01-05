@@ -21,19 +21,14 @@ class ArticleListQuery(SchemaBase):
         """カンマ区切り文字列をリストへ変換する。"""
         if v is None or v is PydanticUndefined:
             return []
-        if isinstance(v, list):
-            raw_items = v
-        else:
-            raw_items = [v]
 
-        items = []
+        raw_items = v if isinstance(v, list) else [v]
+        items: list[str] = []
         for raw in raw_items:
             if raw is None or raw is PydanticUndefined:
                 continue
-            for part in str(raw).split(","):
-                part = part.strip()
-                if part:
-                    items.append(part)
+            parts = (part.strip() for part in str(raw).split(","))
+            items.extend(part for part in parts if part)
         return items
 
     @field_validator("tags")

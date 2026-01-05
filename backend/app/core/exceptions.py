@@ -95,11 +95,15 @@ def _validation_error_message(exc: RequestValidationError) -> str:
     errors = exc.errors()
     if not errors:
         return "入力内容が正しくありません"
-    first = errors[0]
-    detail = first.get("msg", "")
-    if detail:
-        return f"入力内容が正しくありません: {detail}"
-    return "入力内容が正しくありません"
+    messages: list[str] = []
+    for error in errors:
+        msg = error.get("msg")
+        if msg:
+            messages.append(str(msg))
+    if not messages:
+        return "入力内容が正しくありません"
+    joined = "; ".join(messages)
+    return f"入力内容が正しくありません: {joined}"
 
 
 def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:

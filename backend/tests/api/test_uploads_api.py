@@ -4,8 +4,8 @@ import pytest
 from fastapi import status
 
 from app.core.security import require_admin
+from app.core.settings import get_settings
 from app.main import app
-from app.services import uploads as upload_service
 
 
 def _set_override(dep, value):
@@ -29,10 +29,9 @@ async def test_upload_image_requires_auth(client):
 
 async def test_upload_image_succeeds_for_admin(client, tmp_path, monkeypatch):
     _set_override(require_admin, lambda: {"email": "test@example.com"})
-    monkeypatch.setattr(upload_service, "UPLOAD_ROOT", tmp_path)
-
-    original_base_url = upload_service.settings.asset_base_url
-    upload_service.settings.asset_base_url = "http://example.com/uploads"
+    settings = get_settings()
+    monkeypatch.setattr(settings, "upload_root", str(tmp_path))
+    monkeypatch.setattr(settings, "asset_base_url", "http://example.com/uploads")
 
     try:
         res = await client.post(
@@ -40,7 +39,6 @@ async def test_upload_image_succeeds_for_admin(client, tmp_path, monkeypatch):
             files={"file": ("test.png", b"data", "image/png")},
         )
     finally:
-        upload_service.settings.asset_base_url = original_base_url
         _clear_override(require_admin)
 
     assert res.status_code == status.HTTP_201_CREATED

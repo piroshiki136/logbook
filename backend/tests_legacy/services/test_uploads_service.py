@@ -27,15 +27,10 @@ def test_upload_rejects_non_image_content_type():
 def test_upload_saves_file_and_returns_url(tmp_path, monkeypatch):
     upload = _make_upload_file("image.png", "image/png")
 
-    monkeypatch.setattr(upload_service, "UPLOAD_ROOT", tmp_path)
     settings = get_settings()
-    original_base_url = settings.asset_base_url
-    settings.asset_base_url = "http://example.com/uploads"
-
-    try:
-        response = upload_service.save_article_image(file=upload)
-    finally:
-        settings.asset_base_url = original_base_url
+    monkeypatch.setattr(settings, "upload_root", str(tmp_path))
+    monkeypatch.setattr(settings, "asset_base_url", "http://example.com/uploads")
+    response = upload_service.save_article_image(file=upload)
 
     assert response.data is not None
     assert response.data.url.startswith("http://example.com/uploads/")
