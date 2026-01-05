@@ -36,7 +36,7 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 |------------|-----------|------|
 | id         | int (PK)  | 主キー |
 | name       | string    | カテゴリ名（ユニーク） |
-| slug       | string    | URL 用識別子（ユニーク、小文字・英数字+ハイフン） |
+| slug       | string    | URL 用識別子（ユニーク。英小文字・数字・日本語・ハイフン） |
 | color      | string    | 任意（将来拡張用。NULL可） |
 | icon       | string    | 任意（将来拡張用。NULL可） |
 
@@ -59,7 +59,7 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 |------------|-----------|------|
 | id         | int (PK)  | 主キー |
 | name       | string    | タグ名（ユニーク） |
-| slug       | string    | URL 用識別子（ユニーク、小文字・英数字+ハイフン） |
+| slug       | string    | URL 用識別子（ユニーク。英小文字・数字・日本語・ハイフン） |
 
 ※ 将来、説明文・色などを追加できるよう拡張前提。
 
@@ -116,10 +116,11 @@ API レスポンスは tags を配列形式に変換して返す。
 ---
 
 ## 5. slug 生成ルール
-- 文字種: 小文字の英数字とハイフンのみ（スペースや記号はハイフンに置換）
-- 日本語タイトル: ローマ字変換を試みる。変換できない部分は日付タイムスタンプを付けて衝突を避ける
+- 文字種: 英小文字・数字・日本語・ハイフン（先頭や連続ハイフンは不可）
+- 自動生成: タイトルを小文字化し、許可文字以外はハイフンに置換、連続ハイフンは1つに圧縮、前後ハイフンは除去
+- 生成結果が空になる場合はエラーとする
 - 重複時: 末尾に `-2`, `-3` ... の連番サフィックスを付ける
-- 手動編集: 管理UIから修正可能だが、保存時に同じ重複チェックを行う
+- 手動編集: 管理UIから修正可能だが、保存時に同じバリデーションと重複チェックを行う
 
 ---
 
@@ -133,11 +134,9 @@ API レスポンスは tags を配列形式に変換して返す。
   → Next.js の SSG/SSR で HTML へ変換するため DB に HTML を保存しない
 - slug はタイトルからの自動生成＋手動修正可能（上記ルールでバリデーション）
 - 画像保存: 本番は Cloudflare R2（S3 互換）に保存し、公開 read のバケットをカスタムドメイン（例: `https://assets.logbook.example`）で配信する。オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}`。開発環境では従来通り FastAPI が `/uploads`（Docker で永続化）を配信し、`ASSET_BASE_URL=http://localhost:8000/uploads` を想定する。
-- 画像バリデーション: 許可 MIME は `image/png` / `image/jpeg` / `image/webp`、上限 5MB。フロントと API 両方でチェックする。
+- 画像バリデーション: 許可 MIME は `image/png` / `image/jpeg` / `image/webp` / `image/gif`、上限 5MB。フロントと API 両方でチェックする。
 
 ### 6.3 開発用サンプルデータ（seed）
 - `backend/scripts/seed.py` でカテゴリ/タグ/記事/記事タグ/管理ユーザーを最小構成で投入する。
 - 実行: `cd backend && uv run python -m scripts.seed`
 - 例: Category=Programming、Tag=Python/FastAPI、Article=Hello LogBook、AdminUser=admin@example.com
-
-

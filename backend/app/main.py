@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import health
+from app.api import articles, categories, health, tags, uploads
 from app.core.exceptions import setup_exception_handlers
 from app.core.settings import get_settings
 
@@ -31,6 +31,26 @@ def create_app() -> FastAPI:
         health.router,
         prefix=settings.api_v1_prefix,
         tags=["health"],
+    )
+    app.include_router(
+        articles.router,
+        prefix=settings.api_v1_prefix,
+        tags=["articles"],
+    )
+    app.include_router(
+        tags.router,
+        prefix=settings.api_v1_prefix,
+        tags=["tags"],
+    )
+    app.include_router(
+        categories.router,
+        prefix=settings.api_v1_prefix,
+        tags=["categories"],
+    )
+    app.include_router(
+        uploads.router,
+        prefix=settings.api_v1_prefix,
+        tags=["uploads"],
     )
 
     return app
