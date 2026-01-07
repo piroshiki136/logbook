@@ -29,9 +29,9 @@
 - [x] `uv run pytest` で backend テスト全件通過
 
 ## PR5: フロント基盤
-- [ ] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
+- [x] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
+- [x] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
 - [ ] 共通 UI（primitives, ナビ/フッタ）、テーマ、API クライアント/型定義を整備
-- [ ] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
 - [ ] workflowsのfrontのciを設定、GitHub 側で Branch Protection の「Require status checks」の「Status checks that are required」を設定する
 - [ ] プルリクのコマンド見直す
 
