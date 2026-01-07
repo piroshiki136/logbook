@@ -100,12 +100,13 @@ uv run ruff format --check app tests
 # 4. 命名規則
 
 ## フロント（TypeScript / React）
-- コンポーネント: PascalCase
+- コンポーネント名: PascalCase
 - hooks: useXxx
 - 変数と関数: camelCase
 - 型: UpperCamelCase
 - 定数: UPPER_SNAKE_CASE
 - any は使わない
+- ファイル名・フォルダ名: kebab-case
 
 ## バック（Python）
 - 関数と変数: snake_case

@@ -2,6 +2,12 @@
 
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 
+## pr5
+- biomeの設定の見直し(セミコロン, スペース等.現在ファイルonsaveが効いてない)
+- footerの作成
+- navの作成
+- sidebarの作成
+
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
 - `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` / `REDIS_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
