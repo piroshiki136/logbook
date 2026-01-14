@@ -40,7 +40,7 @@ pnpm dev
 cd backend
 uv sync
 uv run alembic upgrade head  # 初回のみ、DB にテーブルを作成する
-uv run fastapi dev app.main:app
+uv run fastapi dev app/main.py
 ```
 開発用サンプルデータ（任意）:
 ```
@@ -57,6 +57,7 @@ pytest 実行時は自動で `SETTINGS_ENV=test` を設定し、`backend/.env.te
 ```
 DATABASE_URL=sqlite+pysqlite:///./test.db
 JWT_PUBLIC_KEY=dummy
+JWT_ALGORITHM=RS256
 ADMIN_ALLOWED_EMAILS=test@example.com
 ```
 

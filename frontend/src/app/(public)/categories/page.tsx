@@ -1,5 +1,3 @@
 export default function Page() {
-  return (
-    <div>Categories Page</div>
-  )
+  return <div>Categories Page</div>
 }

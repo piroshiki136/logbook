@@ -4,6 +4,7 @@
 - ベースURL: https://api.example.com
 - 認証: Bearer Token（NextAuth セッション JWT）
 - 認証必須のエンドポイント: POST / PATCH / DELETE 系
+- GET でも draft を取得したい場合は認証が必要
 - ヘッダー例:
   - Authorization: Bearer <token>
   - Content-Type: application/json
@@ -25,6 +26,30 @@
 
 ---
 
+# 0. ヘルスチェック
+## 0.1 GET /api/health
+## 200レスポンス
+{
+  "success": true,
+  "data": {
+    "status": "ok"
+  }
+}
+
+## 0.2 GET /api/health/db
+## 補足
+- DB に接続できるかを確認する
+
+## 200レスポンス
+{
+  "success": true,
+  "data": {
+    "status": "ok"
+  }
+}
+
+---
+
 # 1. 記事一覧 GET /api/articles
 ## クエリ
 - page?: number（デフォルト: 1）
@@ -35,11 +60,13 @@
 
 ## 補足
 - tags / categories はカンマ区切りで複数指定できる
+- tags / categories は同名パラメータの複数指定も許可する
 - tags の複数指定は OR 条件（いずれかを含む記事を返す）
 - tags は NFKC 正規化 + 小文字化して slug として扱う（表記ゆれ防止）
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は publishedAt の降順（draft=true の場合は publishedAt が null になるため createdAt の降順を優先）
+- draft を指定した場合は管理者認証が必要（未認証は 401）
 
 ## 200レスポンス
 {

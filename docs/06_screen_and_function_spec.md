@@ -97,7 +97,7 @@
 - タブ切替に応じて API のクエリを変更（?draft=false / ?draft=true）
 
 ### API
-- GET /api/articles?includeDraft=true
+- GET /api/articles?draft=true
 - DELETE /api/articles/{id}
 
 ---

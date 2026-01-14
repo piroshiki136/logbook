@@ -7,8 +7,6 @@ export default function Page() {
       <p className="text-base text-muted-foreground mt-3">
         最新記事カードやタグ/カテゴリへの導線をこのページに追加していきます。
       </p>
-      {/* スクロール用のダミー */}
-      <div className="h-[200vh]" />
     </main>
   )
 }

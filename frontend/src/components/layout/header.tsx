@@ -4,9 +4,9 @@ import Link from "next/link"
 
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { useScrollDirection } from "@/hooks/use-scrool-direction"
+import { Input } from "@/components/ui/input"
+import { useScrollDirection } from "@/hooks/use-scroll-direction"
 import { cn } from "@/lib/utils"
-import { Input } from "../ui/input"
 
 export default function Header() {
   const isUp = useScrollDirection()
@@ -15,12 +15,12 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50",
-        "flex h-14 items-center gap-4 bg-background border-b px-4 py-3",
+        "flex h-14 items-center gap-4 px-4 py-3 bg-background border-b",
         "transition-transform duration-300 ease-out",
         isUp ? "translate-y-0" : "-translate-y-full",
       )}
     >
-      <Button variant="ghost" className="text-lg font-semibold ">
+      <Button asChild variant="ghost" className="text-lg font-semibold">
         <Link href="/">Logbook</Link>
       </Button>
 
