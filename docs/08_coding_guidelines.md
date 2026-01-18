@@ -127,7 +127,7 @@ uv run ruff format --check app tests
 - API クライアントは `frontend/src/lib/api/` に機能別で分割する
 - API の共通 fetch ラッパは `frontend/src/lib/api/client.ts` に置く
 - API 型定義は `frontend/src/lib/api/types.ts` に集約する
-- 公開 API は直接呼び出し、管理系・秘匿情報が必要な API は Route Handler 経由で呼び出す
+- 公開 API は直接呼び出し、管理系・秘匿情報が必要な API は Server Actions 経由で呼び出す
 - API のベースURLは `NEXT_PUBLIC_API_BASE_URL` で管理する
 
 ---

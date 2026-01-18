@@ -4,9 +4,12 @@
 
 ## pr5
 
+
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
 - `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` / `REDIS_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
+- テスト/開発用の `/api/health` エンドポイントを本番で残すか削除するかを決める（残す場合は公開範囲と認証要否を明記する）。
+
 
 ## 本番準備
 - エラーハンドリングのユーザー向け表示ポリシー整理
@@ -34,3 +37,5 @@ app.add_middleware(
 )
 ```
 - Renovateの導入
+## MVP 完成後
+- アサーションJWTに `nbf` を追加するか検討する

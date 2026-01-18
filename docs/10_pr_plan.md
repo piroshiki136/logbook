@@ -32,22 +32,26 @@
 - [x] App Router のルート骨組み（`/`, `/articles`, `/articles/[slug]`, `/tags`, `/categories`, `/admin/...`）を配置
 - [x] shadcn/ui 導入、Tailwind のルール適用、docs/06 の補足反映
 - [x] 共通 UI（primitives, ナビ/フッタ）、テーマの整備
-- [ ] API クライアント/型定義を整備
-- [ ] workflowsのfrontのciを設定、GitHub 側で Branch Protection の「Require status checks」の「Status checks that are required」を設定する
-- [ ] プルリクのコマンド見直す
+- [x] API クライアント/型定義を整備
+- [x] 認証必須 CRUD は Server Actions、公開 GET は直叩きとする方針を明文化
+- [x] Server Actions からバックエンドへ JWT 付きで呼び出す土台を実装
+- [x] workflows の front の CI を設定
+- [x] GitHub 側で Branch Protection の「Require status checks」の「Status checks that are required」を設定する
+- [x] プルリクのコマンド見直す
 
 ## PR6: 公開画面実装
 - [ ] トップの Hero/最新記事カード、記事一覧のフィルタ+ページネーション、記事詳細の Markdown 表示とタグ/カテゴリリンク、前後記事ナビ
 - [ ] Vitest + Testing Library でフィルタ/ページネーションのユースケーステスト
 
 ## PR7: 管理画面・認証
-- [ ] NextAuth (Google) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
+- [ ] NextAuth (GitHub) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
 - [ ] タグの表示名（name）を編集できる管理 UI と更新 API を追加する
 - [ ] タグのタイポ修正（name 更新）とカテゴリの新規追加を管理画面から行えるようにする
 - [ ] バリデーションと slug 編集、ドラフト切り替え。主要ハンドラの単体テストを追加
 
 ## 未決事項（着手前に確定する）
 - NextAuth の callback URL / セッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法
+- NextAuth v5（beta）を MVP 後に v4 もしくは Better Auth へ移行する判断基準とタイミング
 - 画像保存先: 開発は FastAPI ローカル、本番は R2 バケットの固定値（バケット名/リージョンなど）
 - レートリミット: Redis を使うか、一時的に無効化するか
 - Docker Compose: サービス構成/ポート/環境変数のデフォルト値

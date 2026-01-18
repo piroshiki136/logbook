@@ -15,7 +15,7 @@
 ---
 
 ## 管理側（入れる機能）
-- Google OAuth（NextAuth）によるログイン
+- GitHub OAuth（NextAuth）によるログイン
 - 記事一覧（下書き／公開ステータス）
 - 記事作成（Markdown 入力＋プレビュー）
 - 下書きバッジ表示

@@ -19,6 +19,8 @@ def _resolve_upload_root(settings: Settings) -> Path:
     if not root.is_absolute():
         root = Path(__file__).resolve().parents[2] / root
     return root
+
+
 ALLOWED_IMAGE_TYPES: dict[str, str] = {
     "image/png": ".png",
     "image/jpeg": ".jpg",

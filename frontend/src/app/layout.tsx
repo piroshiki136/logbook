@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
-import Footer from "@/components/layout/footer"
+import { FooterBoundary } from "@/components/layout/footer-boundary"
 import Header from "@/components/layout/header"
 import { siteDescription, siteTitle } from "@/lib/site-metadata"
 
@@ -40,7 +40,7 @@ export default function RootLayout({
           <div className="flex flex-col min-h-dvh">
             <Header />
             <main className="flex-1 pt-14">{children}</main>
-            <Footer />
+            <FooterBoundary />
           </div>
         </ThemeProvider>
       </body>

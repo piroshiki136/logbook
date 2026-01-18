@@ -86,9 +86,7 @@ def main():
                 if tag not in article.tags:
                     article.tags.append(tag)
 
-        second_article = session.scalar(
-            select(Article).where(Article.slug == "fastapi-tips")
-        )
+        second_article = session.scalar(select(Article).where(Article.slug == "fastapi-tips"))
         if not second_article:
             second_article = Article(
                 title="FastAPI Tips",
