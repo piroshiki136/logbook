@@ -4,6 +4,16 @@ import { createPrivateKey, createSign, randomUUID } from "node:crypto"
 import { auth } from "@/auth"
 import { apiFetch } from "./client"
 
+export class AuthError extends Error {
+  code: "AUTH_REQUIRED"
+
+  constructor(code: "AUTH_REQUIRED", message?: string) {
+    super(message ?? code)
+    this.name = "AuthError"
+    this.code = code
+  }
+}
+
 const ASSERTION_ISSUER = "logbook-frontend"
 const ASSERTION_TTL_SECONDS = 120
 const TOKEN_EXCHANGE_PATH = "/api/auth/token"
@@ -71,7 +81,7 @@ export const createAssertionJwt = async () => {
   const session = await auth()
   const email = session?.user?.email
   if (!email) {
-    throw new Error("AUTH_REQUIRED")
+    throw new AuthError("AUTH_REQUIRED")
   }
 
   const now = Math.floor(Date.now() / 1000)

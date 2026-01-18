@@ -13,7 +13,7 @@ export default async function Page() {
     : null
 
   return (
-    <div className="6">
+    <div className="p-6">
       <h1 className="text-2xl font-bold">Next.js ⇔ FastAPI 接続テスト</h1>
 
       <section className="mt-6">

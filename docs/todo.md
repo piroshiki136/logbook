@@ -39,3 +39,4 @@ app.add_middleware(
 - Renovateの導入
 ## MVP 完成後
 - アサーションJWTに `nbf` を追加するか検討する
+- jtiの仕様変更(Redis等)

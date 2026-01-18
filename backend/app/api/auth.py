@@ -129,7 +129,7 @@ def _rate_limit_or_429(request: Request, now: float) -> None:
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
                 "code": "AUTH_RATE_LIMIT",
-                "message": "Too many requests",
+                "message": "リクエストが多すぎます",
             },
         )
 
