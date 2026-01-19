@@ -5,12 +5,11 @@ import { auth } from "@/auth"
 import { apiFetch } from "./client"
 
 export class AuthError extends Error {
-  code: "AUTH_REQUIRED"
+  code = "AUTH_REQUIRED"
 
-  constructor(code: "AUTH_REQUIRED", message?: string) {
-    super(message ?? code)
+  constructor(message?: string) {
+    super(message ?? "認証が必要です")
     this.name = "AuthError"
-    this.code = code
   }
 }
 
@@ -45,7 +44,17 @@ const readEnvOrThrow = (key: string) => {
   return value
 }
 
-const normalizePem = (value: string) => value.replace(/\\n/g, "\n")
+const normalizePem = (value: string) =>
+  value.trim().replace(/\r\n/g, "\n").replace(/\\n/g, "\n")
+
+const createPrivateKeyOrThrow = (pem: string) => {
+  try {
+    return createPrivateKey(pem)
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "unknown error"
+    throw new Error(`FRONTEND_ASSERTION_PRIVATE_KEY is invalid: ${reason}`)
+  }
+}
 
 const base64Url = (value: string | Buffer) =>
   Buffer.from(value).toString("base64url")
@@ -53,6 +62,7 @@ const base64Url = (value: string | Buffer) =>
 const signAssertionJwt = (payload: AssertionPayload) => {
   const keyPem = normalizePem(readEnvOrThrow("FRONTEND_ASSERTION_PRIVATE_KEY"))
   const keyId = process.env.FRONTEND_ASSERTION_KID
+  const privateKey = createPrivateKeyOrThrow(keyPem)
 
   const header: AssertionHeader = {
     alg: "RS256",
@@ -68,7 +78,7 @@ const signAssertionJwt = (payload: AssertionPayload) => {
   signer.update(signingInput)
   signer.end()
 
-  const signature = signer.sign(createPrivateKey(keyPem))
+  const signature = signer.sign(privateKey)
   return `${signingInput}.${base64Url(signature)}`
 }
 
@@ -81,7 +91,7 @@ export const createAssertionJwt = async () => {
   const session = await auth()
   const email = session?.user?.email
   if (!email) {
-    throw new AuthError("AUTH_REQUIRED")
+    throw new AuthError()
   }
 
   const now = Math.floor(Date.now() / 1000)

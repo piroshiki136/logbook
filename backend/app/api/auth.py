@@ -119,6 +119,7 @@ def _decode_assertion(token: str) -> dict[str, Any]:
         )
         return payload
     except PyJWTError as exc:
+        logger.warning("Assertion decode failed: %s", exc.__class__.__name__)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail={
