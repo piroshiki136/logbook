@@ -179,7 +179,7 @@ async def test_list_articles_filters_by_tags_or(client, db_session):
     )
     _commit(db_session)
 
-    res = await client.get("/api/articles?tags=fastapi,nextjs")
+    res = await client.get("/api/articles?tags=fastapi&tags=nextjs")
     payload = res.json()
 
     assert res.status_code == status.HTTP_200_OK

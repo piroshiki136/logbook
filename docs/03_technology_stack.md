@@ -8,7 +8,7 @@
 - shadcn/ui
 - react-markdown + remark-gfm
 - react-hook-form + zod
-- next-auth v5（Google OAuth）
+- next-auth v5（GitHub OAuth / beta。MVP 後に v4 もしくは Better Auth へ移行検討）
 - Biome
 - pnpm 9
 
@@ -55,14 +55,20 @@
 ## 環境変数（ローカル/本番で共通化するキー）
 ### フロントエンド（frontend/.env.local）
 - `NEXTAUTH_SECRET`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
+- `AUTH_GITHUB_ID`
+- `AUTH_GITHUB_SECRET`
 - `NEXTAUTH_URL`（例: `http://localhost:3000`）
 - `BACKEND_API_BASE`（例: `http://localhost:8000`）
 - `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
+- `AUTH_SECRET`（Auth.js の署名用シークレット）
+- `AUTH_URL`（アプリの正しいURL。OAuthのコールバックURLやリダイレクト先生成に使用）
+- `ADMIN_ALLOWED_EMAILS`
+- `FRONTEND_ASSERTION_PRIVATE_KEY`
+- `FRONTEND_ASSERTION_KID`
 
 ### バックエンド（backend/.env）
-- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
+- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
+- 認証連携: `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`、`FRONTEND_ASSERTION_ISSUER`
 - 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`, `UPLOAD_IMAGE_MAX_BYTES`
 - バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
 

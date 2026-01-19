@@ -4,6 +4,7 @@
 - ベースURL: https://api.example.com
 - 認証: Bearer Token（NextAuth セッション JWT）
 - 認証必須のエンドポイント: POST / PATCH / DELETE 系
+- GET でも draft を取得したい場合は認証が必要
 - ヘッダー例:
   - Authorization: Bearer <token>
   - Content-Type: application/json
@@ -25,6 +26,33 @@
 
 ---
 
+# 0. ヘルスチェック
+## 0.1 GET /api/health
+## 補足
+- テスト/開発用途のエンドポイント。公開運用時は削除/無効化を検討する。
+
+## 200レスポンス
+{
+  "success": true,
+  "data": {
+    "status": "ok"
+  }
+}
+
+## 0.2 GET /api/health/db
+## 補足
+- DB に接続できるかを確認する
+
+## 200レスポンス
+{
+  "success": true,
+  "data": {
+    "status": "ok"
+  }
+}
+
+---
+
 # 1. 記事一覧 GET /api/articles
 ## クエリ
 - page?: number（デフォルト: 1）
@@ -34,12 +62,13 @@
 - draft?: boolean（管理APIのみ指定可。公開APIでは false 固定）
 
 ## 補足
-- tags / categories はカンマ区切りで複数指定できる
+- tags / categories は同名パラメータの複数指定（repeat）のみ許可する
 - tags の複数指定は OR 条件（いずれかを含む記事を返す）
 - tags は NFKC 正規化 + 小文字化して slug として扱う（表記ゆれ防止）
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は publishedAt の降順（draft=true の場合は publishedAt が null になるため createdAt の降順を優先）
+- draft を指定した場合は管理者認証が必要（未認証は 401）
 
 ## 200レスポンス
 {
@@ -237,16 +266,29 @@ prev/next が存在しない場合は null を返す。
 ---
 
 # 認証・権限制御（初心者向けの流れ）
-- 何を検証する？  
-  - フロント（NextAuth）が発行する JWT が正しいサインか、期限切れでないか、誰向けか（aud を例えば `logbook` に固定）を確認する。
-- 鍵の扱い  
-  - JWT の署名方式: RS256。NextAuth 側に秘密鍵（PEM）を保持し、FastAPI 側は `.env` の `JWT_PUBLIC_KEY`（公開鍵）を使って検証する。改行は `\n` で表現して良い。アルゴリズムは `JWT_ALGORITHM=RS256` を既定とする。
-- 送信方法  
-  - 管理系 API ではヘッダーに `Authorization: Bearer <JWT>` を必ず付ける。
-- 管理者の決め方  
-  - 環境変数 `ADMIN_ALLOWED_EMAILS` に、管理者として許可するメールをカンマ区切りで列挙する。  
-  - JWT の email がこの中にあり、admin_users に未登録なら初回アクセス時に自動で作成。  
-  - 含まれないメールなら 403。
+- 交換エンドポイント  
+  - `POST /api/auth/token`
+  - フロントは Server Actions で NextAuth セッションを取得し、アサーションJWTを生成して送信する。
+- アサーションJWT（フロント発行）  
+  - 署名方式: RS256（非対称）
+  - 有効期限: 2分
+  - 必須クレーム: `iss=logbook-frontend`, `email`, `iat`, `exp`, `jti`
+  - `/api/auth/token` は 1分あたり10回まで
+- バックエンドの検証  
+  - 署名検証（`alg` 固定、`kid` → JWKS/公開鍵）
+  - `iss` / `exp` / `iat` を検証
+  - `jti` を短時間（例: 3分）再利用拒否
+  - `ADMIN_ALLOWED_EMAILS` で管理者判定
+- バックエンドJWT  
+  - 署名方式: RS256（既存設定）
+  - 有効期限: 60分
+  - 管理APIはバックエンドJWTを検証する
+  - 可能な限り httpOnly Cookie かサーバー保持で運用し、ブラウザJSから触れない
+  - 署名には `JWT_PRIVATE_KEY` を使用する
+- 鍵配布  
+  - フロントのみ保持: `FRONTEND_ASSERTION_PRIVATE_KEY`（署名用秘密鍵）
+  - バックエンド側: `FRONTEND_ASSERTION_JWKS_URL`（推奨）または `FRONTEND_ASSERTION_PUBLIC_KEY`
+  - `kid` を使ってローテーション（JWKSに複数鍵を掲載し短期併用）
 - エラー時の返し方  
   - JWT 不正/期限切れ → 401  
   - メールが許可されていない → 403
@@ -277,6 +319,7 @@ prev/next が存在しない場合は null を返す。
 - 公開/下書きの分離（公開 API は下書きを返さない、管理 API は draft 指定で切り替え可能）
 - publishedAt の挙動（公開時セット、非公開でも保持、再公開で更新）
 - タグ/カテゴリの複数フィルタ
+- タグ/カテゴリの複数指定は repeat のみ（カンマ区切りは不可）
 - prev/next（publishedAt の降順、公開 API は公開のみ）
 - 認証保護（401/403 の挙動）
 - 画像アップロード（保存先・UUID・返却 URL）

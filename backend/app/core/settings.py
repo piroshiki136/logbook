@@ -69,6 +69,7 @@ class Settings(BaseSettings):
 
     # ---- Security / Auth ----
     jwt_public_key: str = Field(..., validation_alias="JWT_PUBLIC_KEY")
+    jwt_private_key: str | None = Field(None, validation_alias="JWT_PRIVATE_KEY")
     jwt_issuer: str = Field("logbook", validation_alias="JWT_ISSUER")
     jwt_audience: str = Field("logbook", validation_alias="JWT_AUDIENCE")
     jwt_algorithm: str = Field("RS256", validation_alias="JWT_ALGORITHM")
@@ -76,6 +77,15 @@ class Settings(BaseSettings):
     admin_allowed_emails_raw: str = Field(
         ...,
         validation_alias="ADMIN_ALLOWED_EMAILS",
+    )
+    frontend_assertion_public_key: str | None = Field(
+        None, validation_alias="FRONTEND_ASSERTION_PUBLIC_KEY"
+    )
+    frontend_assertion_jwks_url: str | None = Field(
+        None, validation_alias="FRONTEND_ASSERTION_JWKS_URL"
+    )
+    frontend_assertion_issuer: str = Field(
+        "logbook-frontend", validation_alias="FRONTEND_ASSERTION_ISSUER"
     )
 
     @computed_field
@@ -96,6 +106,20 @@ class Settings(BaseSettings):
     def normalize_public_key(cls, value: str | None):
         if not value:
             raise ValueError("JWT_PUBLIC_KEY is required")
+        return value.replace("\\n", "\n").strip()
+
+    @field_validator("jwt_private_key", mode="before")
+    @classmethod
+    def normalize_private_key(cls, value: str | None):
+        if not value:
+            return None
+        return value.replace("\\n", "\n").strip()
+
+    @field_validator("frontend_assertion_public_key", mode="before")
+    @classmethod
+    def normalize_frontend_assertion_public_key(cls, value: str | None):
+        if not value:
+            return None
         return value.replace("\\n", "\n").strip()
 
     upload_root: str = Field("uploads", validation_alias="UPLOAD_ROOT")

@@ -65,10 +65,13 @@ revert: "feat: 記事一覧にページネーションを追加" を巻き戻し
   - 概要（何を・なぜ、関連Issue/背景）
   - 関連ドキュメント（参照した docs/0x_xxx.md の章やセクション）
   - 実行したコマンド（チェックボックス）
-    - `pnpm lint --filter frontend`
-    - `pnpm test --filter frontend`（該当テストがあれば）
-    - `uv run pytest backend/tests`
-    - その他必要なコマンド
+    - `cd frontend && pnpm lint`
+    - `cd frontend && pnpm format`（必要に応じて）
+    - `cd frontend && pnpm test`（該当テストがあれば）
+    - `cd backend && uv run ruff check .`
+    - `cd backend && uv run ruff format .`（必要に応じて）
+    - `cd backend && uv run pytest tests`
+    - その他: （あれば追記）
   - スクリーンショット（UI変更がある場合。なければ N/A）
   - Known Issues / 未解決事項（なければ N/A）
   - 影響範囲・リスク（DBマイグレーション有無、既存機能への影響、権限まわり等）

@@ -67,13 +67,24 @@
 
 # 2. 管理側画面（Admin）
 
-## 2.1 Login（Google OAuth）
+## 2.1 Login（GitHub OAuth）
 ### UI構成
-- Google でログインボタン
+- GitHub でログインボタン
 
 ### 動作仕様
-- NextAuth の Google OAuth 認証を利用
+- NextAuth の GitHub OAuth 認証を利用
 - ログイン後 /admin/articles へ遷移
+
+---
+
+## 2.1.1 Forbidden（権限なし）
+### UI構成
+- 権限なしメッセージ
+- サインアウトボタン
+
+### 動作仕様
+- 許可されていないアカウントの場合に表示
+- サインアウト後は /admin/login へ戻す
 
 ---
 
@@ -97,7 +108,7 @@
 - タブ切替に応じて API のクエリを変更（?draft=false / ?draft=true）
 
 ### API
-- GET /api/articles?includeDraft=true
+- GET /api/articles?draft=true
 - DELETE /api/articles/{id}
 
 ---

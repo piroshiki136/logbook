@@ -23,6 +23,10 @@ backend/.venv/
 # ================================
 .env
 .venv/
+frontend_assertion_private.pem
+frontend_assertion_public.pem
+jwt_private.pem
+jwt_public.pem
 
 # ================================
 # Editor / IDE

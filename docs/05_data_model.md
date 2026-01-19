@@ -24,7 +24,7 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 
 - 記事とタグは多対多（N:N）
 - 記事はカテゴリに1:Nで属する（将来的にカテゴリに色/アイコンを持たせられる）
-- 管理者は NextAuth（Google OAuth）と連携するための情報を保存する
+- 管理者は NextAuth（GitHub OAuth）と連携するための情報を保存する
 
 ---
 
@@ -78,12 +78,12 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 | フィールド   | 型        | 説明 |
 |--------------|-----------|------|
 | id           | int (PK)  | 主キー |
-| email        | string    | 管理者メールアドレス（Google アカウント） |
-| provider     | string    | google |
-| provider_id  | string    | Google OAuth のユーザーID |
+| email        | string    | 管理者メールアドレス（GitHub アカウント） |
+| provider     | string    | github |
+| provider_id  | string    | GitHub OAuth のユーザーID |
 | name         | string    | 表示名 |
 
-- NextAuth（Google OAuth）と FastAPI 側の認証連携のために保持する
+- NextAuth（GitHub OAuth）と FastAPI 側の認証連携のために保持する
 - MVP では記事の author と紐付けない（必要なら追加可能）
 
 ---
