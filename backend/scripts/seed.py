@@ -86,6 +86,23 @@ def main():
                 if tag not in article.tags:
                     article.tags.append(tag)
 
+        second_article = session.scalar(select(Article).where(Article.slug == "fastapi-tips"))
+        if not second_article:
+            second_article = Article(
+                title="FastAPI Tips",
+                slug="fastapi-tips",
+                content="# FastAPI Tips\n\nFastAPI の小ネタ集です。",
+                category=programming,
+                is_draft=False,
+                published_at=datetime.now(UTC),
+            )
+            second_article.tags.extend([fastapi])
+            session.add(second_article)
+        else:
+            for tag in (fastapi,):
+                if tag not in second_article.tags:
+                    second_article.tags.append(tag)
+
         # ---- Admin Users ----
         admin = session.scalar(select(AdminUser).where(AdminUser.email == "admin@example.com"))
         if not admin:

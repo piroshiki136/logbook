@@ -1,4 +1,5 @@
 import logging
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import jwt
@@ -51,6 +52,28 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
                 "message": "認証に失敗しました",
             },
         ) from None
+
+
+def create_access_token(payload: dict[str, Any]) -> str:
+    if not settings.jwt_private_key:
+        raise RuntimeError("JWT_PRIVATE_KEY is required for token issuance")
+
+    now = datetime.now(UTC)
+    data = {
+        "iss": settings.jwt_issuer,
+        "aud": settings.jwt_audience,
+        "iat": int(now.timestamp()),
+        **payload,
+    }
+
+    expire = now + timedelta(minutes=settings.access_token_expire_minutes)
+    data["exp"] = int(expire.timestamp())
+
+    return jwt.encode(
+        data,
+        settings.jwt_private_key,
+        algorithm=settings.jwt_algorithm,
+    )
 
 
 def get_current_user(

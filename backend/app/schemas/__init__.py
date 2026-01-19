@@ -9,6 +9,7 @@ from .article import (
     ArticleSummary,
 )
 from .article_query import ArticleListQuery
+from .auth import TokenExchangeRequest, TokenExchangeResponse
 from .base import SchemaBase, TimestampMixin, to_camel
 from .category import CategoryRead
 from .error import ErrorBody, ErrorResponse
@@ -27,6 +28,8 @@ __all__ = [
     "ArticlePatch",
     "ArticlePrevNextResponse",
     "ArticleSummary",
+    "TokenExchangeRequest",
+    "TokenExchangeResponse",
     "CategoryRead",
     "ErrorBody",
     "ErrorResponse",

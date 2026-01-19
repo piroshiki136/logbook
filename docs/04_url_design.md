@@ -22,8 +22,8 @@
 /articles?tag=nextjs&tag=fastapi&category=web
 対応パラメータ：
 - `page`（ページ番号）
-- `tags`（カンマ区切り or 複数パラメータ）
-- `categories`（カンマ区切り or 複数パラメータ）
+- `tags`（複数パラメータのみ）
+- `categories`（複数パラメータのみ）
 
 ---
 
@@ -49,7 +49,7 @@ API: GET /api/articles/{id}/prev-next
 
 ## 管理側（Next.js）
 
-### ログイン（Google OAuth）
+### ログイン（GitHub OAuth）
 /admin/login
 
 ### 管理用の記事一覧
