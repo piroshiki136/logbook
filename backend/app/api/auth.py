@@ -1,3 +1,5 @@
+import logging
+import re
 import time
 from collections import OrderedDict, deque
 from hashlib import sha256
@@ -14,6 +16,10 @@ from app.schemas.auth import TokenExchangeRequest, TokenExchangeResponse
 
 settings = get_settings()
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+SUBJECT_MAX_LENGTH = 64
+SUBJECT_PATTERN = re.compile(r"^github:[0-9]+$")
 
 ASSERTION_REQUIRED_CLAIMS = ("iss", "iat", "exp", "jti", "email")
 ASSERTION_JTI_TTL_SECONDS = 180
@@ -188,7 +194,21 @@ def exchange_token(payload: TokenExchangeRequest, request: Request):
         "email": normalized_email,
     }
     if "sub" in decoded:
-        token_payload["sub"] = decoded["sub"]
+        sub = decoded["sub"]
+        if (
+            not isinstance(sub, str)
+            or not sub
+            or len(sub) > SUBJECT_MAX_LENGTH
+            or not SUBJECT_PATTERN.fullmatch(sub)
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail={
+                    "code": "AUTH_INVALID_ASSERTION",
+                    "message": "認証に失敗しました",
+                },
+            )
+        token_payload["sub"] = sub
 
     token = create_access_token(token_payload)
 

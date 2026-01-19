@@ -3,10 +3,20 @@ import { auth } from "@/auth"
 import { AdminAuthCard } from "@/features/admin/admin-auth-card"
 import { SignInButton } from "@/features/admin/signin-button"
 
-export default async function Page() {
+type PageProps = {
+  searchParams?: { callbackUrl?: string }
+}
+
+const getSafeCallbackUrl = (callbackUrl?: string) => {
+  if (!callbackUrl) return "/admin"
+  return callbackUrl.startsWith("/admin") ? callbackUrl : "/admin"
+}
+
+export default async function Page({ searchParams }: PageProps) {
   const session = await auth()
+  const safeCallbackUrl = getSafeCallbackUrl(searchParams?.callbackUrl)
   if (session) {
-    redirect("/admin")
+    redirect(safeCallbackUrl)
   }
 
   return (
@@ -14,7 +24,7 @@ export default async function Page() {
       <AdminAuthCard
         title="Admin Login"
         description="GitHub でサインインしてください。"
-        footer={<SignInButton />}
+        footer={<SignInButton redirectTo={safeCallbackUrl} />}
       />
     </div>
   )

@@ -23,6 +23,7 @@ export const config: NextAuthConfig = {
         return true
       } catch (err) {
         console.log(err)
+        return false
       }
     },
     jwt({ token, trigger, session, account }) {
