@@ -57,6 +57,11 @@ uv run fastapi dev app/main.py
 ```
 uv run python -m scripts.seed
 ```
+開発用サンプル記事を全削除して再生成する場合:
+```
+uv run python -m scripts.delete_seed_articles
+uv run python -m scripts.seed
+```
 - テスト: `cd backend && uv run pytest`
 - backend の API テストは httpx の AsyncClient + pytest-anyio で非同期実行する
 - Lint: `cd backend && uv run ruff check .`

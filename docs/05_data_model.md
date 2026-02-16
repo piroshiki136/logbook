@@ -51,6 +51,7 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 | category_id  | int (FK → categories.id) | 1記事1カテゴリ |
 | created_at   | datetime  | 作成日時 |
 | updated_at   | datetime  | 更新日時 |
+| published_at | datetime (NULL可) | 公開日時（下書き中はNULL） |
 | is_draft     | boolean   | 下書きフラグ |
 
 ### 3.3 tags（タグ）
@@ -105,6 +106,7 @@ API レスポンスは tags を配列形式に変換して返す。
   "category": "backend",
   "tags": ["fastapi", "python"],
   "createdAt": "2025-01-22T12:00:00Z",
+  "publishedAt": "2025-01-25T12:00:00Z",
   "updatedAt": "2025-01-22T12:00:00Z",
   "isDraft": false
 }
@@ -139,4 +141,7 @@ API レスポンスは tags を配列形式に変換して返す。
 ### 6.3 開発用サンプルデータ（seed）
 - `backend/scripts/seed.py` でカテゴリ/タグ/記事/記事タグ/管理ユーザーを最小構成で投入する。
 - 実行: `cd backend && uv run python -m scripts.seed`
+- サンプル記事を全削除して再生成する場合:
+  - `cd backend && uv run python -m scripts.delete_seed_articles`
+  - `cd backend && uv run python -m scripts.seed`
 - 例: Category=Programming、Tag=Python/FastAPI、Article=Hello LogBook、AdminUser=admin@example.com
