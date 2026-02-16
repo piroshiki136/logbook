@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { AdminAuthCard } from "@/features/admin/admin-auth-card"
-import { SignInButton } from "@/features/admin/signin-button"
+import { AdminAuthCard, SignInButton } from "@/features/admin"
 
 type PageProps = {
   searchParams?: { callbackUrl?: string }
