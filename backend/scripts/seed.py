@@ -16,7 +16,14 @@ from app.models.category import Category
 from app.models.tag import Tag
 
 
-def get_or_create_category(session, *, name: str, slug: str, color: str | None, icon: str | None):
+def get_or_create_category(
+    session,
+    *,
+    name: str,
+    slug: str,
+    color: str | None,
+    icon: str | None,
+):
     category = session.scalar(select(Category).where(Category.slug == slug))
     if category:
         return category
@@ -44,9 +51,45 @@ def get_or_create_tag(session, *, name: str, slug: str):
     return tag
 
 
+SEED_ARTICLES = [
+    {
+        "title": "FastAPI入門",
+        "slug": "fastapi-intro-ja",
+        "content": "# FastAPI入門\n\nFastAPI の基本ルーティングを学ぶための記事です。",
+        "is_draft": False,
+        "published_at": datetime(2026, 1, 10, 9, 0, tzinfo=UTC),
+        "tags": ["fastapi"],
+    },
+    {
+        "title": "Python実践Tips",
+        "slug": "python-tips-ja",
+        "content": "# Python実践Tips\n\n開発で役立つ小さなテクニックをまとめます。",
+        "is_draft": False,
+        "published_at": None,
+        "tags": ["python", "backend"],
+    },
+    {
+        "title": "テスト戦略メモ",
+        "slug": "testing-strategy-ja",
+        "content": "# テスト戦略メモ\n\nユニットテストと統合テストの分け方を整理します。",
+        "is_draft": True,
+        "published_at": datetime(2026, 1, 12, 9, 0, tzinfo=UTC),
+        "tags": ["python", "fastapi", "testing", "api", "backend"],
+    },
+    {
+        "title": "設計メモ",
+        "slug": "architecture-note-ja",
+        "content": "# 設計メモ\n\n画面遷移と責務分離の方針を整理します。",
+        "is_draft": True,
+        "published_at": None,
+        "tags": ["design", "memo", "frontend"],
+    },
+]
+
+
 def main():
     with SessionLocal.begin() as session:
-        # ---- Categories ----
+        # ---- Category ----
         programming = get_or_create_category(
             session,
             name="Programming",
@@ -54,54 +97,45 @@ def main():
             color="blue",
             icon="code",
         )
+
         # ---- Tags ----
-        python = get_or_create_tag(
-            session,
-            name="Python",
-            slug="python",
-        )
-        fastapi = get_or_create_tag(
-            session,
-            name="FastAPI",
-            slug="fastapi",
-        )
+        seed_tags = [
+            ("python", "Python"),
+            ("fastapi", "FastAPI"),
+            ("testing", "Testing"),
+            ("api", "API"),
+            ("backend", "Backend"),
+            ("design", "Design"),
+            ("memo", "Memo"),
+            ("frontend", "Frontend"),
+        ]
+        tag_map: dict[str, Tag] = {}
+        for slug, name in seed_tags:
+            tag_map[slug] = get_or_create_tag(session, name=name, slug=slug)
 
         # ---- Articles ----
-        article = session.scalar(select(Article).where(Article.slug == "hello-logbook"))
-        if not article:
-            article = Article(
-                title="Hello LogBook",
-                slug="hello-logbook",
-                content="# Hello LogBook\n\nこれはサンプル記事です。",
-                category=programming,
-                is_draft=False,
-                published_at=datetime.now(UTC),
-            )
-            article.tags.extend([python, fastapi])
-            session.add(article)
+        for seed_article in SEED_ARTICLES:
+            article = session.scalar(select(Article).where(Article.slug == seed_article["slug"]))
+            article_tags = [tag_map[tag_slug] for tag_slug in seed_article["tags"]]
 
-        else:
-            # 既存記事にタグを追加
-            for tag in (python, fastapi):
-                if tag not in article.tags:
-                    article.tags.append(tag)
-
-        second_article = session.scalar(select(Article).where(Article.slug == "fastapi-tips"))
-        if not second_article:
-            second_article = Article(
-                title="FastAPI Tips",
-                slug="fastapi-tips",
-                content="# FastAPI Tips\n\nFastAPI の小ネタ集です。",
-                category=programming,
-                is_draft=False,
-                published_at=datetime.now(UTC),
-            )
-            second_article.tags.extend([fastapi])
-            session.add(second_article)
-        else:
-            for tag in (fastapi,):
-                if tag not in second_article.tags:
-                    second_article.tags.append(tag)
+            if not article:
+                article = Article(
+                    title=seed_article["title"],
+                    slug=seed_article["slug"],
+                    content=seed_article["content"],
+                    category=programming,
+                    is_draft=seed_article["is_draft"],
+                    published_at=seed_article["published_at"],
+                )
+                article.tags = article_tags
+                session.add(article)
+            else:
+                article.title = seed_article["title"]
+                article.content = seed_article["content"]
+                article.category = programming
+                article.is_draft = seed_article["is_draft"]
+                article.published_at = seed_article["published_at"]
+                article.tags = article_tags
 
         # ---- Admin Users ----
         admin = session.scalar(select(AdminUser).where(AdminUser.email == "admin@example.com"))
