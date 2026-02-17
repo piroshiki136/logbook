@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
-import { AdminAuthCard } from "@/features/admin/admin-auth-card"
-import { SignOutButton } from "@/features/admin/signout-button"
+import { AdminAuthCard, SignOutButton } from "@/features/admin"
 
 export default async function Page() {
   const session = await auth()

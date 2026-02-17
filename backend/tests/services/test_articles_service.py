@@ -174,6 +174,44 @@ def test_list_articles_allows_draft_query_for_admin(db_session):
     assert [item.title for item in response.data.items] == ["Draft"]
 
 
+def test_list_articles_orders_draft_for_admin_by_updated_at(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    first = article_service.create_article(
+        payload=ArticleCreate(
+            title="First Draft",
+            content="Hello",
+            category="backend",
+            is_draft=True,
+        ),
+        db=db_session,
+    )
+    second = article_service.create_article(
+        payload=ArticleCreate(
+            title="Second Draft",
+            content="Hello",
+            category="backend",
+            is_draft=True,
+        ),
+        db=db_session,
+    )
+
+    base_time = datetime(2025, 1, 1, tzinfo=UTC)
+    first_article = _get_article(db_session, first.data.id)
+    second_article = _get_article(db_session, second.data.id)
+    first_article.updated_at = base_time + timedelta(minutes=2)
+    second_article.updated_at = base_time + timedelta(minutes=1)
+    db_session.commit()
+
+    settings = get_settings()
+    admin_user = {"email": settings.admin_allowed_emails[0]}
+    query = ArticleListQuery(page=1, limit=10, draft=True)
+    response = article_service.list_articles(query=query, db=db_session, user=admin_user)
+
+    assert response.data is not None
+    assert [item.title for item in response.data.items] == ["First Draft", "Second Draft"]
+
+
 def test_get_article_hides_draft_from_non_admin(db_session):
     _create_category(db_session, slug="backend", name="Backend")
 

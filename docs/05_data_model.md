@@ -51,6 +51,7 @@ admin_users: 認証用。記事とは直接関連付けない（MVP では autho
 | category_id  | int (FK → categories.id) | 1記事1カテゴリ |
 | created_at   | datetime  | 作成日時 |
 | updated_at   | datetime  | 更新日時 |
+| published_at | datetime (NULL可) | 最終公開日時（未公開はNULL。再下書き時も保持） |
 | is_draft     | boolean   | 下書きフラグ |
 
 ### 3.3 tags（タグ）
@@ -105,6 +106,7 @@ API レスポンスは tags を配列形式に変換して返す。
   "category": "backend",
   "tags": ["fastapi", "python"],
   "createdAt": "2025-01-22T12:00:00Z",
+  "publishedAt": "2025-01-25T12:00:00Z",
   "updatedAt": "2025-01-22T12:00:00Z",
   "isDraft": false
 }
@@ -137,6 +139,19 @@ API レスポンスは tags を配列形式に変換して返す。
 - 画像バリデーション: 許可 MIME は `image/png` / `image/jpeg` / `image/webp` / `image/gif`、上限 5MB。フロントと API 両方でチェックする。
 
 ### 6.3 開発用サンプルデータ（seed）
-- `backend/scripts/seed.py` でカテゴリ/タグ/記事/記事タグ/管理ユーザーを最小構成で投入する。
+- `backend/scripts/seed.py` でカテゴリ/タグ/記事/記事タグ/管理ユーザーを投入する。
+- 記事データは以下の確認パターンを含む:
+  - 公開記事（`is_draft=false` かつ `published_at` あり）
+  - 未公開下書き（`is_draft=true` かつ `published_at=null`）
+  - 再下書き想定（`is_draft=true` かつ `published_at` あり）
+- seed 検証ルール:
+  - `is_draft=false` で `published_at=null` は禁止（スクリプト実行時にエラー）
 - 実行: `cd backend && uv run python -m scripts.seed`
-- 例: Category=Programming、Tag=Python/FastAPI、Article=Hello LogBook、AdminUser=admin@example.com
+- サンプル記事を全削除して再生成する場合:
+  - `cd backend && CONFIRM_DELETE_SEED_ARTICLES=1 uv run python -m scripts.delete_seed_articles`
+  - `cd backend && uv run python -m scripts.seed`
+- カテゴリ/タグ/管理ユーザーも含めて全削除して再生成する場合:
+  - `cd backend && CONFIRM_DELETE_SEED_ARTICLES=1 CONFIRM_DELETE_SEED_ALL=1 uv run python -m scripts.delete_seed_articles`
+  - `cd backend && uv run python -m scripts.seed`
+- 削除スクリプトは安全対策として、`APP_MODE=local/dev` かつローカル DB 接続時のみ実行可能。
+- 例: Category=Programming/Frontend/DevOps、Tag=Python/FastAPI/Next.js など、Article=公開/下書き/再下書き混在、AdminUser=admin@example.com
