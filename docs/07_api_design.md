@@ -67,7 +67,7 @@
 - tags は NFKC 正規化 + 小文字化して slug として扱う（表記ゆれ防止）
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
-- 管理APIの並び順は publishedAt の降順（draft=true の場合は publishedAt が null になるため createdAt の降順を優先）
+- 管理APIの並び順は publishedAt の降順（draft=true の場合は edited 直後の確認を優先するため updatedAt の降順を優先）
 - draft を指定した場合は管理者認証が必要（未認証は 401）
 
 ## 200レスポンス
@@ -120,8 +120,9 @@
 
 # 公開日時（publishedAt）の扱い
 - isDraft=false に変更したタイミングで publishedAt に現在時刻をセットする
-- isDraft=true の間は publishedAt=null
-- 非公開に戻した場合も publishedAt は保持する（再公開時に現在時刻で上書きする）
+- publishedAt は「最終公開日時」として扱う（未公開記事のみ null）
+- 非公開（isDraft=true）に戻した場合も publishedAt は保持する
+- 再公開時は publishedAt を現在時刻で上書きする
 
 ---
 
