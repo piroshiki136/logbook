@@ -4,7 +4,8 @@
     cd backend
     CONFIRM_DELETE_SEED_ARTICLES=1 uv run python -m scripts.delete_seed_articles
     # カテゴリ/タグ/管理ユーザーも含めて全削除する場合:
-    CONFIRM_DELETE_SEED_ARTICLES=1 CONFIRM_DELETE_SEED_ALL=1 uv run python -m scripts.delete_seed_articles
+    CONFIRM_DELETE_SEED_ARTICLES=1 CONFIRM_DELETE_SEED_ALL=1 \
+    uv run python -m scripts.delete_seed_articles
 """
 
 import os
