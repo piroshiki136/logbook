@@ -2,7 +2,7 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 
 interface ArticleCardBaseProps {
-  slug: string
+  href: string
   title: string
   id: number
   category: string
@@ -14,14 +14,14 @@ interface ArticleCardBaseProps {
 }
 
 export default function ArticleCardBase(props: ArticleCardBaseProps) {
-  const { slug, title, id, category, tags, meta, maxTags = 3 } = props
+  const { href, title, id, category, tags, meta, maxTags = 3 } = props
   const visibleTags = tags.slice(0, maxTags)
   const extraCount = Math.max(0, tags.length - visibleTags.length)
 
   return (
     <article className="group" data-article-id={String(id)}>
       <Link
-        href={`/articles/${slug}`}
+        href={href}
         className="block rounded-xl border border-border bg-background p-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={`記事: ${title}`}
       >

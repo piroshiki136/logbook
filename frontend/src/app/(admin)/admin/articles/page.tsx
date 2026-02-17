@@ -23,7 +23,6 @@ export default async function Page() {
             <AdminArticleCard
               key={article.id}
               id={article.id}
-              slug={article.slug}
               title={article.title}
               category={article.category}
               tags={article.tags}

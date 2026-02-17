@@ -24,7 +24,7 @@ export function PublicArticleCard(props: PublicArticleCardProps) {
   return (
     <ArticleCardBase
       id={id}
-      slug={slug}
+      href={`/articles/${slug}`}
       title={title}
       category={category}
       tags={tags}
