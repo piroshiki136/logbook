@@ -21,7 +21,7 @@ export default async function Page() {
               title={article.title}
               category={article.category}
               tags={article.tags}
-              createdAt={article.createdAt}
+              updatedAt={article.updatedAt}
               isDraft={article.isDraft}
             />
           ))}
