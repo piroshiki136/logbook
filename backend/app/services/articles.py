@@ -53,10 +53,18 @@ def list_articles(
     if query.tags:
         stmt = stmt.where(Article.tags.any(Tag.slug.in_(query.tags)))
 
-    stmt = stmt.order_by(
-        Article.published_at.desc().nullslast(),
-        Article.created_at.desc(),
-    )
+    if query.draft is True:
+        stmt = stmt.order_by(
+            Article.updated_at.desc(),
+            Article.created_at.desc(),
+            Article.id.desc(),
+        )
+    else:
+        stmt = stmt.order_by(
+            Article.published_at.desc().nullslast(),
+            Article.created_at.desc(),
+            Article.id.desc(),
+        )
 
     count_stmt = select(func.count()).select_from(stmt.order_by(None).subquery())
     total = db.scalar(count_stmt) or 0

@@ -43,6 +43,7 @@ def _create_article(
     title,
     published_at,
     created_at,
+    updated_at=None,
     is_draft=False,
     tags=None,
 ):
@@ -55,6 +56,8 @@ def _create_article(
         created_at=created_at,
         is_draft=is_draft,
     )
+    if updated_at is not None:
+        article.updated_at = updated_at
     if tags:
         article.tags = tags
     db_session.add(article)
@@ -141,6 +144,48 @@ async def test_list_articles_includes_drafts_for_admin(client, db_session):
     assert res.status_code == status.HTTP_200_OK
     assert payload["success"] is True
     assert [item["slug"] for item in payload["data"]["items"]] == ["draft-article"]
+
+
+async def test_list_articles_orders_drafts_for_admin_by_updated_at(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    base_time = datetime(2024, 1, 1, tzinfo=UTC)
+
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="older-update",
+        title="Older",
+        published_at=base_time,
+        created_at=base_time,
+        updated_at=base_time + timedelta(minutes=1),
+        is_draft=True,
+    )
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="newer-update",
+        title="Newer",
+        published_at=base_time - timedelta(minutes=10),
+        created_at=base_time - timedelta(minutes=10),
+        updated_at=base_time + timedelta(minutes=2),
+        is_draft=True,
+    )
+    _commit(db_session)
+
+    settings = get_settings()
+    _set_override(get_optional_user, lambda: {"email": settings.admin_allowed_emails[0]})
+    try:
+        res = await client.get("/api/articles?draft=true")
+    finally:
+        _clear_override(get_optional_user)
+
+    payload = res.json()
+    assert res.status_code == status.HTTP_200_OK
+    assert payload["success"] is True
+    assert [item["slug"] for item in payload["data"]["items"]] == [
+        "newer-update",
+        "older-update",
+    ]
 
 
 async def test_list_articles_filters_by_tags_or(client, db_session):

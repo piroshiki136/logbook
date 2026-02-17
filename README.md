@@ -57,6 +57,21 @@ uv run fastapi dev app/main.py
 ```
 uv run python -m scripts.seed
 ```
+開発用サンプル記事を全削除して再生成する場合:
+```
+CONFIRM_DELETE_SEED_ARTICLES=1 uv run python -m scripts.delete_seed_articles
+uv run python -m scripts.seed
+```
+- カテゴリ/タグ/管理ユーザーも含めて全削除する場合:
+```
+CONFIRM_DELETE_SEED_ARTICLES=1 CONFIRM_DELETE_SEED_ALL=1 uv run python -m scripts.delete_seed_articles
+uv run python -m scripts.seed
+```
+- `scripts.delete_seed_articles` は事故防止のため以下を満たさないと実行できない:
+  - `APP_MODE` が `local` または `dev`
+  - DB 接続先がローカル安全ホスト（`localhost` / `127.0.0.1` / `db`）または sqlite
+  - `CONFIRM_DELETE_SEED_ARTICLES=1` が設定されている
+  - 全削除時は `CONFIRM_DELETE_SEED_ALL=1` が追加で必要
 - テスト: `cd backend && uv run pytest`
 - backend の API テストは httpx の AsyncClient + pytest-anyio で非同期実行する
 - Lint: `cd backend && uv run ruff check .`
