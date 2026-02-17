@@ -157,8 +157,7 @@ SEED_ARTICLES = [
         "title": "PostgreSQL インデックス設計",
         "slug": "postgres-indexing-ja",
         "content": (
-            "# PostgreSQL インデックス設計\n\n"
-            "検索速度改善のための基本パターンを整理します。"
+            "# PostgreSQL インデックス設計\n\n検索速度改善のための基本パターンを整理します。"
         ),
         "category_slug": "programming",
         "is_draft": False,
