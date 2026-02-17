@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { formatArticleDate } from "../lib/format-article-date"
 
 interface ArticleCardBaseProps {
   href: string
@@ -7,16 +8,26 @@ interface ArticleCardBaseProps {
   id: number
   category: string
   tags: string[]
-  /** 例: "2026年02月16日"（公開用/管理用カードから渡す） */
-  meta?: ReactNode
+  dateValue?: string
+  metaPrefix?: ReactNode
   /** タグ表示数（デフォルト3） */
   maxTags?: number
 }
 
 export default function ArticleCardBase(props: ArticleCardBaseProps) {
-  const { href, title, id, category, tags, meta, maxTags = 3 } = props
+  const {
+    href,
+    title,
+    id,
+    category,
+    tags,
+    dateValue,
+    metaPrefix,
+    maxTags = 3,
+  } = props
   const visibleTags = tags.slice(0, maxTags)
   const extraCount = Math.max(0, tags.length - visibleTags.length)
+  const formattedDate = dateValue ? formatArticleDate(dateValue) : undefined
 
   return (
     <article className="group" data-article-id={String(id)}>
@@ -26,8 +37,15 @@ export default function ArticleCardBase(props: ArticleCardBaseProps) {
         aria-label={`記事: ${title}`}
       >
         <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-          {meta ? <span className="shrink-0">{meta}</span> : null}
-          {meta ? <span className="select-none">•</span> : null}
+          {metaPrefix ? <span className="shrink-0">{metaPrefix}</span> : null}
+          {formattedDate ? (
+            <span className="shrink-0">{formattedDate}</span>
+          ) : null}
+          {metaPrefix || formattedDate ? (
+            <span className="select-none" aria-hidden="true">
+              •
+            </span>
+          ) : null}
           <span className="shrink-0">{category}</span>
         </div>
 

@@ -2,12 +2,7 @@ import { AdminArticleCard } from "@/features/blog"
 import { getAdminArticles } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 
-const formatError = (error: unknown) => {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return "記事一覧の取得に失敗しました"
-}
+const formatError = () => "記事一覧の取得に失敗しました"
 
 export default async function Page() {
   try {
@@ -34,10 +29,12 @@ export default async function Page() {
       </main>
     )
   } catch (error) {
+    console.error(error)
+
     return (
       <main className="min-h-screen p-6">
         <h1 className="text-2xl font-semibold">Admin Articles</h1>
-        <p className="mt-3 text-sm text-red-600">{formatError(error)}</p>
+        <p className="mt-3 text-sm text-red-600">{formatError()}</p>
       </main>
     )
   }
