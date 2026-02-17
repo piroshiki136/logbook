@@ -1,17 +1,36 @@
 name: Backend CI
 
 on:
-  pull_request:  # feature→dev, dev→main の PR で実行
-    paths:
-      - "backend/**"
+  pull_request:  # PRでは常に起動（pathsで止めない）
   push:
-    branches: [dev, main]  # dev / main に commit が入ったとき
+    branches: [dev, main]
     paths:
       - "backend/**"
       - ".github/workflows/ci-backend.yml"
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - "backend/**"
+              - ".github/workflows/ci-backend.yml"
+
   backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
 
     env:
@@ -23,12 +42,12 @@ jobs:
 
     defaults:
       run:
-        working-directory: backend  # run: のコマンドは backend/ 配下で実行
+        working-directory: backend
 
     steps:
-      - uses: actions/checkout@v4  # リポジトリを runner に checkout（ルートに展開）
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5  # Python をセットアップ
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
