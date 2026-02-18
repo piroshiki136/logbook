@@ -3,7 +3,7 @@
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 
 ## pr6
-トップの表示確認
+docs/04・docs/06 のフィルタクエリ例（カンマ区切り）と docs/07（repeat のみ許可）に仕様差分が残っています。
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
