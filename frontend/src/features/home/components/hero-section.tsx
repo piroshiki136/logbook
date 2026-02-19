@@ -19,7 +19,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
       {/* content */}
       <div className="relative flex items-end p-6 sm:p-10">
-        <div className=" w-full max-w-3xl">
+        <div className="w-full max-w-3xl">
           <h1 className="text-balance text-3xl font-semibold tracking-tight text-white sm:text-5xl">
             LogBook
           </h1>
