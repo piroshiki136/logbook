@@ -10,20 +10,16 @@
 
 ---
 
-### 記事一覧（ページネーション・フィルタ対応）
+### 記事一覧（MVP: ページネーション対応）
 /articles
 /articles?page=2
 
-#### 複数タグ・複数カテゴリのフィルタ
-クエリパラメータで指定する。
-例：
-/articles?tags=nextjs,fastapi&categories=web,backend
-または複数クエリとして：
-/articles?tag=nextjs&tag=fastapi&category=web
-対応パラメータ：
+対応パラメータ（MVP）：
 - `page`（ページ番号）
-- `tags`（複数パラメータのみ）
-- `categories`（複数パラメータのみ）
+
+#### MVP 完成後に追加するフィルタ
+- タグ・カテゴリのフィルタをクエリパラメータで指定する
+- 形式は repeat 方式（例: `/articles?tags=nextjs&tags=fastapi&categories=web`）
 
 ---
 
@@ -66,14 +62,18 @@ id を使用し、slug 編集を許容する。
 
 ## API（FastAPI）
 
-### 記事一覧（フィルタ・ページネーション）
+### 記事一覧（MVP: ページネーション）
 
-GET /api/articles?page=&limit=&tags=&categories=
+GET /api/articles?page=&limit=
 
 - page（ページ番号）
 - limit（1ページあたり件数）
-- tags（複数タグ指定）
-- categories（複数カテゴリ指定）
+
+### 記事一覧フィルタ（MVP 完成後に追加）
+GET /api/articles?page=&limit=&tags=&categories=
+
+- tags（複数タグ指定、repeat 方式）
+- categories（複数カテゴリ指定、repeat 方式）
 
 ### 記事詳細
 GET /api/articles/{slug}
@@ -110,7 +110,7 @@ GET /api/categories
 - `/` はポートフォリオ兼トップページ（Hero + 最新記事）
 - 記事一覧は `/articles` に配置
 - 記事詳細は slug ベースになる
-- タグ・カテゴリは一覧ページとフィルタをサポート
+- タグ・カテゴリは一覧ページを提供し、記事一覧フィルタは MVP 完成後に追加する
 - 管理画面は `/admin` 配下にまとめる
 - API は `/api` 配下に統一する
-- フィルタ（タグ・カテゴリ）はクエリパラメータ方式で対応する
+- フィルタ（タグ・カテゴリ）はクエリパラメータの repeat 方式で対応する
