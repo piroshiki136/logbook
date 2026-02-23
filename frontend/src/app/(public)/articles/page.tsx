@@ -1,4 +1,6 @@
 import { ArticlesPagination, PublicArticleCard } from "@/features/blog"
+import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-builder"
+import { parsePage } from "@/features/blog/lib/parse-page"
 import { getArticles } from "@/lib/api/articles"
 import { hasPublishedAt } from "@/lib/article/guards"
 
@@ -16,13 +18,6 @@ type PageProps = {
 
 const DEFAULT_LIMIT = 10
 
-const parsePage = (raw?: string) => {
-  const parsed = Number(raw)
-  if (!Number.isFinite(parsed)) return 1
-  if (parsed < 1) return 1
-  return Math.floor(parsed)
-}
-
 const parseListParam = (raw?: string | string[]) => {
   if (!raw) return []
   const values = Array.isArray(raw) ? raw : [raw]
@@ -33,35 +28,11 @@ const parseListParam = (raw?: string | string[]) => {
     .filter((value) => value.length > 0)
 }
 
-const createPageHrefBuilder = (
-  params: Awaited<PageProps["searchParams"]>,
-  pathname = "/articles",
-) => {
-  return (page: number) => {
-    const query = new URLSearchParams()
-
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        if (key === "page" || value === undefined) continue
-        if (Array.isArray(value)) {
-          for (const item of value) {
-            query.append(key, item)
-          }
-          continue
-        }
-        query.set(key, value)
-      }
-    }
-
-    query.set("page", String(page))
-    return `${pathname}?${query.toString()}`
-  }
-}
-
 export default async function Page({ searchParams }: PageProps) {
   try {
     const resolvedSearchParams = await searchParams
     const page = parsePage(resolvedSearchParams?.page)
+    // MVPではフィルタUIは未提供だが、URL直打ちの互換性とMVP後の再導入準備として受け付ける。
     const tags = parseListParam(resolvedSearchParams?.tags)
     const categories = parseListParam(resolvedSearchParams?.categories)
 
@@ -73,7 +44,7 @@ export default async function Page({ searchParams }: PageProps) {
     })
     const publicItems = data.items.filter(hasPublishedAt)
     const totalPages = Math.max(1, Math.ceil(data.total / data.limit))
-    const hrefBuilder = createPageHrefBuilder(resolvedSearchParams)
+    const hrefBuilder = createPageHrefBuilder(resolvedSearchParams, "/articles")
 
     return (
       <main className="min-h-screen p-6">

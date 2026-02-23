@@ -1,4 +1,6 @@
 import { AdminArticleCard, ArticlesPagination } from "@/features/blog"
+import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-builder"
+import { parsePage } from "@/features/blog/lib/parse-page"
 import { getAdminArticles } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 
@@ -13,38 +15,6 @@ type PageProps = {
 
 const DEFAULT_LIMIT = 20
 
-const parsePage = (raw?: string) => {
-  const parsed = Number(raw)
-  if (!Number.isFinite(parsed)) return 1
-  if (parsed < 1) return 1
-  return Math.floor(parsed)
-}
-
-const createPageHrefBuilder = (
-  params: Awaited<PageProps["searchParams"]>,
-  pathname = "/admin/articles",
-) => {
-  return (page: number) => {
-    const query = new URLSearchParams()
-
-    if (params) {
-      for (const [key, value] of Object.entries(params)) {
-        if (key === "page" || value === undefined) continue
-        if (Array.isArray(value)) {
-          for (const item of value) {
-            query.append(key, item)
-          }
-          continue
-        }
-        query.set(key, value)
-      }
-    }
-
-    query.set("page", String(page))
-    return `${pathname}?${query.toString()}`
-  }
-}
-
 export default async function Page({ searchParams }: PageProps) {
   try {
     const resolvedSearchParams = await searchParams
@@ -52,7 +22,10 @@ export default async function Page({ searchParams }: PageProps) {
     const token = await getAdminToken()
     const data = await getAdminArticles({ page, limit: DEFAULT_LIMIT }, token)
     const totalPages = Math.max(1, Math.ceil(data.total / data.limit))
-    const hrefBuilder = createPageHrefBuilder(resolvedSearchParams)
+    const hrefBuilder = createPageHrefBuilder(
+      resolvedSearchParams,
+      "/admin/articles",
+    )
 
     return (
       <main className="min-h-screen p-6">

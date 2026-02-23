@@ -73,6 +73,7 @@ export function ArticlesPagination(props: ArticlesPaginationProps) {
     className,
   } = props
 
+  // ページが1ページのみの場合はページネーションを表示しない
   if (totalPages <= 1) return null
 
   const safeTotalPages = Math.max(1, Math.floor(totalPages))
