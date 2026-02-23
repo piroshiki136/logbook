@@ -14,7 +14,7 @@ interface ArticleCardBaseProps {
   maxTags?: number
 }
 
-export default function ArticleCardBase(props: ArticleCardBaseProps) {
+export function ArticleCardBase(props: ArticleCardBaseProps) {
   const {
     href,
     title,

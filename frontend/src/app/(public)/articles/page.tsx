@@ -1,12 +1,6 @@
 import { PublicArticleCard } from "@/features/blog"
 import { getArticles } from "@/lib/api/articles"
-import type { ArticleListItem } from "@/lib/api/types"
-
-const hasPublishedAt = (
-  article: ArticleListItem,
-): article is ArticleListItem & { publishedAt: string } => {
-  return article.publishedAt !== null
-}
+import { hasPublishedAt } from "@/lib/article/guards"
 
 const formatError = () =>
   "記事一覧の取得に失敗しました。しばらくしてから再度お試しください。"
