@@ -4,7 +4,6 @@ import Link from "next/link"
 
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useScrollDirection } from "@/hooks/use-scroll-direction"
 import { cn } from "@/lib/utils"
 
@@ -25,7 +24,8 @@ export default function Header() {
       </Button>
 
       <div className="ml-auto flex items-center gap-5">
-        <Input type="search" placeholder="検索" />
+        {/* mvpでは使わないため、消しておく*/}
+        {/* <Input type="search" placeholder="検索" /> */}
         <Button asChild variant="ghost" className="text-base">
           <Link href="/articles">記事一覧</Link>
         </Button>

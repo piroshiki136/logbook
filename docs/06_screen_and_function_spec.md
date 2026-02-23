@@ -22,7 +22,7 @@
 - 最新記事カードクリック → 記事詳細ページへ遷移
 
 ### API
-- GET /api/articles?limit=5
+- GET /api/articles?limit=3
 
 ---
 

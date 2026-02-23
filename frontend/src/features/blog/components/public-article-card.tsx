@@ -1,4 +1,4 @@
-import ArticleCardBase from "./article-card-base"
+import { ArticleCardBase } from "./article-card-base"
 
 type PublicArticleCardProps = {
   id: number
