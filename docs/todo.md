@@ -3,7 +3,16 @@
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 
 ## pr6
-- （解消済み）フィルタ仕様差分を整理し、MVP はフィルタバー除外・MVP 後に repeat 方式で再導入する方針へ統一した。
+- ページネーションコンポーネント実装メモ（MVP）
+  - 対象画面: `/articles`
+  - 目的: 記事一覧のページ移動 UI を共通部品として実装する
+  - URL 仕様: `?page=` クエリを正として遷移し、`/articles?page=2` の形式で扱う
+  - データ連動: `getArticles({ page, limit })` を使い、`total` と `limit` から総ページ数を算出する
+  - UI 要件: 前へ/次へ、ページ番号、現在ページ強調（`aria-current="page"`）
+  - 入力値補正: `page` が空・非数・0以下の場合は 1 扱い
+  - 要確認事項: `page` が総ページ数を超えた場合の扱い（最終ページへ補正 or 空表示）
+  - 配置候補: `frontend/src/components/ui/pagination.tsx`（共通化）または blog feature 配下
+  - テスト観点: ページ番号遷移、前後ボタン、1 ページ時の表示、異常クエリ時の補正
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
