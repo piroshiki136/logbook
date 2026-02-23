@@ -1,13 +1,31 @@
-import { AdminArticleCard } from "@/features/blog"
+import { AdminArticleCard, ArticlesPagination } from "@/features/blog"
+import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-builder"
+import { parsePage } from "@/features/blog/lib/parse-page"
 import { getAdminArticles } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 
 const formatError = () => "記事一覧の取得に失敗しました"
 
-export default async function Page() {
+type PageProps = {
+  searchParams?: Promise<{
+    page?: string
+    [key: string]: string | string[] | undefined
+  }>
+}
+
+const DEFAULT_LIMIT = 20
+
+export default async function Page({ searchParams }: PageProps) {
   try {
+    const resolvedSearchParams = await searchParams
+    const page = parsePage(resolvedSearchParams?.page)
     const token = await getAdminToken()
-    const data = await getAdminArticles({ page: 1, limit: 20 }, token)
+    const data = await getAdminArticles({ page, limit: DEFAULT_LIMIT }, token)
+    const totalPages = Math.max(1, Math.ceil(data.total / data.limit))
+    const hrefBuilder = createPageHrefBuilder(
+      resolvedSearchParams,
+      "/admin/articles",
+    )
 
     return (
       <main className="min-h-screen p-6">
@@ -26,6 +44,11 @@ export default async function Page() {
             />
           ))}
         </div>
+        <ArticlesPagination
+          currentPage={data.page}
+          totalPages={totalPages}
+          buildHref={hrefBuilder}
+        />
       </main>
     )
   } catch (error) {

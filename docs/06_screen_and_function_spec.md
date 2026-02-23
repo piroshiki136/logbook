@@ -30,18 +30,18 @@
 ### UI構成
 - 記事カード一覧
   - タイトル、日付、カテゴリ、タグ一覧
-- タグフィルタ（複数選択）
-- カテゴリフィルタ（複数選択）
 - ページネーション
 
 ### 動作仕様
-- フィルタ選択 → クエリパラメータに反映
-  `?tags=nextjs,fastapi&categories=web`
 - カードクリック → 記事詳細へ遷移
 - ページ番号クリック → ページ遷移
 
 ### API
-- GET /api/articles?page=&tags=&categories=
+- GET /api/articles?page=
+
+### MVP スコープ注記
+- タグ/カテゴリのフィルタバーは MVP では実装しない。
+- フィルタ UI とクエリ連動（`tags` / `categories`）は MVP 完成後に再導入する。
 
 ---
 

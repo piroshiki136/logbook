@@ -5,7 +5,7 @@
     uv run python -m scripts.seed
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
 
@@ -183,6 +183,20 @@ SEED_ARTICLES = [
         "tags": ["security", "auth", "backend", "devops"],
     },
 ]
+
+# ページネーション確認用の公開テスト記事
+for i in range(1, 21):
+    SEED_ARTICLES.append(
+        {
+            "title": f"test{i}",
+            "slug": f"test{i}",
+            "content": f"# test{i}\n\ntest{i}detail",
+            "category_slug": "programming",
+            "is_draft": False,
+            "published_at": datetime(2026, 2, 1, 9, 0, tzinfo=UTC) + timedelta(days=i),
+            "tags": ["backend"],
+        }
+    )
 
 
 def validate_seed_articles(

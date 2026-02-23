@@ -57,18 +57,22 @@
 ## クエリ
 - page?: number（デフォルト: 1）
 - limit?: number（デフォルト: 10、最大: 50）
-- tags?: string（例: "nextjs,fastapi"）
-- categories?: string
 - draft?: boolean（管理APIのみ指定可。公開APIでは false 固定）
 
 ## 補足
-- tags / categories は同名パラメータの複数指定（repeat）のみ許可する
-- tags の複数指定は OR 条件（いずれかを含む記事を返す）
-- tags は NFKC 正規化 + 小文字化して slug として扱う（表記ゆれ防止）
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は publishedAt の降順（draft=true の場合は edited 直後の確認を優先するため updatedAt の降順を優先）
 - draft を指定した場合は管理者認証が必要（未認証は 401）
+
+## MVP 完成後に追加するクエリ
+- tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
+- categories?: string（repeat 方式。例: `?categories=web&categories=backend`）
+
+## MVP 完成後の補足
+- tags / categories は同名パラメータの複数指定（repeat）のみ許可する
+- tags の複数指定は OR 条件（いずれかを含む記事を返す）
+- tags は NFKC 正規化 + 小文字化して slug として扱う（表記ゆれ防止）
 
 ## 200レスポンス
 {
@@ -324,3 +328,7 @@ prev/next が存在しない場合は null を返す。
 - prev/next（publishedAt の降順、公開 API は公開のみ）
 - 認証保護（401/403 の挙動）
 - 画像アップロード（保存先・UUID・返却 URL）
+
+## 注記
+- タグ/カテゴリの複数フィルタは API としては実装・検証対象とする。
+- ただし公開フロントのフィルタバー UI は MVP 完成後に再導入する。
