@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 
 export function AboutMeSection() {
   return (
-    <section aria-label="about me" className="py-12">
+    <section aria-label="自己紹介" className="py-12">
       <h2 className="text-2xl font-semibold tracking-tight">About Me</h2>
       <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
         情報学部3年の <span className="font-medium text-foreground">shiki</span>{" "}
@@ -24,7 +24,7 @@ export function AboutMeSection() {
             <Link
               href="https://github.com/piroshiki136"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               aria-label="GitHubプロフィールを新しいタブで開く"
             >
               GitHub
