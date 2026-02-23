@@ -22,10 +22,7 @@ const parseListParam = (raw?: string | string[]) => {
   if (!raw) return []
   const values = Array.isArray(raw) ? raw : [raw]
 
-  return values
-    .flatMap((value) => value.split(","))
-    .map((value) => value.trim())
-    .filter((value) => value.length > 0)
+  return values.map((value) => value.trim()).filter((value) => value.length > 0)
 }
 
 export default async function Page({ searchParams }: PageProps) {
