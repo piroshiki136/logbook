@@ -87,9 +87,62 @@ SEED_TAGS = [
     ("devops", "DevOps"),
     ("docker", "Docker"),
     ("auth", "Auth"),
+    ("markdown", "Markdown"),
 ]
 
 SEED_ARTICLES = [
+    {
+        "title": "markdown確認用",
+        "slug": "markdown-check-ja",
+        "content": (
+            "# Markdown確認用ダミー記事\n\n"
+            "これは **太字**、*斜体*、~~取り消し線~~ を確認するための段落です。"
+            " ここに `inline code` も含めます。\n\n"
+            "---\n\n"
+            "## 見出しと引用\n\n"
+            "> これは引用です。\n"
+            "> 複数行の引用も確認できます。\n\n"
+            "### リスト\n\n"
+            "- 箇条書き A\n"
+            "- 箇条書き B\n"
+            "  - ネスト 1\n"
+            "  - ネスト 2\n\n"
+            "1. 番号付き 1\n"
+            "2. 番号付き 2\n"
+            "3. 番号付き 3\n\n"
+            "- [x] 完了タスク\n"
+            "- [ ] 未完了タスク\n\n"
+            "## リンクと画像\n\n"
+            "[公式サイトへのリンク](https://example.com)\n\n"
+            "![ダミー画像](https://via.placeholder.com/640x360.png?text=markdown+sample)\n\n"
+            "## テーブル（GFM）\n\n"
+            "| 項目 | 値 | メモ |\n"
+            "| --- | --- | --- |\n"
+            "| 名前 | サンプル | ダミーデータ |\n"
+            "| 種別 | 記事 | プレビュー用途 |\n"
+            "| 状態 | 公開 | 確認用 |\n\n"
+            "## コードブロック\n\n"
+            "```ts\n"
+            "type User = {\n"
+            "  id: number\n"
+            "  name: string\n"
+            "}\n\n"
+            'const user: User = { id: 1, name: "Taro" }\n'
+            "console.log(user)\n"
+            "```\n\n"
+            "```bash\n"
+            "pnpm lint\n"
+            "uv run pytest\n"
+            "```\n\n"
+            "## 補足\n\n"
+            "最後に通常段落のダミーテキストです。"
+            "この文章は表示崩れ確認のため、やや長めにしています。"
+        ),
+        "category_slug": "frontend",
+        "is_draft": False,
+        "published_at": datetime(2026, 2, 28, 9, 0, tzinfo=UTC),
+        "tags": ["markdown", "frontend", "design", "memo"],
+    },
     {
         "title": "FastAPI入門",
         "slug": "fastapi-intro-ja",

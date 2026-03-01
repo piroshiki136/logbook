@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "highlight.js/styles/github.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -143,4 +145,49 @@ a {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* highlight.js: code block only */
+:root {
+  --hljs-bg: #1e1e1e;
+  --hljs-fg: #d4d4d4;
+}
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent;
+  color: var(--hljs-fg);
+  padding: 0;
+  line-height: inherit;
+  font-size: inherit;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a9955;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal {
+  color: #569cd6;
+}
+
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_ {
+  color: #4ec9b0;
+}
+
+.hljs-string,
+.hljs-regexp {
+  color: #ce9178;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable {
+  color: #b5cea8;
 }
