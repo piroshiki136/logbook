@@ -1,7 +1,7 @@
 "use client"
 
 import { Check, Copy } from "lucide-react"
-import { type ReactNode, useState } from "react"
+import { type ReactNode, useEffect, useRef, useState } from "react"
 import ReactMarkdown, { type Components } from "react-markdown"
 import rehypeHighlight from "rehype-highlight"
 import remarkGfm from "remark-gfm"
@@ -34,23 +34,38 @@ type CodeFrameProps = {
 
 function CodeFrame({ rawCode, children }: CodeFrameProps) {
   const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef<number | null>(null)
 
-  const onCopy = async () => {
+  const onCopy = async (code: string) => {
     try {
-      await navigator.clipboard.writeText(rawCode)
+      await navigator.clipboard.writeText(code)
       setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current)
+      }
+      timeoutRef.current = window.setTimeout(() => {
+        setCopied(false)
+        timeoutRef.current = null
+      }, 1500)
     } catch {
       setCopied(false)
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className="not-prose my-4">
       <div className="relative overflow-hidden rounded-lg border border-border bg-[#1e1e1e] text-[#d4d4d4]">
         <button
           type="button"
-          onClick={onCopy}
+          onClick={() => onCopy(rawCode)}
           aria-label={copied ? "コピー完了" : "コードをコピー"}
           className="absolute top-2 right-2 z-10 rounded-md border border-white/20 bg-black/30 px-2 py-1 text-xs text-white transition-colors hover:bg-black/50"
         >
