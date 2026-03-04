@@ -5,6 +5,7 @@ frontend/.next/
 frontend/node_modules/
 frontend/dist/
 frontend/.pnpm-store/
+.pnpm-store/
 frontend/*.tsbuildinfo
 frontend/.env
 frontend/.env.local
