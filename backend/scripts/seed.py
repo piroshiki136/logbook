@@ -15,6 +15,15 @@ from app.models.article import Article
 from app.models.category import Category
 from app.models.tag import Tag
 
+ARTICLE_TITLE_MAX_LENGTH = 200
+
+
+def build_max_length_title(prefix: str) -> str:
+    """記事タイトル上限（200文字）ちょうどの文字列を作る。"""
+    if len(prefix) > ARTICLE_TITLE_MAX_LENGTH:
+        raise ValueError("prefix is too long")
+    return f"{prefix}{'あ' * (ARTICLE_TITLE_MAX_LENGTH - len(prefix))}"
+
 
 def get_or_create_category(
     session,
@@ -234,6 +243,33 @@ SEED_ARTICLES = [
         "is_draft": False,
         "published_at": datetime(2026, 1, 25, 13, 0, tzinfo=UTC),
         "tags": ["security", "auth", "backend", "devops"],
+    },
+    {
+        "title": build_max_length_title("タイトル上限200文字確認その1-"),
+        "slug": "title-max-length-200-sample-1",
+        "content": "# タイトル上限200文字確認その1\n\nUI確認用のダミー記事です。",
+        "category_slug": "frontend",
+        "is_draft": False,
+        "published_at": datetime(2026, 2, 25, 9, 0, tzinfo=UTC),
+        "tags": ["frontend", "design", "memo"],
+    },
+    {
+        "title": build_max_length_title("タイトル上限200文字確認その2-"),
+        "slug": "title-max-length-200-sample-2",
+        "content": "# タイトル上限200文字確認その2\n\nUI確認用のダミー記事です。",
+        "category_slug": "programming",
+        "is_draft": False,
+        "published_at": datetime(2026, 2, 25, 10, 0, tzinfo=UTC),
+        "tags": ["backend", "api", "testing"],
+    },
+    {
+        "title": build_max_length_title("タイトル上限200文字確認その3-"),
+        "slug": "title-max-length-200-sample-3",
+        "content": "# タイトル上限200文字確認その3\n\nUI確認用のダミー記事です。",
+        "category_slug": "devops",
+        "is_draft": False,
+        "published_at": datetime(2026, 2, 25, 11, 0, tzinfo=UTC),
+        "tags": ["devops", "docker", "memo"],
     },
 ]
 
