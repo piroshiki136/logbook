@@ -61,7 +61,7 @@
 
 ### API
 - GET /api/articles/{slug}
-- GET /api/articles/{id}/prev-next（または articles?around=ID）
+- GET /api/articles/{id}/prev-next
 
 ---
 
@@ -163,5 +163,5 @@
 - 管理画面ではバッジ表示＋タブ切替により UI サポート
 
 ## 次・前の記事
-- API で記事IDを基準に前後を取得する
-（例：id の大小で判定）
+- API は `id` で対象記事を指定し、前後判定は `publishedAt` の降順で行う
+- `publishedAt` が同一または `null` の場合は `createdAt` 降順、さらに `id` 降順で決定する
