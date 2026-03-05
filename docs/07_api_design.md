@@ -238,7 +238,7 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
 ---
 
 # 9. 前後の記事取得 GET /api/articles/{id}/prev-next
-- id を基準に前後の記事を返す（公開APIでは isDraft=false のみ）
+- id で対象記事を指定し、その記事の前後を返す（公開APIでは isDraft=false のみ）
 - 管理APIでは認証が必要、ドラフトも取得可能
 - prev/next の判定は publishedAt の降順を基準にする
 - publishedAt が同一、または null の場合は createdAt の降順、さらに id の降順で決める
