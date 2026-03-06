@@ -10,6 +10,8 @@
 - react-hook-form + zod
 - next-auth v5（GitHub OAuth / beta。MVP 後に v4 もしくは Better Auth へ移行検討）
 - Biome
+- Vitest + Testing Library（単体/結合テスト）
+- Playwright（E2E テスト）
 - pnpm 9
 
 ## バックエンド

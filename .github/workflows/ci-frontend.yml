@@ -1,12 +1,63 @@
-# TODO: front開発時に再度設定する
-
-name: Frontend CI (disabled)
+name: Frontend CI
 
 on:
-  workflow_dispatch: # 手動実行のみ（実行しなければ動かない）
+  pull_request: # PRでは常に起動（pathsで止めない）
+  push:
+    branches: [dev, main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/ci-frontend.yml"
 
 jobs:
-  noop:
+  changes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
     steps:
-      - run: echo "This workflow is disabled"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - "frontend/**"
+              - ".github/workflows/ci-frontend.yml"
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (biome check)
+        run: pnpm lint
+
+      - name: Format check (biome format --check)
+        run: pnpm biome format --check .
+
+      - name: Test (vitest)
+        run: pnpm test
