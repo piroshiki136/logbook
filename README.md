@@ -45,6 +45,9 @@ pnpm dev
 - Lint: `cd frontend && pnpm lint`
 - Format: `cd frontend && pnpm format`
 - Lint（修正あり）: `cd frontend && pnpm biome check --write .`
+- Unit/Integration Test: `cd frontend && pnpm test`
+- Coverage: `cd frontend && pnpm coverage`
+- E2E Test: `cd frontend && pnpm e2e`
 
 ### backend
 ```bash

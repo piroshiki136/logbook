@@ -154,6 +154,28 @@ uv run ruff format --check app tests
 
 ---
 
+# 8. テスト方針
+
+## フロントエンド
+- 単体/結合テスト: Vitest + Testing Library を利用する
+- E2E テスト: Playwright を利用する
+- テストファイルは対象モジュールの近傍に `*.test.ts(x)` で配置する
+- 公開導線（`/articles`, `/articles/[slug]`）の回帰防止を優先し、ページネーション/前後記事ナビを必須ケースとする
+- カバレッジ目安（statement）
+  - `features/**`: 90% 以上
+  - `lib/**`: 95% 以上
+  - `components/ui/**`: 70〜90%（実利用コンポーネントを優先）
+  - プロジェクト全体: 80% 以上
+- 実行コマンド
+  - `cd frontend && pnpm test`
+  - `cd frontend && pnpm coverage`
+  - `cd frontend && pnpm e2e`
+
+## バックエンド
+- 既存方針どおり Pytest + httpx（ASGITransport）を継続する
+
+---
+
 # 9. 拡張方針
 - 必要になった場合に詳細なガイドラインを追記する
 - プロジェクト拡大時は詳細版への拡張を行う

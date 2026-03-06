@@ -48,13 +48,28 @@
 - [x] データ取得: 詳細取得
 - [x] 記事詳細: Markdown 表示
 - [x] 記事詳細: タグ/カテゴリ表示（MVP: 遷移なし）
-- [ ] データ取得: 前後記事取得（API クライアント関数は実装済み）
-- [ ] 記事詳細: 前後記事ナビ
-- [ ] テスト: ページネーションのユースケース
+- [x] データ取得: 前後記事取得（API クライアント関数は実装済み）
+- [x] 記事詳細: 前後記事ナビ
+- [x] テスト: ページネーションのユースケース
 
 ### PR6 補足（MVP スコープ調整）
 - フィルタバー（タグ/カテゴリ）は MVP から除外し、MVP 完成後に再導入する。
 - 理由: MVP では記事閲覧の主要導線（一覧・詳細・前後記事ナビ）を優先し、UI 複雑性とテスト範囲を抑える。
+
+### PR6 テスト実装方針（2026-03-06）
+- 単体テスト（Vitest）
+  - `parsePage` の入力補正（空・非数・0 以下・小数）
+  - `createPageHrefBuilder` のクエリ維持（`tags` / `categories` を保持した `page` 更新）
+- 結合テスト（Vitest + Testing Library）
+  - `ArticlesPagination` の表示分岐（1ページ時非表示、先頭/末尾での無効化、リンク生成）
+  - `ArticlePrevNextNav` の表示分岐（前後なし/片側のみ/両側）
+- E2E（Playwright）
+  - `/articles` のページ遷移（クエリ `?page=` と表示の一致）
+  - `/articles/[slug]` の前後記事ナビ遷移
+- 完了条件
+  - `cd frontend && pnpm lint`
+  - `cd frontend && pnpm test`
+  - `cd frontend && pnpm e2e`
 
 ## PR7: 管理画面・認証
 - [ ] NextAuth (GitHub) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
