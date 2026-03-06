@@ -45,8 +45,10 @@ const server = createServer((req, res) => {
   const pathname = url.pathname
 
   if (req.method === "GET" && pathname === "/api/articles") {
-    const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"))
-    const limit = Math.max(1, Number(url.searchParams.get("limit") ?? "10"))
+    const rawPage = Number(url.searchParams.get("page"))
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1
+    const rawLimit = Number(url.searchParams.get("limit"))
+    const limit = Number.isFinite(rawLimit) && rawLimit >= 1 ? rawLimit : 10
 
     const start = (page - 1) * limit
     const items = articles.slice(start, start + limit).map((article) => ({

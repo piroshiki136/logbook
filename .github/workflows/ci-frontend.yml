@@ -53,11 +53,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint (biome check)
+      - name: Lint (biome check)  # biome checkでlint, format, import-sortすべてチェック
         run: pnpm lint
-
-      - name: Format check (biome format --check)
-        run: pnpm biome format .
 
       - name: Test (vitest)
         run: pnpm test
