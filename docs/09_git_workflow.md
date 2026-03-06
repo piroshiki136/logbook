@@ -67,7 +67,8 @@ revert: "feat: 記事一覧にページネーションを追加" を巻き戻し
   - 実行したコマンド（チェックボックス）
     - `cd frontend && pnpm lint`
     - `cd frontend && pnpm format`（必要に応じて）
-    - `cd frontend && pnpm test`（該当テストがあれば）
+    - `cd frontend && pnpm test`（単体/結合。該当変更があれば）
+    - `cd frontend && pnpm e2e`（導線変更時）
     - `cd backend && uv run ruff check .`
     - `cd backend && uv run ruff format .`（必要に応じて）
     - `cd backend && uv run pytest tests`
