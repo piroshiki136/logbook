@@ -4,6 +4,7 @@
 frontend/.next/
 frontend/node_modules/
 frontend/dist/
+frontend/test-results/
 frontend/.pnpm-store/
 .pnpm-store/
 frontend/*.tsbuildinfo

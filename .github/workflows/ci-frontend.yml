@@ -57,7 +57,7 @@ jobs:
         run: pnpm lint
 
       - name: Format check (biome format --check)
-        run: pnpm biome format --check .
+        run: pnpm biome format .
 
       - name: Test (vitest)
         run: pnpm test
