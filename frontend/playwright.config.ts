@@ -21,7 +21,7 @@ export default defineConfig({
       reuseExistingServer: !isCI,
     },
     {
-      command: "pnpm dev",
+      command: "pnpm dev --port 3000",
       port: 3000,
       reuseExistingServer: !isCI,
       env: {
