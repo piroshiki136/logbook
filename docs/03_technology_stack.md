@@ -1,10 +1,10 @@
 # 03. 使用技術（Technology Stack）
 
 ## フロントエンド
-- Next.js 15（App Router、Node.js 20 LTS 前提）
-- React 18.2
-- TypeScript 5.5
-- Tailwind CSS 3.4
+- Next.js 16（App Router、Node.js 22 前提）
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
 - shadcn/ui
 - react-markdown + remark-gfm
 - react-hook-form + zod
@@ -12,7 +12,7 @@
 - Biome
 - Vitest + Testing Library（単体/結合テスト）
 - Playwright（E2E テスト）
-- pnpm 9
+- pnpm 10
 
 ## バックエンド
 - Python 3.12

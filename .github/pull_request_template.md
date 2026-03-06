@@ -9,7 +9,7 @@
 - [ ] cd frontend && pnpm format
 - [ ] cd frontend && pnpm test
 - [ ] cd frontend && pnpm coverage
-- [ ] cd frontend $$ pnpm e2e 
+- [ ] cd frontend $$ pnpm e2e
 - [ ] cd backend && uv run ruff check .
 - [ ] cd backend && uv run ruff format .
 - [ ] cd backend && uv run pytest tests
