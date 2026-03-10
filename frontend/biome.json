@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**/*.{js,jsx,ts,tsx,json,css}", "!next-env.d.ts", "!coverage"]
+    "includes": [
+      "**/*.{js,jsx,ts,tsx,json,css}",
+      "!next-env.d.ts",
+      "!coverage",
+      "!test-results",
+      "!.next"
+    ]
   },
   "formatter": {
     "enabled": true,

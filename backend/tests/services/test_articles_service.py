@@ -143,6 +143,35 @@ def test_list_articles_filters_drafts_for_non_admin(db_session):
     assert [item.title for item in response.data.items] == ["Published"]
 
 
+def test_list_articles_excludes_unpublished_non_draft_for_non_admin(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    published = ArticleCreate(
+        title="Published",
+        content="Hello",
+        category="backend",
+        is_draft=False,
+    )
+    article_service.create_article(payload=published, db=db_session)
+
+    hidden = Article(
+        title="Hidden",
+        slug="hidden",
+        content="Hello",
+        category=_create_category(db_session, slug="ops", name="Ops"),
+        is_draft=False,
+        published_at=None,
+    )
+    db_session.add(hidden)
+    db_session.commit()
+
+    query = ArticleListQuery(page=1, limit=10)
+    response = article_service.list_articles(query=query, db=db_session, user=None)
+
+    assert response.data is not None
+    assert [item.title for item in response.data.items] == ["Published"]
+
+
 def test_list_articles_rejects_draft_query_for_non_admin(db_session):
     _create_category(db_session, slug="backend", name="Backend")
 

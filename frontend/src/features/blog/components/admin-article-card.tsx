@@ -20,7 +20,7 @@ export function AdminArticleCard(props: AdminArticleCardProps) {
   return (
     <ArticleCardBase
       id={id}
-      href={`/admin/articles/${id}`}
+      href={`/admin/articles/${id}/edit`}
       title={title}
       category={category}
       tags={tags}

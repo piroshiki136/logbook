@@ -5,7 +5,7 @@
 ### トップページ
 /
 - Hero セクション（自己紹介）
-- 最新記事を複数件表示（例：3〜5件）
+- 最新記事を 3 件表示
 - 「すべての記事を見る」ボタンで /articles に遷移
 
 ---
@@ -68,6 +68,8 @@ GET /api/articles?page=&limit=
 
 - page（ページ番号）
 - limit（1ページあたり件数）
+- 未認証の公開アクセスでは公開済み記事のみを返す
+- `draft` は管理用途のみ指定可とし、公開側では `false` 固定とする
 
 ### 記事一覧フィルタ（MVP 完成後に追加）
 GET /api/articles?page=&limit=&tags=&categories=

@@ -9,12 +9,11 @@ vi.mock("next/link", () => ({
     children,
     ...props
   }: {
-    href: string | { pathname?: string }
+    href: string
     children: ReactNode
   } & AnchorHTMLAttributes<HTMLAnchorElement>) => {
-    const resolvedHref = typeof href === "string" ? href : (href.pathname ?? "")
     return (
-      <a href={resolvedHref} {...props}>
+      <a href={href} {...props}>
         {children}
       </a>
     )

@@ -1,9 +1,9 @@
 import { apiFetch } from "./client"
 import type {
   ArticleDetail,
-  ArticleListItem,
   ArticlePrevNext,
   Paginated,
+  PublicArticleListItem,
 } from "./types"
 
 type ArticleListParams = {
@@ -47,9 +47,9 @@ const buildListParams = (params: ArticleListParams = {}) => {
 
 export const getArticles = async (
   params: ArticleListParams = {},
-): Promise<Paginated<ArticleListItem>> => {
+): Promise<Paginated<PublicArticleListItem>> => {
   const query = buildListParams(params)
-  return apiFetch<Paginated<ArticleListItem>>(`/api/articles${query}`)
+  return apiFetch<Paginated<PublicArticleListItem>>(`/api/articles${query}`)
 }
 
 export const getArticle = async (slug: string): Promise<ArticleDetail> => {

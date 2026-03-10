@@ -43,7 +43,10 @@ def list_articles(
 
     if query.draft is None:
         if not is_admin:
-            stmt = stmt.where(Article.is_draft.is_(False))
+            stmt = stmt.where(
+                Article.is_draft.is_(False),
+                Article.published_at.is_not(None),
+            )
     else:
         stmt = stmt.where(Article.is_draft.is_(query.draft))
 
