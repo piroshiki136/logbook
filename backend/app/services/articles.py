@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.sql import Select
 
 from app.core.exceptions import AppError
 from app.core.normalization import normalize_tag_key
@@ -279,7 +281,7 @@ def _now() -> datetime:
     return datetime.now(UTC)
 
 
-def _apply_public_visibility_filter(stmt):
+def _apply_public_visibility_filter(stmt: Select[Any]) -> Select[Any]:
     return stmt.where(
         Article.is_draft.is_(False),
         Article.published_at.is_not(None),
