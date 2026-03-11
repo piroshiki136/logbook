@@ -32,6 +32,11 @@ export type ArticleListItem = {
   isDraft: boolean
 }
 
+export type PublicArticleListItem = ArticleListItem & {
+  publishedAt: string
+  isDraft: false
+}
+
 export type ArticleDetail = ArticleListItem & {
   content: string
 }

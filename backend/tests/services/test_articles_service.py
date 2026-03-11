@@ -143,6 +143,35 @@ def test_list_articles_filters_drafts_for_non_admin(db_session):
     assert [item.title for item in response.data.items] == ["Published"]
 
 
+def test_list_articles_excludes_unpublished_non_draft_for_non_admin(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    published = ArticleCreate(
+        title="Published",
+        content="Hello",
+        category="backend",
+        is_draft=False,
+    )
+    article_service.create_article(payload=published, db=db_session)
+
+    hidden = Article(
+        title="Hidden",
+        slug="hidden",
+        content="Hello",
+        category=_create_category(db_session, slug="ops", name="Ops"),
+        is_draft=False,
+        published_at=None,
+    )
+    db_session.add(hidden)
+    db_session.commit()
+
+    query = ArticleListQuery(page=1, limit=10)
+    response = article_service.list_articles(query=query, db=db_session, user=None)
+
+    assert response.data is not None
+    assert [item.title for item in response.data.items] == ["Published"]
+
+
 def test_list_articles_rejects_draft_query_for_non_admin(db_session):
     _create_category(db_session, slug="backend", name="Backend")
 
@@ -222,6 +251,33 @@ def test_get_article_hides_draft_from_non_admin(db_session):
         is_draft=True,
     )
     response = article_service.create_article(payload=draft_payload, db=db_session)
+
+    with pytest.raises(AppError) as exc:
+        article_service.get_article(
+            slug=response.data.slug,
+            db=db_session,
+            user=None,
+        )
+
+    assert exc.value.code == "ARTICLE_NOT_FOUND"
+    assert exc.value.status_code == 404
+
+
+def test_get_article_hides_non_draft_without_published_at_from_non_admin(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    response = article_service.create_article(
+        payload=ArticleCreate(
+            title="Unpublished",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+    article = _get_article(db_session, response.data.id)
+    article.published_at = None
+    db_session.commit()
 
     with pytest.raises(AppError) as exc:
         article_service.get_article(
@@ -332,3 +388,30 @@ def test_get_prev_next_uses_published_order_and_excludes_drafts_for_public(db_se
     assert response.data.next is not None
     assert response.data.prev.slug == first.data.slug
     assert response.data.next.slug == third.data.slug
+
+
+def test_get_prev_next_hides_non_draft_without_published_at_from_public(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    response = article_service.create_article(
+        payload=ArticleCreate(
+            title="Unpublished",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+    article = _get_article(db_session, response.data.id)
+    article.published_at = None
+    db_session.commit()
+
+    with pytest.raises(AppError) as exc:
+        article_service.get_prev_next(
+            article_id=response.data.id,
+            db=db_session,
+            user=None,
+        )
+
+    assert exc.value.code == "ARTICLE_NOT_FOUND"
+    assert exc.value.status_code == 404

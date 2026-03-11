@@ -4,13 +4,17 @@ import type {
   ArticleListItem,
   ArticlePrevNext,
   Paginated,
+  PublicArticleListItem,
 } from "./types"
 
-type ArticleListParams = {
+type PublicArticleListParams = {
   page?: number
   limit?: number
   tags?: string[]
   categories?: string[]
+}
+
+type ArticleListParams = PublicArticleListParams & {
   draft?: boolean
 }
 
@@ -43,6 +47,13 @@ const buildListParams = (params: ArticleListParams = {}) => {
 
   const query = searchParams.toString()
   return query ? `?${query}` : ""
+}
+
+export const getPublicArticles = async (
+  params: PublicArticleListParams = {},
+): Promise<Paginated<PublicArticleListItem>> => {
+  const query = buildListParams(params)
+  return apiFetch<Paginated<PublicArticleListItem>>(`/api/articles${query}`)
 }
 
 export const getArticles = async (
