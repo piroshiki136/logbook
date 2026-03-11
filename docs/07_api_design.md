@@ -104,7 +104,7 @@
 - slug（string）
 
 ## 補足
-- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得できる
+- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt != null` の記事のみ取得できる
 - 管理APIでは認証が必要、ドラフトや未公開記事も取得可能
 
 ## 200レスポンス

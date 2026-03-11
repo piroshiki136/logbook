@@ -18,9 +18,7 @@ type ArticleListParams = PublicArticleListParams & {
   draft?: boolean
 }
 
-const buildListParams = (
-  params: ArticleListParams | PublicArticleListParams = {},
-) => {
+const buildListParams = (params: ArticleListParams = {}) => {
   const searchParams = new URLSearchParams()
 
   if (params.page !== undefined) {
