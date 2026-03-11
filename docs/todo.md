@@ -1,11 +1,11 @@
 # TODO / 未決事項まとめ
 
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
+todo
 
-## pr6
-- 公開画面（`/articles`, `/articles/[slug]`）のテスト基盤を整備する
-  - 単体/結合: Vitest + Testing Library
-  - E2E: Playwright（初期はモック API サーバーを利用）
+# pr7
+1. /admin/articles/[id]/editに遷移するように修正済み。遷移先はPRで実装
+
 
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
@@ -40,6 +40,10 @@ app.add_middleware(
 ```
 - Renovateの導入
 ## MVP 完成後
+- タグ・カテゴリ一覧ページを実装する
+  - 対象画面: `/tags`, `/categories`
+  - 現状: [tags/page.tsx](frontend/src/app/(public)/tags/page.tsx) と [categories/page.tsx](frontend/src/app/(public)/categories/page.tsx) は placeholder のみ
+  - 背景: `todo` 指摘 4 は MVP 後対応に変更
 - フィルタバー（タグ/カテゴリ）を再導入する
   - 対象画面: `/articles`
   - UI 要件: タグ複数選択・カテゴリ複数選択・選択中フィルタの解除

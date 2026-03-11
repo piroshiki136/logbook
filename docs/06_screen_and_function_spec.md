@@ -14,7 +14,7 @@
   - 簡単な自由紹介テキスト
 - What I Do（任意）
   - 技術スタック・活動内容の簡易紹介
-- 最新記事一覧（3〜5件）
+- 最新記事一覧（3件固定）
   - カード（タイトル / 日付 / カテゴリ / タグ）
 - 「すべての記事を見る」ボタン（/articles）
 
@@ -23,6 +23,7 @@
 
 ### API
 - GET /api/articles?limit=3
+- 未認証の公開アクセスでは公開済み記事のみ取得する
 
 ---
 
@@ -38,6 +39,7 @@
 
 ### API
 - GET /api/articles?page=
+- 未認証の公開アクセスでは公開済み記事のみ取得する
 
 ### MVP スコープ注記
 - タグ/カテゴリのフィルタバーは MVP では実装しない。
@@ -61,7 +63,9 @@
 
 ### API
 - GET /api/articles/{slug}
+- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 - GET /api/articles/{id}/prev-next
+- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 
 ---
 

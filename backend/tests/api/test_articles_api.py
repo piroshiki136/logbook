@@ -102,6 +102,39 @@ async def test_list_articles_excludes_drafts(client, db_session):
     assert [item["slug"] for item in payload["data"]["items"]] == ["public-article"]
 
 
+async def test_list_articles_excludes_non_draft_without_published_at(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    base_time = datetime(2024, 1, 1, tzinfo=UTC)
+
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="public-article",
+        title="Public",
+        published_at=base_time,
+        created_at=base_time,
+        is_draft=False,
+    )
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="hidden-article",
+        title="Hidden",
+        published_at=None,
+        created_at=base_time + timedelta(minutes=1),
+        is_draft=False,
+    )
+    _commit(db_session)
+
+    res = await client.get("/api/articles")
+    payload = res.json()
+
+    assert res.status_code == status.HTTP_200_OK
+    assert payload["success"] is True
+    assert payload["data"]["total"] == 1
+    assert [item["slug"] for item in payload["data"]["items"]] == ["public-article"]
+
+
 async def test_list_articles_requires_admin_for_draft_filter(client):
     res = await client.get("/api/articles?draft=true")
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
@@ -317,6 +350,25 @@ async def test_get_article_public_and_draft_visibility(client, db_session):
     assert res_draft.status_code == status.HTTP_404_NOT_FOUND
 
 
+async def test_get_article_hides_non_draft_without_published_at(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    base_time = datetime(2024, 1, 1, tzinfo=UTC)
+
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="unpublished-article",
+        title="Unpublished",
+        published_at=None,
+        created_at=base_time,
+        is_draft=False,
+    )
+    _commit(db_session)
+
+    res = await client.get("/api/articles/unpublished-article")
+    assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
 async def test_get_article_draft_visible_for_admin(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
@@ -398,4 +450,23 @@ async def test_prev_next_hides_draft_from_public(client, db_session):
     _commit(db_session)
 
     res = await client.get(f"/api/articles/{draft.id}/prev-next")
+    assert res.status_code == status.HTTP_404_NOT_FOUND
+
+
+async def test_prev_next_hides_non_draft_without_published_at_from_public(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    base_time = datetime(2024, 1, 1, tzinfo=UTC)
+
+    unpublished = _create_article(
+        db_session,
+        category_id=category.id,
+        slug="unpublished",
+        title="Unpublished",
+        published_at=None,
+        created_at=base_time,
+        is_draft=False,
+    )
+    _commit(db_session)
+
+    res = await client.get(f"/api/articles/{unpublished.id}/prev-next")
     assert res.status_code == status.HTTP_404_NOT_FOUND

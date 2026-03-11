@@ -1,10 +1,11 @@
+import { ArrowRightIcon } from "lucide-react"
 import Link from "next/link"
 import type { ReactNode } from "react"
 
+import { Button } from "@/components/ui/button"
 import { PublicArticleCard } from "@/features/blog"
-import { getArticles } from "@/lib/api/articles"
-import type { ArticleListItem } from "@/lib/api/types"
-import { hasPublishedAt } from "@/lib/article/guards"
+import { getPublicArticles } from "@/lib/api/articles"
+import type { PublicArticleListItem } from "@/lib/api/types"
 
 const ERROR_MESSAGE =
   "最新記事の取得に失敗しました。しばらくしてから再度お試しください。"
@@ -12,12 +13,12 @@ const ERROR_MESSAGE =
 export async function LatestArticlesSection() {
   const headingId = "latest-articles-heading"
 
-  let items: Array<ArticleListItem & { publishedAt: string }> = []
+  let items: PublicArticleListItem[] = []
   let errorMessage: string | null = null
 
   try {
-    const data = await getArticles({ limit: 3 })
-    items = data.items.filter(hasPublishedAt)
+    const data = await getPublicArticles({ limit: 3 })
+    items = data.items
   } catch (error) {
     console.error(error)
     errorMessage = ERROR_MESSAGE
@@ -56,19 +57,27 @@ export async function LatestArticlesSection() {
 
   return (
     <section aria-labelledby={headingId} className="py-12">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5">
         <h2 id={headingId} className="text-2xl font-semibold tracking-tight">
           最新記事
         </h2>
-        <Link
-          href="/articles"
-          className="text-sm text-muted-foreground underline-offset-4 transition duration-150 hover:-translate-y-0.5 hover:font-medium hover:text-foreground hover:underline focus-visible:rounded-sm focus-visible:text-foreground focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          すべての記事を見る
-        </Link>
       </div>
 
       {body}
+
+      <div className="mt-6 flex justify-start">
+        <Button
+          asChild
+          variant="outline"
+          size="lg"
+          className="w-full sm:w-auto"
+        >
+          <Link href="/articles">
+            記事一覧を見る
+            <ArrowRightIcon aria-hidden="true" />
+          </Link>
+        </Button>
+      </div>
     </section>
   )
 }
