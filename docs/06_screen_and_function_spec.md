@@ -63,7 +63,9 @@
 
 ### API
 - GET /api/articles/{slug}
+- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 - GET /api/articles/{id}/prev-next
+- 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 
 ---
 

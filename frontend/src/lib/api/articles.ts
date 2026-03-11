@@ -1,20 +1,26 @@
 import { apiFetch } from "./client"
 import type {
   ArticleDetail,
+  ArticleListItem,
   ArticlePrevNext,
   Paginated,
   PublicArticleListItem,
 } from "./types"
 
-type ArticleListParams = {
+type PublicArticleListParams = {
   page?: number
   limit?: number
   tags?: string[]
   categories?: string[]
+}
+
+type ArticleListParams = PublicArticleListParams & {
   draft?: boolean
 }
 
-const buildListParams = (params: ArticleListParams = {}) => {
+const buildListParams = (
+  params: ArticleListParams | PublicArticleListParams = {},
+) => {
   const searchParams = new URLSearchParams()
 
   if (params.page !== undefined) {
@@ -45,11 +51,18 @@ const buildListParams = (params: ArticleListParams = {}) => {
   return query ? `?${query}` : ""
 }
 
-export const getArticles = async (
-  params: ArticleListParams = {},
+export const getPublicArticles = async (
+  params: PublicArticleListParams = {},
 ): Promise<Paginated<PublicArticleListItem>> => {
   const query = buildListParams(params)
   return apiFetch<Paginated<PublicArticleListItem>>(`/api/articles${query}`)
+}
+
+export const getArticles = async (
+  params: ArticleListParams = {},
+): Promise<Paginated<ArticleListItem>> => {
+  const query = buildListParams(params)
+  return apiFetch<Paginated<ArticleListItem>>(`/api/articles${query}`)
 }
 
 export const getArticle = async (slug: string): Promise<ArticleDetail> => {

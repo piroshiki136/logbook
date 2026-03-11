@@ -43,10 +43,7 @@ def list_articles(
 
     if query.draft is None:
         if not is_admin:
-            stmt = stmt.where(
-                Article.is_draft.is_(False),
-                Article.published_at.is_not(None),
-            )
+            stmt = _apply_public_visibility_filter(stmt)
     else:
         stmt = stmt.where(Article.is_draft.is_(query.draft))
 
@@ -98,7 +95,7 @@ def get_article(*, slug: str, db: Session, user: dict | None) -> ApiResponse[Art
     )
 
     if not is_admin:
-        stmt = stmt.where(Article.is_draft.is_(False))
+        stmt = _apply_public_visibility_filter(stmt)
 
     article = db.scalar(stmt)
     if not article:
@@ -212,7 +209,7 @@ def get_prev_next(
 
     base_stmt = select(Article).where(Article.id == article_id)
     if not is_admin:
-        base_stmt = base_stmt.where(Article.is_draft.is_(False))
+        base_stmt = _apply_public_visibility_filter(base_stmt)
 
     current = db.scalar(base_stmt)
     if not current:
@@ -233,7 +230,7 @@ def get_prev_next(
         func.row_number().over(order_by=order_clause).label("rn"),
     )
     if not is_admin:
-        scope_stmt = scope_stmt.where(Article.is_draft.is_(False))
+        scope_stmt = _apply_public_visibility_filter(scope_stmt)
 
     scope_subquery = scope_stmt.subquery()
     current_rn = db.scalar(
@@ -280,6 +277,13 @@ def get_prev_next(
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+def _apply_public_visibility_filter(stmt):
+    return stmt.where(
+        Article.is_draft.is_(False),
+        Article.published_at.is_not(None),
+    )
 
 
 def _article_summary(article: Article) -> ArticleSummary:

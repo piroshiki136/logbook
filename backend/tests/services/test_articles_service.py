@@ -263,6 +263,33 @@ def test_get_article_hides_draft_from_non_admin(db_session):
     assert exc.value.status_code == 404
 
 
+def test_get_article_hides_non_draft_without_published_at_from_non_admin(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    response = article_service.create_article(
+        payload=ArticleCreate(
+            title="Unpublished",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+    article = _get_article(db_session, response.data.id)
+    article.published_at = None
+    db_session.commit()
+
+    with pytest.raises(AppError) as exc:
+        article_service.get_article(
+            slug=response.data.slug,
+            db=db_session,
+            user=None,
+        )
+
+    assert exc.value.code == "ARTICLE_NOT_FOUND"
+    assert exc.value.status_code == 404
+
+
 def test_list_articles_filters_by_tags_and_categories(db_session):
     _create_category(db_session, slug="backend", name="Backend")
     _create_category(db_session, slug="frontend", name="Frontend")
@@ -361,3 +388,30 @@ def test_get_prev_next_uses_published_order_and_excludes_drafts_for_public(db_se
     assert response.data.next is not None
     assert response.data.prev.slug == first.data.slug
     assert response.data.next.slug == third.data.slug
+
+
+def test_get_prev_next_hides_non_draft_without_published_at_from_public(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    response = article_service.create_article(
+        payload=ArticleCreate(
+            title="Unpublished",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+    article = _get_article(db_session, response.data.id)
+    article.published_at = None
+    db_session.commit()
+
+    with pytest.raises(AppError) as exc:
+        article_service.get_prev_next(
+            article_id=response.data.id,
+            db=db_session,
+            user=None,
+        )
+
+    assert exc.value.code == "ARTICLE_NOT_FOUND"
+    assert exc.value.status_code == 404

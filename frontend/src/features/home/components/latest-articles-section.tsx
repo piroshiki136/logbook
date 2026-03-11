@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
 import { PublicArticleCard } from "@/features/blog"
-import { getArticles } from "@/lib/api/articles"
+import { getPublicArticles } from "@/lib/api/articles"
 import type { PublicArticleListItem } from "@/lib/api/types"
 
 const ERROR_MESSAGE =
@@ -17,7 +17,7 @@ export async function LatestArticlesSection() {
   let errorMessage: string | null = null
 
   try {
-    const data = await getArticles({ limit: 3 })
+    const data = await getPublicArticles({ limit: 3 })
     items = data.items
   } catch (error) {
     console.error(error)
@@ -74,7 +74,7 @@ export async function LatestArticlesSection() {
         >
           <Link href="/articles">
             記事一覧を見る
-            <ArrowRightIcon />
+            <ArrowRightIcon aria-hidden="true" />
           </Link>
         </Button>
       </div>

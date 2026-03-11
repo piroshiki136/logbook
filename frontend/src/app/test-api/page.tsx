@@ -1,9 +1,13 @@
-import { getArticle, getArticlePrevNext, getArticles } from "@/lib/api/articles"
+import {
+  getArticle,
+  getArticlePrevNext,
+  getPublicArticles,
+} from "@/lib/api/articles"
 import { getHealth } from "@/lib/api/health"
 
 export default async function Page() {
   const health = await getHealth()
-  const articles = await getArticles({ limit: 3 })
+  const articles = await getPublicArticles({ limit: 3 })
   const firstArticle = articles.items[0]
   const articleDetail = firstArticle
     ? await getArticle(firstArticle.slug)

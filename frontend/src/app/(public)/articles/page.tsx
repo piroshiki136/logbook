@@ -1,7 +1,7 @@
 import { ArticlesPagination, PublicArticleCard } from "@/features/blog"
 import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-builder"
 import { parsePage } from "@/features/blog/lib/parse-page"
-import { getArticles } from "@/lib/api/articles"
+import { getPublicArticles } from "@/lib/api/articles"
 
 const formatError = () =>
   "記事一覧の取得に失敗しました。しばらくしてから再度お試しください。"
@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: PageProps) {
     const tags = parseListParam(resolvedSearchParams?.tags)
     const categories = parseListParam(resolvedSearchParams?.categories)
 
-    const data = await getArticles({
+    const data = await getPublicArticles({
       page,
       limit: DEFAULT_LIMIT,
       ...(tags.length > 0 ? { tags } : {}),

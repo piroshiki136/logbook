@@ -4,7 +4,7 @@
 todo
 
 # pr7
-  1. /admin/articles/[id]/editに遷移するように修正済み。遷移先はPRで実装
+1. /admin/articles/[id]/editに遷移するように修正済み。遷移先はPRで実装
 
 
 ## Docker 化直前
@@ -42,7 +42,7 @@ app.add_middleware(
 ## MVP 完成後
 - タグ・カテゴリ一覧ページを実装する
   - 対象画面: `/tags`, `/categories`
-  - 現状: [tags/page.tsx](/home/a/projects/logbook/frontend/src/app/(public)/tags/page.tsx) と [categories/page.tsx](/home/a/projects/logbook/frontend/src/app/(public)/categories/page.tsx) は placeholder のみ
+  - 現状: [tags/page.tsx](frontend/src/app/(public)/tags/page.tsx) と [categories/page.tsx](frontend/src/app/(public)/categories/page.tsx) は placeholder のみ
   - 背景: `todo` 指摘 4 は MVP 後対応に変更
 - フィルタバー（タグ/カテゴリ）を再導入する
   - 対象画面: `/articles`
