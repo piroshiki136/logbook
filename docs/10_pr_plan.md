@@ -72,10 +72,60 @@
   - `cd frontend && pnpm e2e`
 
 ## PR7: 管理画面・認証
-- [ ] NextAuth (GitHub) 設定、`/admin` 配下の保護、記事一覧（公開/下書きタブ）、新規/編集フォーム、画像アップロード連携
-- [ ] タグの表示名（name）を編集できる管理 UI と更新 API を追加する
-- [ ] タグのタイポ修正（name 更新）とカテゴリの新規追加を管理画面から行えるようにする
-- [ ] バリデーションと slug 編集、ドラフト切り替え。主要ハンドラの単体テストを追加
+ブランチ名: `feature/pr7-admin-auth`
+
+### 完了済み
+ブランチ名: `feature/pr7-admin-foundation`
+
+- [x] NextAuth (GitHub) 設定、`/api/auth/[...nextauth]`、`/admin/login`、`/admin/forbidden` を整備する
+- [x] `/admin` 配下の認証・認可保護を middleware に集約し、`ADMIN_ALLOWED_EMAILS` と整合させる
+- [x] 管理記事一覧: ページネーションとエラー表示を管理画面用 UI に整える
+
+### 次 PR で進める候補（管理記事導線の開通）
+ブランチ名: `feature/pr7-admin-article-flow`
+
+- [x] 管理トップ: セッション表示の仮実装を置き換え、記事管理への導線を実装する
+- [x] 管理記事一覧: 全記事 / 公開記事 / 非公開タブを実装し、`draft` クエリ連動で切り替えられるようにする
+- [x] 管理記事: ルーティング識別子（`id` / `slug`）と取得 API の責務を統一する
+- [x] 管理記事: 編集フォームを実装する
+
+### 後続 PR で進める候補（記事編集機能の完成）
+ブランチ名: `feature/pr7-admin-article-editor`
+
+- [ ] 管理記事: 新規作成フォームを実装する
+- [ ] 管理記事: slug 編集、バリデーション、ドラフト切り替えを実装する
+- [ ] 管理記事: 画像アップロード連携を実装する
+
+### 後続 PR で進める候補（タグ・カテゴリ管理）
+ブランチ名: `feature/pr7-admin-taxonomy`
+
+- [ ] 管理タグ: タグ一覧、表示名（name）編集 UI、更新 API を追加する
+- [ ] 管理カテゴリ: カテゴリ新規追加 UI と作成 API を追加する
+
+### 後続 PR で進める候補（品質・ドキュメント）
+ブランチ名: `feature/pr7-admin-quality-docs`
+
+- [ ] Server Actions / API クライアントの認証必須ハンドラに単体テストを追加する
+- [ ] docs/04, docs/06, docs/07 に管理画面導線と API 差分が出た場合は更新する
+
+### PR7 テスト実装方針（案）
+- 単体テスト（Vitest）
+  - `callbackUrl` の正規化（`/admin` 配下のみ許可）
+  - `ADMIN_ALLOWED_EMAILS` の判定
+  - 管理 API クライアント / Server Actions の認証エラー処理
+- 結合テスト（Vitest + Testing Library）
+  - 管理記事一覧の公開/下書きタブ切り替え
+  - 新規/編集フォームのバリデーション、slug 編集、ドラフト切り替え
+  - 権限なし時の `forbidden` 導線
+- API テスト（Pytest + httpx）
+  - タグ name 更新
+  - カテゴリ新規追加
+  - 管理記事取得の識別子ルール（`id` / `slug`）の整合
+  - 認証必須エンドポイントの 401/403
+- 完了条件
+  - `cd frontend && pnpm lint`
+  - `cd frontend && pnpm test`
+  - `cd backend && uv run pytest`
 
 ## 未決事項（着手前に確定する）
 - NextAuth の callback URL / セッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法

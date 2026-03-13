@@ -4,7 +4,15 @@
 todo
 
 # pr7
-1. /admin/articles/[id]/editに遷移するように修正済み。遷移先はPRで実装
+
+## /adminについて
+
+1. /admin/articles/[id]/edit に遷移するように修正済み。遷移先は PR で実装
+2. `frontend/src/app/(admin)/admin/articles/[id]/edit/page.tsx` が空ファイルのため、編集画面未実装かつ `cd frontend && pnpm exec tsc --noEmit` で `is not a module` が発生する
+4. 管理記事のルートは `[id]` だが、フロントの取得 API は slug 前提のみで、編集画面実装時に識別子設計が衝突している
+5. タグ name 更新 API / UI が未実装
+6. カテゴリ新規追加 API / UI が未実装
+7. 管理画面・認証まわりのフロント単体テストが未着手
 
 
 ## Docker 化直前

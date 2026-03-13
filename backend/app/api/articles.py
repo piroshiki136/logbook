@@ -41,6 +41,18 @@ def list_articles(
 
 
 @router.get(
+    "/articles/by-id/{article_id}",
+    response_model=ApiResponse[ArticleDetail],
+    dependencies=[Depends(require_admin)],
+)
+def get_admin_article_by_id(
+    article_id: int,
+    db: Session = Depends(get_db),
+):
+    return article_service.get_admin_article_by_id(article_id=article_id, db=db)
+
+
+@router.get(
     "/articles/{slug}",
     response_model=ApiResponse[ArticleDetail],
 )

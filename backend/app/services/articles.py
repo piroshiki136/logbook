@@ -113,6 +113,28 @@ def get_article(*, slug: str, db: Session, user: dict | None) -> ApiResponse[Art
     )
 
 
+def get_admin_article_by_id(*, article_id: int, db: Session) -> ApiResponse[ArticleDetail]:
+    article = db.scalar(
+        select(Article)
+        .options(
+            selectinload(Article.tags),
+            selectinload(Article.category),
+        )
+        .where(Article.id == article_id)
+    )
+    if not article:
+        raise AppError(
+            code="ARTICLE_NOT_FOUND",
+            message="記事が見つかりません",
+            status_code=404,
+        )
+
+    return ApiResponse(
+        success=True,
+        data=_article_detail(article),
+    )
+
+
 def create_article(*, payload: ArticleCreate, db: Session) -> ApiResponse[ArticleDetail]:
     category = _ensure_category(db, payload.category)
     slug = _apply_slug_rules(db, title=payload.title, slug=payload.slug)
