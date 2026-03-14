@@ -3,14 +3,6 @@
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
 todo
 
-# pr7
-
-## /adminについて
-
-1. タグ name 更新 API / UI が未実装
-2. カテゴリ新規追加 API / UI が未実装
-
-
 ## Docker 化直前
 - `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
 - `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` / `REDIS_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
@@ -44,6 +36,10 @@ app.add_middleware(
 ```
 - Renovateの導入
 ## MVP 完成後
+- 管理タグ・カテゴリ管理を実装する
+  - ブランチ名: `feature/pr7-admin-taxonomy`
+  - タグ name 更新 API / UI
+  - カテゴリ新規追加 API / UI
 - タグ・カテゴリ一覧ページを実装する
   - 対象画面: `/tags`, `/categories`
   - 現状: [tags/page.tsx](frontend/src/app/(public)/tags/page.tsx) と [categories/page.tsx](frontend/src/app/(public)/categories/page.tsx) は placeholder のみ
