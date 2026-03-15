@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from fastapi import status
 
-from app.core.security import get_optional_user
+from app.core.security import get_current_user, get_optional_user
 from app.core.settings import get_settings
 from app.main import app
 from app.models.article import Article
@@ -219,6 +219,50 @@ async def test_list_articles_orders_drafts_for_admin_by_updated_at(client, db_se
         "newer-update",
         "older-update",
     ]
+
+
+async def test_get_admin_article_by_id_returns_draft_for_admin(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    article = _create_article(
+        db_session,
+        category_id=category.id,
+        slug="draft-article",
+        title="Draft",
+        published_at=None,
+        created_at=datetime(2024, 1, 1, tzinfo=UTC),
+        is_draft=True,
+    )
+    _commit(db_session)
+
+    settings = get_settings()
+    _set_override(get_current_user, lambda: {"email": settings.admin_allowed_emails[0]})
+    try:
+        res = await client.get(f"/api/articles/by-id/{article.id}")
+    finally:
+        _clear_override(get_current_user)
+
+    payload = res.json()
+    assert res.status_code == status.HTTP_200_OK
+    assert payload["success"] is True
+    assert payload["data"]["id"] == article.id
+    assert payload["data"]["slug"] == "draft-article"
+
+
+async def test_get_admin_article_by_id_requires_admin(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    article = _create_article(
+        db_session,
+        category_id=category.id,
+        slug="private-article",
+        title="Private",
+        published_at=None,
+        created_at=datetime(2024, 1, 1, tzinfo=UTC),
+        is_draft=True,
+    )
+    _commit(db_session)
+
+    res = await client.get(f"/api/articles/by-id/{article.id}")
+    assert res.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 async def test_list_articles_filters_by_tags_or(client, db_session):
