@@ -57,11 +57,11 @@ export const getAdminArticles = async (
   })
 }
 
-export const getAdminArticle = async (
-  slug: string,
+export const getAdminArticleById = async (
+  articleId: number,
   token: string,
 ): Promise<ArticleDetail> => {
-  return apiFetch<ArticleDetail>(`/api/articles/${slug}`, { token })
+  return apiFetch<ArticleDetail>(`/api/articles/by-id/${articleId}`, { token })
 }
 
 export const getAdminArticlePrevNext = async (
