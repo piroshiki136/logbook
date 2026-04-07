@@ -1,14 +1,10 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import type { ArticleEditorFormState } from "@/features/admin/components/article-editor-form"
 import { updateAdminArticle } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 import { ApiError } from "@/lib/api/client"
-
-export type EditArticleFormState = {
-  ok: boolean
-  message: string
-}
 
 const parseTags = (value: FormDataEntryValue | null) => {
   if (typeof value !== "string") return []
@@ -22,9 +18,9 @@ const getString = (value: FormDataEntryValue | null) =>
   typeof value === "string" ? value.trim() : ""
 
 export const updateArticleAction = async (
-  _prevState: EditArticleFormState,
+  _prevState: ArticleEditorFormState,
   formData: FormData,
-): Promise<EditArticleFormState> => {
+): Promise<ArticleEditorFormState> => {
   const idValue = getString(formData.get("id"))
   const articleId = Number(idValue)
 

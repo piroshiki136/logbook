@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation"
+import { ArticleEditorForm, updateArticleAction } from "@/features/admin"
 import { getAdminArticleById } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 import { getCategories } from "@/lib/api/categories"
-import { EditArticleForm } from "./edit-article-form"
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -40,7 +40,11 @@ export default async function Page({ params }: PageProps) {
             </p>
           </div>
 
-          <EditArticleForm article={article} categories={categories} />
+          <ArticleEditorForm
+            article={article}
+            categories={categories}
+            action={updateArticleAction}
+          />
         </section>
       </div>
     </main>

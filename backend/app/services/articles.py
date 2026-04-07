@@ -55,7 +55,13 @@ def list_articles(
     if query.tags:
         stmt = stmt.where(Article.tags.any(Tag.slug.in_(query.tags)))
 
-    if query.draft is True:
+    if query.draft is None and is_admin:
+        stmt = stmt.order_by(
+            Article.updated_at.desc(),
+            Article.created_at.desc(),
+            Article.id.desc(),
+        )
+    elif query.draft is True:
         stmt = stmt.order_by(
             Article.updated_at.desc(),
             Article.created_at.desc(),

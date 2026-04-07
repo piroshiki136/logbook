@@ -62,7 +62,7 @@
 ## 補足
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
-- 管理APIの並び順は publishedAt の降順（draft=true の場合は edited 直後の確認を優先するため updatedAt の降順を優先）
+- 管理APIの並び順は、全記事が updatedAt の降順、公開記事が publishedAt の降順、draft=true が updatedAt の降順
 - draft を指定した場合は管理者認証が必要（未認証は 401）
 
 ## MVP 完成後に追加するクエリ
@@ -172,8 +172,7 @@
 ---
 
 # 5. 記事削除 DELETE /api/articles/{id}
-- 認証必須
-- 204レスポンス
+- MVP 対象外。公開停止は `isDraft=true` による非公開化で対応する
 
 ---
 
@@ -206,6 +205,7 @@
 ---
 
 # 8. 画像アップロード POST /api/upload-image
+- MVP 対象外。後続フェーズで有効化する将来 API として扱う
 - 認証必須
 
 ## Multipart FormData

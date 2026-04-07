@@ -1,5 +1,5 @@
 import { ApiError } from "@/lib/api/client"
-import { updateArticleAction } from "./actions"
+import { updateArticleAction } from "./update-article-action"
 
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
