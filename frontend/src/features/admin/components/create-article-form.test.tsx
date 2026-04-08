@@ -82,11 +82,7 @@ describe("CreateArticleForm", () => {
     })
     fireEvent.blur(screen.getByLabelText("slug"))
 
-    expect(
-      screen.getByText(
-        "slug に空白は使えません",
-      ),
-    ).toBeInTheDocument()
+    expect(screen.getByText("slug に空白は使えません")).toBeInTheDocument()
   })
 
   it("先頭ハイフンの slug を入力すると個別のエラーを表示する", () => {

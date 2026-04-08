@@ -17,10 +17,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { ArticleDetail, Category } from "@/lib/api/types"
 import {
-  getArticleFormValues,
-  validateArticleForm,
   type ArticleFormErrors,
   type ArticleFormFieldName,
+  getArticleFormValues,
+  validateArticleForm,
 } from "../lib/article-form-validation"
 
 export type ArticleEditorFormState = {
@@ -65,8 +65,8 @@ export function ArticleEditorForm({
 
     setFieldErrors(
       Object.fromEntries(
-        Object.entries(nextErrors).filter(([fieldName]) =>
-          nextTouchedFields[fieldName as ArticleFormFieldName],
+        Object.entries(nextErrors).filter(
+          ([fieldName]) => nextTouchedFields[fieldName as ArticleFormFieldName],
         ),
       ) as ArticleFormErrors,
     )
@@ -75,23 +75,31 @@ export function ArticleEditorForm({
   }
 
   const handleFieldBlur = (
-    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    event: React.FocusEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const fieldName = event.target.name as ArticleFormFieldName
     if (!fieldName) return
+    const form = event.currentTarget.form
+    if (!form) return
 
     const nextTouchedFields = { ...touchedFields, [fieldName]: true }
     setTouchedFields(nextTouchedFields)
-    syncErrors(event.currentTarget.form, nextTouchedFields)
+    syncErrors(form, nextTouchedFields)
   }
 
   const handleFieldChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const fieldName = event.target.name as ArticleFormFieldName
     if (!fieldName || !touchedFields[fieldName]) return
+    const form = event.currentTarget.form
+    if (!form) return
 
-    syncErrors(event.currentTarget.form, touchedFields)
+    syncErrors(form, touchedFields)
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

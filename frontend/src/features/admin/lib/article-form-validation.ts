@@ -4,11 +4,7 @@ const SLUG_VALIDATE_RE = new RegExp(
 )
 const SLUG_ALLOWED_CHARS_RE = new RegExp(`^[${SLUG_CHAR_CLASS}-]+$`)
 
-export type ArticleFormFieldName =
-  | "title"
-  | "slug"
-  | "category"
-  | "content"
+export type ArticleFormFieldName = "title" | "slug" | "category" | "content"
 
 export type ArticleFormErrors = Partial<Record<ArticleFormFieldName, string>>
 
@@ -25,15 +21,25 @@ type ValidateArticleFormOptions = {
 
 const trim = (value: string) => value.trim()
 
-export const getArticleFormValues = (formData: FormData): ArticleFormValues => ({
-  title: typeof formData.get("title") === "string" ? String(formData.get("title")) : "",
-  slug: typeof formData.get("slug") === "string" ? String(formData.get("slug")) : "",
+export const getArticleFormValues = (
+  formData: FormData,
+): ArticleFormValues => ({
+  title:
+    typeof formData.get("title") === "string"
+      ? String(formData.get("title"))
+      : "",
+  slug:
+    typeof formData.get("slug") === "string"
+      ? String(formData.get("slug"))
+      : "",
   category:
     typeof formData.get("category") === "string"
       ? String(formData.get("category"))
       : "",
   content:
-    typeof formData.get("content") === "string" ? String(formData.get("content")) : "",
+    typeof formData.get("content") === "string"
+      ? String(formData.get("content"))
+      : "",
 })
 
 export const validateArticleForm = (
