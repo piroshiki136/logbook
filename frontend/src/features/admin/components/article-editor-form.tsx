@@ -113,6 +113,7 @@ export function ArticleEditorForm({
     <form
       action={formAction}
       className="flex flex-col gap-6"
+      noValidate
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="id" value={String(article.id)} />
@@ -131,7 +132,6 @@ export function ArticleEditorForm({
               name="title"
               defaultValue={article.title}
               disabled={isPending}
-              required
               aria-invalid={fieldErrors.title ? "true" : "false"}
               onBlur={handleFieldBlur}
               onChange={handleFieldChange}
@@ -148,7 +148,6 @@ export function ArticleEditorForm({
               name="slug"
               defaultValue={article.slug}
               disabled={isPending}
-              required
               aria-invalid={fieldErrors.slug ? "true" : "false"}
               onBlur={handleFieldBlur}
               onChange={handleFieldChange}
@@ -206,7 +205,6 @@ export function ArticleEditorForm({
             name="content"
             defaultValue={article.content}
             disabled={isPending}
-            required
             rows={18}
             className="min-h-72"
             aria-invalid={fieldErrors.content ? "true" : "false"}

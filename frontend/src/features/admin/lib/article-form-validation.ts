@@ -2,6 +2,7 @@ const SLUG_CHAR_CLASS = "0-9a-zぁ-んァ-ヶ一-龯ー々ゝゞ"
 const SLUG_VALIDATE_RE = new RegExp(
   `^[${SLUG_CHAR_CLASS}]+(?:-[${SLUG_CHAR_CLASS}]+)*$`,
 )
+const SLUG_ALLOWED_CHARS_RE = new RegExp(`^[${SLUG_CHAR_CLASS}-]+$`)
 
 export type ArticleFormFieldName =
   | "title"
@@ -61,9 +62,14 @@ export const validateArticleForm = (
       errors.slug = "slug に空白は使えません"
     } else if (normalizedSlug.length > 150) {
       errors.slug = "slug は150文字以内で指定してください"
+    } else if (!SLUG_ALLOWED_CHARS_RE.test(normalizedSlug)) {
+      errors.slug = "slug は英小文字・数字・日本語・ハイフンのみ使用できます"
+    } else if (normalizedSlug.startsWith("-") || normalizedSlug.endsWith("-")) {
+      errors.slug = "slug の先頭や末尾にハイフンは使えません"
+    } else if (normalizedSlug.includes("--")) {
+      errors.slug = "slug に連続したハイフンは使えません"
     } else if (!SLUG_VALIDATE_RE.test(normalizedSlug)) {
-      errors.slug =
-        "slug は英小文字・数字・日本語・ハイフンのみ使用でき、先頭や連続ハイフンは不可です"
+      errors.slug = "slug の形式が正しくありません"
     }
   }
 

@@ -78,7 +78,7 @@ export function CreateArticleForm({
 
     const nextTouchedFields = { ...touchedFields, [fieldName]: true }
     setTouchedFields(nextTouchedFields)
-    syncErrors(event.currentTarget.form, nextTouchedFields)
+    syncErrors(event.currentTarget.form!, nextTouchedFields)
   }
 
   const handleFieldChange = (
@@ -87,7 +87,7 @@ export function CreateArticleForm({
     const fieldName = event.target.name as ArticleFormFieldName
     if (!fieldName || !touchedFields[fieldName]) return
 
-    syncErrors(event.currentTarget.form, touchedFields)
+    syncErrors(event.currentTarget.form!, touchedFields)
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -109,6 +109,7 @@ export function CreateArticleForm({
     <form
       action={formAction}
       className="flex flex-col gap-6"
+      noValidate
       onSubmit={handleSubmit}
     >
       <input
@@ -125,7 +126,6 @@ export function CreateArticleForm({
               id="title"
               name="title"
               disabled={isPending}
-              required
               aria-invalid={fieldErrors.title ? "true" : "false"}
               onBlur={handleFieldBlur}
               onChange={handleFieldChange}
@@ -161,7 +161,6 @@ export function CreateArticleForm({
             id="category"
             name="category"
             disabled={isPending}
-            required
             defaultValue={categories[0]?.slug ?? ""}
             aria-invalid={fieldErrors.category ? "true" : "false"}
             onBlur={handleFieldBlur}
@@ -198,7 +197,6 @@ export function CreateArticleForm({
             id="content"
             name="content"
             disabled={isPending}
-            required
             rows={18}
             className="min-h-72"
             aria-invalid={fieldErrors.content ? "true" : "false"}

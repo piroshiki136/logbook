@@ -84,8 +84,21 @@ describe("CreateArticleForm", () => {
 
     expect(
       screen.getByText(
-        "slug は英小文字・数字・日本語・ハイフンのみ使用でき、先頭や連続ハイフンは不可です",
+        "slug に空白は使えません",
       ),
+    ).toBeInTheDocument()
+  })
+
+  it("先頭ハイフンの slug を入力すると個別のエラーを表示する", () => {
+    render(<CreateArticleForm categories={categories} action={action} />)
+
+    fireEvent.change(screen.getByLabelText("slug"), {
+      target: { value: "-invalid" },
+    })
+    fireEvent.blur(screen.getByLabelText("slug"))
+
+    expect(
+      screen.getByText("slug の先頭や末尾にハイフンは使えません"),
     ).toBeInTheDocument()
   })
 })
