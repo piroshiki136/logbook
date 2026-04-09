@@ -50,9 +50,12 @@ API: GET /api/articles/{id}/prev-next
 
 ### 管理用の記事一覧
 /admin/articles
+- 管理トップ（`/admin`）へ戻る導線をヘッダーに配置する
 
 ### 記事作成
 /admin/articles/new
+- 管理トップ（`/admin`）へ戻る導線をヘッダーに配置する
+- 保存成功後は `/admin/articles/[id]/edit` へ遷移する
 
 ### 記事編集
 /admin/articles/[id]/edit
@@ -88,9 +91,11 @@ PATCH /api/articles/{id}
 
 ### 記事削除
 DELETE /api/articles/{id}
+- 記事削除機能は MVP 対象外とし、運用上は非公開化で対応する
 
 ### 画像アップロード
 POST /api/upload-image
+- 画像アップロード機能は MVP 対象外とし、後続フェーズで有効化する
 
 ### タグ一覧
 GET /api/tags

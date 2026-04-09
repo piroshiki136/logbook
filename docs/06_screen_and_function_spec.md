@@ -99,44 +99,51 @@
   - 更新日
   - ステータス（公開 or Draft）
   - 編集ボタン（/admin/articles/[id]/edit）
-  - 削除ボタン（trash icon）
 - 表示切替タブ
   - All
   - Published
   - Draft
 - 新規作成ボタン（/admin/articles/new）
+- Admin トップへ戻るボタン（/admin）
 
 ### 動作仕様
 - 編集ボタン → 編集画面へ遷移
-- 削除ボタン → ダイアログ表示 → OK → API → リロード
 - タブ切替に応じて API のクエリを変更（?draft=false / ?draft=true）
+- Admin トップへ戻るボタン → `/admin` へ遷移
+- 記事の公開停止は削除ではなく非公開化で対応する
 
 ### API
 - GET /api/articles?draft=true
-- DELETE /api/articles/{id}
 
 ---
 
 ## 2.3 New Article（記事作成）
 ### UI構成
 - タイトル入力
-- slug（自動生成＋手動修正可）
+- slug（任意入力。未入力時はサーバー側で自動生成）
 - カテゴリ選択（string）
-- タグ複数選択
+- タグ入力（カンマ区切り）
 - Markdown エディタ
-- プレビュー（react-markdown）
-- 下書き保存 / 公開保存ボタン
-- 画像アップロード（ローカル→URL挿入）
+- 公開 / 非公開切り替えボタン
+- 記事管理へ戻るボタン（/admin/articles）
+- Admin トップへ戻るボタン（/admin）
 
 ### 動作仕様
-- タイトル入力 → 自動 slug 生成（小文字化 + 許可文字以外をハイフンに置換）
-- slug は自由に編集可能
+- slug が空欄なら API の作成処理で title から自動生成する
+- slug は手動編集可能
+- 初期状態は非公開
 - 保存後 → 編集画面へ遷移（/admin/articles/[id]/edit）
-- バリデーションエラーは入力欄下に表示
+- API エラーはフォーム下部に表示
+- 管理導線ボタンから `/admin` または `/admin/articles` へ戻れる
+
+### 未実装 / 仕様差分
+- タイトル入力に追従するクライアント側 slug 自動生成は未実装
+- react-markdown によるプレビューは未実装
+- 画像アップロード連携は MVP 対象外とし、後続フェーズで対応する
+- 入力欄ごとのバリデーション表示は未実装
 
 ### API
 - POST /api/articles
-- POST /api/upload-image
 
 ---
 
@@ -147,8 +154,12 @@
 
 ### 動作仕様
 - 更新保存（公開 or 下書き）機能
-- 画像追加可能
+- 管理導線ボタンから `/admin/articles` へ戻れる
 - slug の更新可（ただし URL 変更に注意）
+
+### 未実装 / 仕様差分
+- 画像アップロード連携は MVP 対象外とし、後続フェーズで対応する
+- 入力欄ごとのバリデーション表示は未実装
 
 ### API
 - GET /api/articles/{id}

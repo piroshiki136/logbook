@@ -83,7 +83,12 @@ export default async function Page({ searchParams }: PageProps) {
 
     return (
       <main className="min-h-screen p-6">
-        <h1 className="text-2xl font-semibold">記事管理</h1>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-semibold">記事管理</h1>
+          <Button asChild variant="outline">
+            <Link href="/admin">Adminへ戻る</Link>
+          </Button>
+        </div>
         <div className="mt-6">
           <ButtonGroup className="w-full flex-wrap md:w-fit">
             {articleTabs.map((tab) => {
@@ -133,7 +138,12 @@ export default async function Page({ searchParams }: PageProps) {
 
     return (
       <main className="min-h-screen p-6">
-        <h1 className="text-2xl font-semibold">記事管理</h1>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-2xl font-semibold">記事管理</h1>
+          <Button asChild variant="outline">
+            <Link href="/admin">Adminへ戻る</Link>
+          </Button>
+        </div>
         <p className="mt-3 text-sm text-red-600">{formatError()}</p>
       </main>
     )

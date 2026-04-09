@@ -25,7 +25,7 @@ ASSERTION_REQUIRED_CLAIMS = ("iss", "iat", "exp", "jti", "email")
 ASSERTION_JTI_TTL_SECONDS = 180
 ASSERTION_JTI_MAX_SIZE = 1000
 RATE_LIMIT_WINDOW_SECONDS = 60
-RATE_LIMIT_MAX = 10
+RATE_LIMIT_MAX = 30
 
 _jwks_client = (
     PyJWKClient(settings.frontend_assertion_jwks_url)
