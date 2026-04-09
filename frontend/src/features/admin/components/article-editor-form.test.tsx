@@ -1,5 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { EditArticleForm } from "./edit-article-form"
+import {
+  ArticleEditorForm,
+  type ArticleEditorFormState,
+} from "./article-editor-form"
 
 vi.mock("next/link", () => ({
   default: ({
@@ -14,10 +17,6 @@ vi.mock("next/link", () => ({
       {children}
     </a>
   ),
-}))
-
-vi.mock("./actions", () => ({
-  updateArticleAction: vi.fn(),
 }))
 
 const article = {
@@ -38,9 +37,20 @@ const categories = [
   { id: 2, name: "Frontend", slug: "frontend", color: null, icon: null },
 ]
 
-describe("EditArticleForm", () => {
+const action = async (
+  state: ArticleEditorFormState,
+  _formData: FormData,
+): Promise<ArticleEditorFormState> => state
+
+describe("ArticleEditorForm", () => {
   it("公開記事を初期表示し、hidden の isDraft に false を入れる", () => {
-    render(<EditArticleForm article={article} categories={categories} />)
+    render(
+      <ArticleEditorForm
+        article={article}
+        categories={categories}
+        action={action}
+      />,
+    )
 
     expect(screen.getByRole("button", { name: "公開" })).toHaveAttribute(
       "data-variant",
@@ -50,7 +60,13 @@ describe("EditArticleForm", () => {
   })
 
   it("非公開を選ぶと hidden の isDraft を true に切り替える", () => {
-    render(<EditArticleForm article={article} categories={categories} />)
+    render(
+      <ArticleEditorForm
+        article={article}
+        categories={categories}
+        action={action}
+      />,
+    )
 
     fireEvent.click(screen.getByRole("button", { name: "非公開" }))
 
@@ -63,9 +79,10 @@ describe("EditArticleForm", () => {
 
   it("下書き記事は非公開を初期選択する", () => {
     render(
-      <EditArticleForm
+      <ArticleEditorForm
         article={{ ...article, isDraft: true, publishedAt: null }}
         categories={categories}
+        action={action}
       />,
     )
 
@@ -74,5 +91,22 @@ describe("EditArticleForm", () => {
       "default",
     )
     expect(screen.getByDisplayValue("true")).toHaveAttribute("name", "isDraft")
+  })
+
+  it("空の slug を送信しようとすると slug のエラーを表示する", () => {
+    render(
+      <ArticleEditorForm
+        article={article}
+        categories={categories}
+        action={action}
+      />,
+    )
+
+    fireEvent.change(screen.getByLabelText("slug"), {
+      target: { value: "" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "保存" }))
+
+    expect(screen.getByText("slug は必須です")).toBeInTheDocument()
   })
 })
