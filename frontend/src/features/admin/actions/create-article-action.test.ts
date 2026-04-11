@@ -90,4 +90,49 @@ describe("createArticleAction", () => {
 
     expect(result).toEqual({ ok: false, message: "作成に失敗しました" })
   })
+
+  it("認証トークン取得に失敗した場合は汎用メッセージを返し、API を呼ばない", async () => {
+    mocks.getAdminToken.mockRejectedValue(new Error("AUTH_REQUIRED"))
+
+    const formData = new FormData()
+    formData.set("title", "Title")
+    formData.set("slug", "slug")
+    formData.set("content", "Body")
+    formData.set("category", "backend")
+    formData.set("isDraft", "true")
+
+    const result = await createArticleAction(
+      { ok: false, message: "" },
+      formData,
+    )
+
+    expect(mocks.createAdminArticle).not.toHaveBeenCalled()
+    expect(mocks.redirect).not.toHaveBeenCalled()
+    expect(result).toEqual({ ok: false, message: "記事の作成に失敗しました" })
+  })
+
+  it("認証エラーをそのままフォームに返し、遷移しない", async () => {
+    mocks.getAdminToken.mockResolvedValue("token")
+    mocks.createAdminArticle.mockRejectedValue(
+      new ApiError("AUTH_INVALID_TOKEN", "認証の有効期限が切れました", 401),
+    )
+
+    const formData = new FormData()
+    formData.set("title", "Title")
+    formData.set("slug", "slug")
+    formData.set("content", "Body")
+    formData.set("category", "backend")
+    formData.set("isDraft", "false")
+
+    const result = await createArticleAction(
+      { ok: false, message: "" },
+      formData,
+    )
+
+    expect(mocks.redirect).not.toHaveBeenCalled()
+    expect(result).toEqual({
+      ok: false,
+      message: "認証の有効期限が切れました",
+    })
+  })
 })

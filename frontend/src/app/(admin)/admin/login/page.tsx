@@ -1,19 +1,15 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { AdminAuthCard, SignInButton } from "@/features/admin"
+import { getSafeAdminCallbackUrl } from "@/features/admin/lib/callback-url"
 
 type PageProps = {
   searchParams?: { callbackUrl?: string }
 }
 
-const getSafeCallbackUrl = (callbackUrl?: string) => {
-  if (!callbackUrl) return "/admin"
-  return callbackUrl.startsWith("/admin") ? callbackUrl : "/admin"
-}
-
 export default async function Page({ searchParams }: PageProps) {
   const session = await auth()
-  const safeCallbackUrl = getSafeCallbackUrl(searchParams?.callbackUrl)
+  const safeCallbackUrl = getSafeAdminCallbackUrl(searchParams?.callbackUrl)
   if (session) {
     redirect(safeCallbackUrl)
   }

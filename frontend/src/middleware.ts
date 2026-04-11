@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server"
 
 import { auth } from "@/auth"
+import {
+  isAllowedAdminEmail,
+  parseAdminAllowedEmails,
+} from "@/features/admin/lib/admin-allow-list"
 
-const allowList = (process.env.ADMIN_ALLOWED_EMAILS ?? "")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean)
-
-const isAllowedEmail = (email?: string | null) =>
-  !!email && allowList.includes(email.toLowerCase())
+const allowList = parseAdminAllowedEmails(process.env.ADMIN_ALLOWED_EMAILS)
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
@@ -22,7 +20,7 @@ export default auth((req) => {
     return NextResponse.redirect(url)
   }
 
-  if (!isAllowedEmail(req.auth.user?.email)) {
+  if (!isAllowedAdminEmail(req.auth.user?.email, allowList)) {
     return NextResponse.redirect(new URL("/admin/forbidden", req.nextUrl))
   }
 
