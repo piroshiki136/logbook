@@ -73,6 +73,34 @@ async def test_tag_update_updates_name_only(client, db_session):
     assert tag.slug == "fastapi"
 
 
+async def test_tag_update_rejects_blank_name(client, db_session):
+    tag = Tag(name="FastAPI", slug="fastapi")
+    db_session.add(tag)
+    db_session.flush()
+
+    _set_override(require_admin, lambda: {"email": "test@example.com"})
+    try:
+        res = await client.patch(f"/api/tags/{tag.id}", json={"name": "   "})
+    finally:
+        _clear_override(require_admin)
+
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+async def test_tag_update_rejects_too_long_name(client, db_session):
+    tag = Tag(name="FastAPI", slug="fastapi")
+    db_session.add(tag)
+    db_session.flush()
+
+    _set_override(require_admin, lambda: {"email": "test@example.com"})
+    try:
+        res = await client.patch(f"/api/tags/{tag.id}", json={"name": "x" * 101})
+    finally:
+        _clear_override(require_admin)
+
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
 async def test_category_create_generates_slug(client, db_session):
     _set_override(require_admin, lambda: {"email": "test@example.com"})
     try:
@@ -97,3 +125,50 @@ async def test_category_create_generates_slug(client, db_session):
 
     saved = db_session.query(Category).filter(Category.slug == "frontend-platform").one()
     assert saved.name == "Frontend Platform"
+
+
+async def test_category_create_rejects_blank_name(client):
+    _set_override(require_admin, lambda: {"email": "test@example.com"})
+    try:
+        res = await client.post(
+            "/api/categories",
+            json={
+                "name": "   ",
+            },
+        )
+    finally:
+        _clear_override(require_admin)
+
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+async def test_category_create_rejects_invalid_slug(client):
+    _set_override(require_admin, lambda: {"email": "test@example.com"})
+    try:
+        res = await client.post(
+            "/api/categories",
+            json={
+                "name": "Frontend Platform",
+                "slug": "bad slug",
+            },
+        )
+    finally:
+        _clear_override(require_admin)
+
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+async def test_category_create_rejects_too_long_color(client):
+    _set_override(require_admin, lambda: {"email": "test@example.com"})
+    try:
+        res = await client.post(
+            "/api/categories",
+            json={
+                "name": "Frontend Platform",
+                "color": "x" * 51,
+            },
+        )
+    finally:
+        _clear_override(require_admin)
+
+    assert res.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
