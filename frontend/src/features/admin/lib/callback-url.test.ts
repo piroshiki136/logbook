@@ -16,5 +16,7 @@ describe("getSafeAdminCallbackUrl", () => {
     expect(getSafeAdminCallbackUrl("/")).toBe("/admin")
     expect(getSafeAdminCallbackUrl("https://example.com/admin")).toBe("/admin")
     expect(getSafeAdminCallbackUrl("/articles")).toBe("/admin")
+    expect(getSafeAdminCallbackUrl("/admin-login")).toBe("/admin")
+    expect(getSafeAdminCallbackUrl("/administer")).toBe("/admin")
   })
 })
