@@ -77,7 +77,8 @@
 
 ### 動作仕様
 - NextAuth の GitHub OAuth 認証を利用
-- ログイン後 /admin/articles へ遷移
+- `callbackUrl` が `/admin` 配下の場合はその URL へ戻す
+- `callbackUrl` 未指定または不正な場合は `/admin` へ遷移
 
 ---
 
@@ -88,7 +89,22 @@
 
 ### 動作仕様
 - 許可されていないアカウントの場合に表示
+- 許可判定は `ADMIN_ALLOWED_EMAILS` に含まれるメールアドレスで行う
 - サインアウト後は /admin/login へ戻す
+
+---
+
+## 2.1.2 Admin Top（管理トップ）
+### UI構成
+- ログイン中ユーザー名
+- ログイン中メールアドレス
+- 記事管理ボタン（/admin/articles）
+- 新規作成ボタン（/admin/articles/new）
+- サインアウトボタン
+
+### 動作仕様
+- 管理画面の起点として利用する
+- 記事管理 / 新規作成へ遷移できる
 
 ---
 
@@ -113,6 +129,8 @@
 - 記事の公開停止は削除ではなく非公開化で対応する
 
 ### API
+- GET /api/articles
+- GET /api/articles?draft=false
 - GET /api/articles?draft=true
 
 ---
@@ -140,7 +158,6 @@
 - タイトル入力に追従するクライアント側 slug 自動生成は未実装
 - react-markdown によるプレビューは未実装
 - 画像アップロード連携は MVP 対象外とし、後続フェーズで対応する
-- 入力欄ごとのバリデーション表示は未実装
 
 ### API
 - POST /api/articles
@@ -154,15 +171,14 @@
 
 ### 動作仕様
 - 更新保存（公開 or 下書き）機能
-- 管理導線ボタンから `/admin/articles` へ戻れる
+- 管理導線ボタンから `/admin` または `/admin/articles` へ戻れる
 - slug の更新可（ただし URL 変更に注意）
 
 ### 未実装 / 仕様差分
 - 画像アップロード連携は MVP 対象外とし、後続フェーズで対応する
-- 入力欄ごとのバリデーション表示は未実装
 
 ### API
-- GET /api/articles/{id}
+- GET /api/articles/by-id/{id}
 - PATCH /api/articles/{id}
 
 ---
@@ -172,6 +188,7 @@
 ## 認証制御
 - /admin 配下は NextAuth の認証必須
 - 未ログイン時 → /admin/login にリダイレクト
+- 非許可メール時 → /admin/forbidden にリダイレクト
 
 ## 下書き管理
 - articles.is_draft により制御

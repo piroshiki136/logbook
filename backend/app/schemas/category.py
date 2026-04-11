@@ -7,3 +7,10 @@ class CategoryRead(SchemaBase):
     slug: str
     color: str | None = None
     icon: str | None = None
+
+
+class CategoryCreate(SchemaBase):
+    name: str
+    slug: str | None = None
+    color: str | None = None
+    icon: str | None = None

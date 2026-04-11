@@ -45,12 +45,25 @@ API: GET /api/articles/{id}/prev-next
 
 ## 管理側（Next.js）
 
+### 管理トップ
+/admin
+- ログイン中の管理者情報を表示する
+- 記事管理（`/admin/articles`）と新規作成（`/admin/articles/new`）への導線を配置する
+
 ### ログイン（GitHub OAuth）
 /admin/login
+- `callbackUrl` が `/admin` 配下の場合のみ、その URL へ遷移する
+- `callbackUrl` 未指定または `/admin` 配下以外の場合は `/admin` へ遷移する
+
+### 権限なし
+/admin/forbidden
+- 許可されていないメールアドレスでログインした場合に表示する
+- サインアウト導線を配置する
 
 ### 管理用の記事一覧
 /admin/articles
 - 管理トップ（`/admin`）へ戻る導線をヘッダーに配置する
+- 公開記事 / 非公開記事 / 全記事のタブ切り替えを提供する
 
 ### 記事作成
 /admin/articles/new
@@ -83,6 +96,10 @@ GET /api/articles?page=&limit=&tags=&categories=
 ### 記事詳細
 GET /api/articles/{slug}
 
+### 管理用の記事詳細
+GET /api/articles/by-id/{id}
+- 管理画面の編集導線は `slug` ではなく `id` を使用する
+
 ### 記事作成
 POST /api/articles
 
@@ -107,9 +124,11 @@ GET /api/categories
 
 ## API 認証
 
-### 管理系 API は NextAuth で発行されるトークンを検証
-- フロントから API 呼び出し時に `Authorization` ヘッダで送信
-- FastAPI 側のミドルウェアで検証し、認証失敗時は 401 を返す
+### 管理系 API はバックエンド JWT を検証する
+- フロントの Server Actions で NextAuth セッションからアサーション JWT を生成する
+- `POST /api/auth/token` でバックエンド JWT に交換してから API を呼び出す
+- フロントから API 呼び出し時に `Authorization: Bearer <backend token>` を送信する
+- FastAPI 側のミドルウェアで検証し、認証失敗時は 401、権限不足時は 403 を返す
 
 ---
 
