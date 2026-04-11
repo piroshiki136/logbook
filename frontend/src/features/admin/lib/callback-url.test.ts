@@ -6,6 +6,9 @@ describe("getSafeAdminCallbackUrl", () => {
     expect(getSafeAdminCallbackUrl("/admin/articles/42/edit")).toBe(
       "/admin/articles/42/edit",
     )
+    expect(getSafeAdminCallbackUrl("/admin/articles?tab=draft#top")).toBe(
+      "/admin/articles?tab=draft#top",
+    )
   })
 
   it("未指定時は /admin を返す", () => {
@@ -18,5 +21,7 @@ describe("getSafeAdminCallbackUrl", () => {
     expect(getSafeAdminCallbackUrl("/articles")).toBe("/admin")
     expect(getSafeAdminCallbackUrl("/admin-login")).toBe("/admin")
     expect(getSafeAdminCallbackUrl("/administer")).toBe("/admin")
+    expect(getSafeAdminCallbackUrl("/admin/../articles")).toBe("/admin")
+    expect(getSafeAdminCallbackUrl("/admin/%2e%2e/articles")).toBe("/admin")
   })
 })
