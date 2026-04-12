@@ -16,7 +16,10 @@ export default auth((req) => {
 
   if (!req.auth) {
     const url = new URL("/admin/login", req.nextUrl)
-    url.searchParams.set("callbackUrl", req.nextUrl.pathname)
+    url.searchParams.set(
+      "callbackUrl",
+      `${req.nextUrl.pathname}${req.nextUrl.search}`,
+    )
     return NextResponse.redirect(url)
   }
 

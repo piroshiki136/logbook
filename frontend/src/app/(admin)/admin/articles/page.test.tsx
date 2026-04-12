@@ -95,7 +95,7 @@ describe("/admin/articles page", () => {
 
     expect(mocks.getAdminToken).toHaveBeenCalledOnce()
     expect(mocks.getAdminArticles).toHaveBeenCalledWith(
-      { page: 2, limit: 20, draft: true },
+      { page: 2, limit: 20, draft: true, tags: ["nextjs"] },
       "token",
     )
 
