@@ -98,4 +98,46 @@ describe("updateArticleAction", () => {
 
     expect(result).toEqual({ ok: false, message: "更新に失敗しました" })
   })
+
+  it("認証トークン取得に失敗した場合は汎用メッセージを返し、更新しない", async () => {
+    mocks.getAdminToken.mockRejectedValue(new Error("AUTH_REQUIRED"))
+
+    const formData = new FormData()
+    formData.set("id", "42")
+    formData.set("title", "Title")
+    formData.set("slug", "slug")
+    formData.set("content", "Body")
+    formData.set("category", "backend")
+    formData.set("isDraft", "true")
+
+    const result = await updateArticleAction(
+      { ok: false, message: "" },
+      formData,
+    )
+
+    expect(mocks.updateAdminArticle).not.toHaveBeenCalled()
+    expect(result).toEqual({ ok: false, message: "記事の更新に失敗しました" })
+  })
+
+  it("認証エラーをそのままフォームに返す", async () => {
+    mocks.getAdminToken.mockResolvedValue("token")
+    mocks.updateAdminArticle.mockRejectedValue(
+      new ApiError("AUTH_FORBIDDEN", "管理者権限がありません", 403),
+    )
+
+    const formData = new FormData()
+    formData.set("id", "42")
+    formData.set("title", "Title")
+    formData.set("slug", "slug")
+    formData.set("content", "Body")
+    formData.set("category", "backend")
+    formData.set("isDraft", "false")
+
+    const result = await updateArticleAction(
+      { ok: false, message: "" },
+      formData,
+    )
+
+    expect(result).toEqual({ ok: false, message: "管理者権限がありません" })
+  })
 })

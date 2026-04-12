@@ -12,6 +12,8 @@ const formatError = () => "記事一覧の取得に失敗しました"
 type PageProps = {
   searchParams?: Promise<{
     page?: string
+    tags?: string | string[]
+    categories?: string | string[]
     [key: string]: string | string[] | undefined
   }>
 }
@@ -28,6 +30,13 @@ const getDraftFilter = (draft: string | string[] | undefined): DraftFilter => {
   if (draft === "true") return true
   if (draft === "false") return false
   return undefined
+}
+
+const parseListParam = (raw?: string | string[]) => {
+  if (!raw) return []
+  const values = Array.isArray(raw) ? raw : [raw]
+
+  return values.map((value) => value.trim()).filter((value) => value.length > 0)
 }
 
 const createDraftTabHref = (
@@ -70,9 +79,17 @@ export default async function Page({ searchParams }: PageProps) {
     const resolvedSearchParams = await searchParams
     const page = parsePage(resolvedSearchParams?.page)
     const draft = getDraftFilter(resolvedSearchParams?.draft)
+    const tags = parseListParam(resolvedSearchParams?.tags)
+    const categories = parseListParam(resolvedSearchParams?.categories)
     const token = await getAdminToken()
     const data = await getAdminArticles(
-      { page, limit: DEFAULT_LIMIT, draft },
+      {
+        page,
+        limit: DEFAULT_LIMIT,
+        draft,
+        ...(tags.length > 0 ? { tags } : {}),
+        ...(categories.length > 0 ? { categories } : {}),
+      },
       token,
     )
     const totalPages = Math.max(1, Math.ceil(data.total / data.limit))

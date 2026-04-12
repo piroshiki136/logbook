@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/auth"
 import { AdminAuthCard, SignOutButton } from "@/features/admin"
+import {
+  isAllowedAdminEmail,
+  parseAdminAllowedEmails,
+} from "@/features/admin/lib/admin-allow-list"
 
 export default async function Page() {
   const session = await auth()
@@ -8,15 +12,8 @@ export default async function Page() {
     redirect("/admin/login")
   }
 
-  const allowed = process.env.ADMIN_ALLOWED_EMAILS ?? ""
-  const allowList = new Set(
-    allowed
-      .split(",")
-      .map((email) => email.trim().toLowerCase())
-      .filter(Boolean),
-  )
-  const email = session.user?.email?.toLowerCase()
-  const isAllowed = !!email && allowList.has(email)
+  const allowList = parseAdminAllowedEmails(process.env.ADMIN_ALLOWED_EMAILS)
+  const isAllowed = isAllowedAdminEmail(session.user?.email, allowList)
 
   if (isAllowed) {
     redirect("/admin")

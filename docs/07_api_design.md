@@ -2,7 +2,7 @@
 
 ## 共通事項
 - ベースURL: https://api.example.com
-- 認証: Bearer Token（NextAuth セッション JWT）
+- 認証: Bearer Token（バックエンド JWT）
 - 認証必須のエンドポイント: POST / PATCH / DELETE 系
 - GET でも draft を取得したい場合は認証が必要
 - ヘッダー例:
@@ -126,6 +126,20 @@
 
 ---
 
+# 2.1 管理用記事詳細 GET /api/articles/by-id/{id}
+## パス
+- id（number）
+
+## 補足
+- 管理画面の編集導線で使用する
+- 認証必須
+- draft / 未公開記事も取得できる
+
+## 200レスポンス
+`GET /api/articles/{slug}` と同一のレスポンス形式を返す。
+
+---
+
 # 公開日時（publishedAt）の扱い
 - isDraft=false に変更したタイミングで publishedAt に現在時刻をセットする
 - publishedAt は「最終公開日時」として扱う（未公開記事のみ null）
@@ -190,6 +204,33 @@
 
 ---
 
+# 6.1 タグ更新 PATCH /api/tags/{tagId}
+- 認証必須
+
+## パス
+- tagId（number）
+
+## ボディ
+{
+  "name": "FastAPI Web"
+}
+
+## 補足
+- 管理画面ではタグの表示名（`name`）のみ更新する
+- `slug` はタグの正規化キーとして維持する
+
+## 200レスポンス
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "FastAPI Web",
+    "slug": "fastapi"
+  }
+}
+
+---
+
 # 7. カテゴリ一覧 GET /api/categories
 ## 補足
 - name の昇順で返す
@@ -200,6 +241,34 @@
   "data": [
     { "id": 1, "name": "Backend", "slug": "backend", "color": "#0EA5E9", "icon": "code" }
   ]
+}
+
+---
+
+# 7.1 カテゴリ作成 POST /api/categories
+- 認証必須
+
+## ボディ
+{
+  "name": "Frontend Platform",
+  "slug": "frontend-platform",
+  "color": "#123456",
+  "icon": "layers"
+}
+
+## 補足
+- `slug` が未指定の場合は `name` から自動生成する
+
+## 201レスポンス
+{
+  "success": true,
+  "data": {
+    "id": 2,
+    "name": "Frontend Platform",
+    "slug": "frontend-platform",
+    "color": "#123456",
+    "icon": "layers"
+  }
 }
 
 ---
@@ -278,6 +347,7 @@ prev/next が存在しない場合は null を返す。
 - 交換エンドポイント  
   - `POST /api/auth/token`
   - フロントは Server Actions で NextAuth セッションを取得し、アサーションJWTを生成して送信する。
+  - 交換後のバックエンド JWT を管理 API 呼び出しに利用する。
 - アサーションJWT（フロント発行）  
   - 署名方式: RS256（非対称）
   - 有効期限: 2分
