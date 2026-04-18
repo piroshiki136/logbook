@@ -319,28 +319,28 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
 
 ---
 
-# 9. 前後の記事取得 GET /api/articles/{id}/prev-next
-- id で対象記事を指定し、その記事の前後を返す（公開APIでは `isDraft=false` かつ `publishedAt!=null` のみ）
+# 9. 新旧記事取得 GET /api/articles/{id}/newer-older
+- id で対象記事を指定し、その記事より新しい記事と古い記事を返す（公開APIでは `isDraft=false` かつ `publishedAt!=null` のみ）
 - 管理APIでは認証が必要、ドラフトも取得可能
-- prev/next の判定は publishedAt の降順を基準にする
-- publishedAt が同一、または null の場合は createdAt の降順、さらに id の降順で決める
+- newer/older の判定は updatedAt の降順を基準にする
+- updatedAt が同一の場合は createdAt の降順、さらに id の降順で決める
 
 ## 200レスポンス
 {
   "success": true,
   "data": {
-    "prev": {
+    "newer": {
       "id": 11,
-      "slug": "prev-article",
-      "title": "前の記事",
+      "slug": "newer-article",
+      "title": "新しい記事",
       "createdAt": "...",
       "publishedAt": "...",
       "isDraft": false
     },
-    "next": {
+    "older": {
       "id": 13,
-      "slug": "next-article",
-      "title": "次の記事",
+      "slug": "older-article",
+      "title": "古い記事",
       "createdAt": "...",
       "publishedAt": "...",
       "isDraft": false
@@ -348,7 +348,7 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
   }
 }
 
-prev/next が存在しない場合は null を返す。
+newer/older が存在しない場合は null を返す。
 
 ---
 
@@ -409,7 +409,7 @@ prev/next が存在しない場合は null を返す。
 - publishedAt の挙動（公開時セット、非公開でも保持、再公開で更新）
 - タグ/カテゴリの複数フィルタ
 - タグ/カテゴリの複数指定は repeat のみ（カンマ区切りは不可）
-- prev/next（publishedAt の降順、公開 API は公開のみ）
+- newer/older（updatedAt の降順、公開 API は公開のみ）
 - 認証保護（401/403 の挙動）
 - 画像アップロード（保存先・UUID・返却 URL）
 

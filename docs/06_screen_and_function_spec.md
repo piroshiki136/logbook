@@ -59,17 +59,17 @@
 - カテゴリ
 - タグ（リンク付き）
 - 本文（Markdown → HTML）
-- 前の記事 / 次の記事（ナビゲーション）
+- 新しい記事 / 古い記事（ナビゲーション）
 
 ### 動作仕様
 - 日時は `YYYY年MM月DD日 HH:mm`（24時間表記）で表示する
 - MVP ではカテゴリ/タグは表示のみ（遷移なし）
-- 前の記事 / 次の記事クリックで該当記事へ遷移
+- 新しい記事 / 古い記事クリックで該当記事へ遷移
 
 ### API
 - GET /api/articles/{slug}
 - 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
-- GET /api/articles/{id}/prev-next
+- GET /api/articles/{id}/newer-older
 - 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 
 ---
@@ -199,6 +199,6 @@
 - articles.is_draft により制御
 - 管理画面ではバッジ表示＋タブ切替により UI サポート
 
-## 次・前の記事
-- API は `id` で対象記事を指定し、前後判定は `publishedAt` の降順で行う
-- `publishedAt` が同一または `null` の場合は `createdAt` 降順、さらに `id` 降順で決定する
+## 新旧記事
+- API は `id` で対象記事を指定し、新旧判定は `updatedAt` の降順で行う
+- `updatedAt` が同一の場合は `createdAt` 降順、さらに `id` 降順で決定する

@@ -169,8 +169,8 @@ async def test_article_delete_not_found_returns_404(client):
     assert body["error"]["code"] == "ARTICLE_NOT_FOUND"
 
 
-async def test_prev_next_not_found_returns_404(client):
-    res = await client.get("/api/articles/1/prev-next")
+async def test_newer_older_not_found_returns_404(client):
+    res = await client.get("/api/articles/1/newer-older")
     assert res.status_code == status.HTTP_404_NOT_FOUND
     body = res.json()
     assert body["error"]["code"] == "ARTICLE_NOT_FOUND"

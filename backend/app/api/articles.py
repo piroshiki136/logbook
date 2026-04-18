@@ -8,8 +8,8 @@ from app.schemas.article import (
     ArticleCreate,
     ArticleDetail,
     ArticleListResponse,
+    ArticleNewerOlderResponse,
     ArticlePatch,
-    ArticlePrevNextResponse,
 )
 from app.schemas.article_query import ArticleListQuery
 from app.services import articles as article_service
@@ -103,12 +103,12 @@ def delete_article(
 
 
 @router.get(
-    "/articles/{article_id}/prev-next",
-    response_model=ApiResponse[ArticlePrevNextResponse],
+    "/articles/{article_id}/newer-older",
+    response_model=ApiResponse[ArticleNewerOlderResponse],
 )
-def get_prev_next(
+def get_newer_older(
     article_id: int,
     db: Session = Depends(get_db),
     user: dict | None = Depends(get_optional_user),
 ):
-    return article_service.get_prev_next(article_id=article_id, db=db, user=user)
+    return article_service.get_newer_older(article_id=article_id, db=db, user=user)

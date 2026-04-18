@@ -10,23 +10,14 @@ export default function NotFound() {
         お探しのページは見つかりませんでした
       </h1>
       <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-        URL
-        が間違っているか、ページが移動または削除された可能性があります。記事一覧やトップページから目的のページを探してください。
+        URLが間違っているか、ページが移動または削除された可能性があります。トップページから目的のページを探してください。
       </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/"
-          className="inline-flex items-center rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
-        >
-          トップへ戻る
-        </Link>
-        <Link
-          href="/articles"
-          className="inline-flex items-center rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-        >
-          記事一覧へ戻る
-        </Link>
-      </div>
+      <Link
+        href="/"
+        className="inline-flex items-center rounded-full mt-8 px-5 py-2 text-sm font-medium bg-foreground text-background transition-opacity hover:opacity-90"
+      >
+        トップへ戻る
+      </Link>
     </section>
   )
 }

@@ -228,7 +228,7 @@ def test_list_articles_filters_by_tags_and_categories(db_session):
     assert [item.title for item in response.data.items] == ["Backend"]
 
 
-def test_get_prev_next_uses_published_order_and_excludes_drafts_for_public(db_session):
+def test_get_newer_older_uses_published_order_and_excludes_drafts_for_public(db_session):
     _create_category(db_session, slug="backend", name="Backend")
 
     first = article_service.create_article(
@@ -283,14 +283,14 @@ def test_get_prev_next_uses_published_order_and_excludes_drafts_for_public(db_se
         article.created_at = published_at
     db_session.commit()
 
-    response = article_service.get_prev_next(
+    response = article_service.get_newer_older(
         article_id=second.data.id,
         db=db_session,
         user=None,
     )
 
     assert response.data is not None
-    assert response.data.prev is not None
-    assert response.data.next is not None
-    assert response.data.prev.slug == first.data.slug
-    assert response.data.next.slug == third.data.slug
+    assert response.data.newer is not None
+    assert response.data.older is not None
+    assert response.data.newer.slug == first.data.slug
+    assert response.data.older.slug == third.data.slug

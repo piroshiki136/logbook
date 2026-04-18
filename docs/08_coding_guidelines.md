@@ -160,7 +160,7 @@ uv run ruff format --check app tests
 - 単体/結合テスト: Vitest + Testing Library を利用する
 - E2E テスト: Playwright を利用する
 - テストファイルは対象モジュールの近傍に `*.test.ts(x)` で配置する
-- 公開導線（`/articles`, `/articles/[slug]`）の回帰防止を優先し、ページネーション/前後記事ナビを必須ケースとする
+- 公開導線（`/articles`, `/articles/[slug]`）の回帰防止を優先し、ページネーション/新旧記事ナビを必須ケースとする
 - カバレッジ目安（statement）
   - `features/**`: 90% 以上
   - `lib/**`: 95% 以上

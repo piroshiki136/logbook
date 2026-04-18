@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card"
 import { formatArticleDate } from "../lib/format-article-date"
 
-interface ArticlePrevNextCardProps {
+interface ArticleNewerOlderCardProps {
   href: string
   title: string
   id: number
@@ -15,7 +15,7 @@ interface ArticlePrevNextCardProps {
   label: string
 }
 
-export function ArticlePrevNextCard(props: ArticlePrevNextCardProps) {
+export function ArticleNewerOlderCard(props: ArticleNewerOlderCardProps) {
   const { href, title, id, dateValue, label } = props
   const formattedDate = dateValue ? formatArticleDate(dateValue) : undefined
 

@@ -10,7 +10,7 @@ import {
   createAdminArticle,
   deleteAdminArticle,
   getAdminArticleById,
-  getAdminArticlePrevNext,
+  getAdminArticleNewerOlder,
   getAdminArticles,
   updateAdminArticle,
 } from "./admin-articles"
@@ -52,12 +52,12 @@ describe("admin-articles api client", () => {
     })
   })
 
-  it("前後記事取得は管理トークン付きで呼び出す", async () => {
+  it("新旧記事取得は管理トークン付きで呼び出す", async () => {
     mocks.apiFetch.mockResolvedValue({})
 
-    await getAdminArticlePrevNext(42, "token")
+    await getAdminArticleNewerOlder(42, "token")
 
-    expect(mocks.apiFetch).toHaveBeenCalledWith("/api/articles/42/prev-next", {
+    expect(mocks.apiFetch).toHaveBeenCalledWith("/api/articles/42/newer-older", {
       token: "token",
     })
   })

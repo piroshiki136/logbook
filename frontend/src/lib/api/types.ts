@@ -50,9 +50,9 @@ export type ArticleNeighbor = {
   isDraft: boolean
 }
 
-export type ArticlePrevNext = {
-  prev: ArticleNeighbor | null
-  next: ArticleNeighbor | null
+export type ArticleNewerOlder = {
+  newer: ArticleNeighbor | null
+  older: ArticleNeighbor | null
 }
 
 export type CreateArticleInput = {

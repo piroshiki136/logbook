@@ -1,5 +1,11 @@
 import { render, screen } from "@testing-library/react"
+import { afterEach } from "vitest"
 import { ArticleCreatedNotice } from "./article-created-notice"
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+})
 
 describe("ArticleCreatedNotice", () => {
   it("created が false のときは表示しない", () => {

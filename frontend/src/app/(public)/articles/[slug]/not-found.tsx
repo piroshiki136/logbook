@@ -12,20 +12,12 @@ export default function NotFound() {
       <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
         URLが間違っているか、記事が削除または非公開になった可能性があります。
       </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/articles"
-          className="inline-flex items-center rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
-        >
-          記事一覧へ戻る
-        </Link>
-        <Link
-          href="/"
-          className="inline-flex items-center rounded-full border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-        >
-          トップへ戻る
-        </Link>
-      </div>
+      <Link
+        href="/"
+        className="inline-flex items-center rounded-full mt-8 px-5 py-2 text-sm font-medium bg-foreground text-background transition-opacity hover:opacity-90"
+      >
+        トップへ戻る
+      </Link>
     </section>
   )
 }

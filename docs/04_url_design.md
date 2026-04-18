@@ -29,9 +29,9 @@
 - Markdown をレンダリングして表示
 - タグ・カテゴリ表示あり（リンク付与）
 
-### 前後記事
-API: GET /api/articles/{id}/prev-next  
-フロントから記事詳細画面で利用し、前後記事リンクを表示する
+### 新旧記事
+API: GET /api/articles/{id}/newer-older  
+フロントから記事詳細画面で利用し、新しい記事 / 古い記事リンクを表示する
 
 ---
 
