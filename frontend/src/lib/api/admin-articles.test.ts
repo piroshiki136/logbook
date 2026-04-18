@@ -57,9 +57,12 @@ describe("admin-articles api client", () => {
 
     await getAdminArticleNewerOlder(42, "token")
 
-    expect(mocks.apiFetch).toHaveBeenCalledWith("/api/articles/42/newer-older", {
-      token: "token",
-    })
+    expect(mocks.apiFetch).toHaveBeenCalledWith(
+      "/api/articles/42/newer-older",
+      {
+        token: "token",
+      },
+    )
   })
 
   it("作成・更新・削除で認証必須ハンドラを呼び出す", async () => {
