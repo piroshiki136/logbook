@@ -49,8 +49,8 @@ describe("ArticlePrevNextNav", () => {
     render(<ArticlePrevNextNav prev={prev} next={null} />)
 
     expect(screen.getByRole("navigation", { name: "前後の記事" })).toBeVisible()
-    expect(screen.getByText("前の記事")).toBeInTheDocument()
-    expect(screen.queryByText("次の記事")).not.toBeInTheDocument()
+    expect(screen.getByText("次の記事")).toBeInTheDocument()
+    expect(screen.queryByText("前の記事")).not.toBeInTheDocument()
     expect(screen.getByRole("link", { name: /First Post/ })).toHaveAttribute(
       "href",
       "/articles/first-post",
@@ -60,8 +60,8 @@ describe("ArticlePrevNextNav", () => {
   it("前後記事が両方ある場合は両方表示する", () => {
     render(<ArticlePrevNextNav prev={prev} next={next} />)
 
-    expect(screen.getByText("前の記事")).toBeInTheDocument()
     expect(screen.getByText("次の記事")).toBeInTheDocument()
+    expect(screen.getByText("前の記事")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Third Post/ })).toHaveAttribute(
       "href",
       "/articles/third-post",

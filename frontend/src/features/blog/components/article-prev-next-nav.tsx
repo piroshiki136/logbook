@@ -18,7 +18,7 @@ export function ArticlePrevNextNav({ prev, next }: ArticlePrevNextNavProps) {
         <ArticlePrevNextCard
           id={prev.id}
           href={`/articles/${prev.slug}`}
-          label="前の記事"
+          label="次の記事"
           title={prev.title}
           dateValue={prev.publishedAt ?? prev.createdAt}
         />
@@ -28,7 +28,7 @@ export function ArticlePrevNextNav({ prev, next }: ArticlePrevNextNavProps) {
         <ArticlePrevNextCard
           id={next.id}
           href={`/articles/${next.slug}`}
-          label="次の記事"
+          label="前の記事"
           title={next.title}
           dateValue={next.publishedAt ?? next.createdAt}
         />

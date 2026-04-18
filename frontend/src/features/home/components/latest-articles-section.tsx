@@ -48,7 +48,7 @@ export async function LatestArticlesSection() {
             title={article.title}
             category={article.category}
             tags={article.tags}
-            publishedAt={article.publishedAt}
+            updatedAt={article.updatedAt}
           />
         ))}
       </div>

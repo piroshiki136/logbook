@@ -57,13 +57,6 @@ export default function Footer() {
           <p className="text-xs text-zinc-400">
             © {year} {siteTitle}.
           </p>
-          {/* 追加したいならここに追加 */}
-          <Link
-            href="/about"
-            className="text-xs text-zinc-400 hover:text-zinc-200"
-          >
-            About
-          </Link>
         </div>
       </div>
     </footer>

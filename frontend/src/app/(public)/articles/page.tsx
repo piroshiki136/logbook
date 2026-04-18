@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: PageProps) {
               title={article.title}
               category={article.category}
               tags={article.tags}
-              publishedAt={article.publishedAt}
+              updatedAt={article.updatedAt}
             />
           ))}
         </div>

@@ -28,16 +28,19 @@
 
 ## データベース
 - PostgreSQL 15（ローカルは Docker Compose で起動）
-- 本番はデプロイ先に合わせて PostgreSQL を利用（Railway、Render など）
+- 本番は Neon の PostgreSQL を利用する
 
 ## インフラ
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
 - フロントエンドデプロイ：Vercel
-- バックエンドデプロイ：Railway / Render / Fly.io
+- バックエンドデプロイ：Cloud Run
+- 本番 DB：Neon
+- 独自ドメイン：初期リリースでは未取得。`vercel.app` / `run.app` の標準ドメインを利用する
+- バックエンド代替候補：Render（Cloud Run の無料枠や費用対効果が見合わなくなった場合のみ検討。無料 Web Service は本番用途に使わない）
 - CDN/WAF/Rate Limit: Cloudflare（無料プラン）で WAF + IP ごとのレートリミットを有効化し、本番/ステージングでは FastAPI 側でも Redis + `fastapi-limiter` による 60 req/min（公開 API）・30 req/min（管理 API）の制限を二重に掛ける。ローカル開発の初期段階では `fastapi-limiter` は無効化し、将来的に Redis を起動した段階でトグルできるようにする。
 
 ### ストレージ / バックアップ方針
-- 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用。配信用カスタムドメイン（例: `https://assets.logbook.example`）を割り当て、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。
+- 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用し、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。配信 URL は初期段階では R2 標準の公開 URL も許容し、独自ドメインは将来導入候補とする。
 - 画像アップロード（開発）: FastAPI が `/uploads` を静的配信し、`backend/uploads` ディレクトリを Docker ボリュームで永続化する。
 - 認可/公開: バケットは public read。書き込みは管理API経由のみ許可し、NextAuth JWT を必須とする。
 - 環境変数例: `S3_ENDPOINT`（R2エンドポイント）, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`（画像用）, `ASSET_BASE_URL`（公開URLベース）, `UPLOAD_IMAGE_MAX_BYTES`（例: `5242880`）。
@@ -60,7 +63,7 @@
 - `AUTH_GITHUB_ID`
 - `AUTH_GITHUB_SECRET`
 - `NEXTAUTH_URL`（例: `http://localhost:3000`）
-- `BACKEND_API_BASE`（例: `http://localhost:8000`）
+- `BACKEND_API_BASE`（例: ローカル `http://localhost:8000` / 本番 `https://<cloud-run-service>.run.app`）
 - `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
 - `AUTH_SECRET`（Auth.js の署名用シークレット）
 - `AUTH_URL`（アプリの正しいURL。OAuthのコールバックURLやリダイレクト先生成に使用）
@@ -83,3 +86,4 @@
 ## メモ（段階的導入）
 - Redis はレートリミット用に利用するが、初期ローカル開発では `fastapi-limiter` を OFF にしても API が動くようにし、将来 Redis を導入するタイミングで `REDIS_URL` と「レートリミット有効化フラグ（例: `ENABLE_RATE_LIMITER`）」を設定して切り替える。
 - Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db/redis、ボリューム（DB/`backend/uploads`）、ポートを整理する。
+- 本番 URL は独自ドメイン未取得のため、`frontend=.vercel.app`、`backend=.run.app` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。

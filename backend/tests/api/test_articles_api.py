@@ -482,7 +482,7 @@ async def test_get_article_draft_visible_for_admin(client, db_session):
     assert payload["data"]["isDraft"] is True
 
 
-async def test_prev_next_orders_by_published_at(client, db_session):
+async def test_prev_next_orders_by_updated_at(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
 
@@ -491,24 +491,27 @@ async def test_prev_next_orders_by_published_at(client, db_session):
         category_id=category.id,
         slug="newest",
         title="Newest",
-        published_at=base_time + timedelta(minutes=2),
-        created_at=base_time + timedelta(minutes=2),
+        published_at=base_time,
+        created_at=base_time,
+        updated_at=base_time + timedelta(minutes=3),
     )
     middle = _create_article(
         db_session,
         category_id=category.id,
         slug="middle",
         title="Middle",
-        published_at=base_time + timedelta(minutes=1),
+        published_at=base_time + timedelta(minutes=2),
         created_at=base_time + timedelta(minutes=1),
+        updated_at=base_time + timedelta(minutes=2),
     )
     oldest = _create_article(
         db_session,
         category_id=category.id,
         slug="oldest",
         title="Oldest",
-        published_at=base_time,
-        created_at=base_time,
+        published_at=base_time + timedelta(minutes=4),
+        created_at=base_time + timedelta(minutes=2),
+        updated_at=base_time + timedelta(minutes=1),
     )
     _commit(db_session)
 

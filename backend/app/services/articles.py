@@ -250,7 +250,7 @@ def get_prev_next(
         )
 
     order_clause = (
-        Article.published_at.desc().nullslast(),
+        Article.updated_at.desc(),
         Article.created_at.desc(),
         Article.id.desc(),
     )
