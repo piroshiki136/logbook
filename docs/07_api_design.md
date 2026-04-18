@@ -64,6 +64,7 @@
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は、全記事が updatedAt の降順、公開記事が publishedAt の降順、draft=true が updatedAt の降順
 - draft を指定した場合は管理者認証が必要（未認証は 401）
+- tags / categories による公開記事フィルタは MVP では未提供とし、一覧 API は page / limit を基本とする
 
 ## MVP 完成後に追加するクエリ
 - tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
@@ -191,6 +192,10 @@
 ---
 
 # 6. タグ一覧 GET /api/tags
+## 位置づけ
+- MVP では公開画面から利用しない
+- 管理タグ機能や公開タグ一覧を実装する後続フェーズ向け API として扱う
+
 ## 補足
 - name の昇順で返す
 
@@ -232,6 +237,10 @@
 ---
 
 # 7. カテゴリ一覧 GET /api/categories
+## 位置づけ
+- MVP では公開画面から利用しない
+- 管理カテゴリ機能や公開カテゴリ一覧を実装する後続フェーズ向け API として扱う
+
 ## 補足
 - name の昇順で返す
 

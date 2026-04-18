@@ -48,7 +48,7 @@ describe("createArticleAction", () => {
 
     await expect(
       createArticleAction({ ok: false, message: "" }, formData),
-    ).rejects.toThrow("NEXT_REDIRECT:/admin/articles/42/edit")
+    ).rejects.toThrow("NEXT_REDIRECT:/admin/articles/42/edit?created=1")
 
     expect(mocks.getAdminToken).toHaveBeenCalled()
     expect(mocks.createAdminArticle).toHaveBeenCalledWith(
@@ -63,7 +63,9 @@ describe("createArticleAction", () => {
       "token",
     )
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/articles")
-    expect(mocks.redirect).toHaveBeenCalledWith("/admin/articles/42/edit")
+    expect(mocks.redirect).toHaveBeenCalledWith(
+      "/admin/articles/42/edit?created=1",
+    )
   })
 
   it("API エラー時はメッセージを返す", async () => {
