@@ -32,12 +32,12 @@
 
 ## インフラ
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
-- フロントエンドデプロイ：Vercel
-- バックエンドデプロイ：Cloud Run
-- 本番 DB：Neon
+- フロントエンドデプロイ：Vercel に統一する
+- バックエンドデプロイ：Cloud Run に統一する
+- 本番 DB：Neon に統一する
 - 独自ドメイン：初期リリースでは未取得。`vercel.app` / `run.app` の標準ドメインを利用する
-- バックエンド代替候補：Render（Cloud Run の無料枠や費用対効果が見合わなくなった場合のみ検討。無料 Web Service は本番用途に使わない）
-- CDN/WAF/Rate Limit: Cloudflare（無料プラン）で WAF + IP ごとのレートリミットを有効化し、本番/ステージングでは FastAPI 側でも Redis + `fastapi-limiter` による 60 req/min（公開 API）・30 req/min（管理 API）の制限を二重に掛ける。ローカル開発の初期段階では `fastapi-limiter` は無効化し、将来的に Redis を起動した段階でトグルできるようにする。
+- 本番の公開構成は Vercel / Cloud Run / Neon を前提とし、他のホスティング先はこの docs のスコープ外とする
+- CDN/WAF/Rate Limit: MVP では Cloudflare（無料プラン）の WAF + IP ごとのレートリミットを優先し、アプリ内の Redis / `fastapi-limiter` は導入しない。将来、運用上の必要性が明確になった場合のみ後続対応として検討する。
 
 ### ストレージ / バックアップ方針
 - 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用し、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。配信 URL は初期段階では R2 標準の公開 URL も許容し、独自ドメインは将来導入候補とする。
@@ -72,7 +72,7 @@
 - `FRONTEND_ASSERTION_KID`
 
 ### バックエンド（backend/.env）
-- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`REDIS_URL`（例: `redis://localhost:6379/0`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
+- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
 - 認証連携: `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`、`FRONTEND_ASSERTION_ISSUER`
 - 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`, `UPLOAD_IMAGE_MAX_BYTES`
 - バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
@@ -81,9 +81,8 @@
 - Next.js (frontend): 3000
 - FastAPI (backend): 8000
 - PostgreSQL: 5432
-- Redis: 6379
 
 ## メモ（段階的導入）
-- Redis はレートリミット用に利用するが、初期ローカル開発では `fastapi-limiter` を OFF にしても API が動くようにし、将来 Redis を導入するタイミングで `REDIS_URL` と「レートリミット有効化フラグ（例: `ENABLE_RATE_LIMITER`）」を設定して切り替える。
-- Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db/redis、ボリューム（DB/`backend/uploads`）、ポートを整理する。
-- 本番 URL は独自ドメイン未取得のため、`frontend=.vercel.app`、`backend=.run.app` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。
+- Redis は MVP では導入しない。複数インスタンスでの共有レートリミットや永続ストアが本当に必要になった場合のみ採用を再検討する。
+- Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db、必要に応じて追加サービス、ボリューム（DB/`backend/uploads`）、ポートを整理する。
+- 本番 URL は独自ドメイン未取得のため、`frontend=.vercel.app`、`backend=.run.app`、`db=Neon` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。

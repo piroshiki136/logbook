@@ -137,7 +137,8 @@
 - [x] DB は Neon を利用し、Cloud Run 上に PostgreSQL を自前構築しない
 - [x] 独自ドメインは PR8 のスコープ外とし、OAuth / CORS / API 連携は `vercel.app` / `run.app` 前提で確定する
 - [x] 画像保存は Cloud Run ローカル保存を本番利用せず、Cloudflare R2 を前提にする
-- [ ] バックエンドは Cloud Run へ安定して載せられるよう、`backend` に本番用 `Dockerfile` を追加する
+- [x] 本番の配備先は Vercel / Cloud Run / Neon に統一し、他のホスティング案は PR8 のスコープ外とする
+- [x] バックエンドは Cloud Run へ安定して載せられるよう、`backend` に本番用 `Dockerfile` を追加する
 
 ### 1. MVP スコープの確定
 - [x] `docs/02`, `docs/06`, `docs/07`, `docs/todo` の MVP / MVP後対応の記述を一致させる
@@ -198,13 +199,18 @@
 - [x] JWT エラー詳細を本番で返さない前提として `debug=false` の設定確認を別途行う
 
 ### 3. 本番設定の確定
-- [ ] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
+- [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
   - `uvicorn` の起動コマンドを固定する
   - Cloud Run の `PORT` 環境変数で待ち受ける
-- [ ] Dockerfile を前提に、Cloud Run のデプロイ手順を README / docs に残す
-- [ ] 本番用の `CORS_ALLOW_ORIGINS` を必須設定にし、少なくとも `https://<project>.vercel.app` を含める。開発用の `http://localhost:3000` をどう扱うかも README / docs に明記する
+- [x] Dockerfile を前提に、Cloud Run のデプロイ手順を README / docs に残す
+- [ ] 本番用の `CORS_ALLOW_ORIGINS` は必須設定にする方針で実装を修正する
+  - 現状の `backend/app/core/settings.py` は `http://localhost:3000` をデフォルト値にしているため、本番向けには未確定
+  - ローカル開発では `http://localhost:3000` を使い、本番では明示的な環境変数設定を必須にする
+  - Vercel の実 URL が未確定でも、この方針までは先に実装・文書化できる
+- [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
+  - この項目は frontend の Vercel URL 確定後でないと完了できない
 - [ ] Vercel に設定する必須環境変数を棚卸しする
   - `NEXTAUTH_SECRET`
   - `AUTH_GITHUB_ID`
@@ -232,11 +238,11 @@
 - [ ] FastAPI の `debug=false` を本番で強制し、エラー応答で DB エラー詳細や内部情報を出さないことを確認する
 - [ ] `ADMIN_ALLOWED_EMAILS` の運用方法を決め、大小文字差異を吸収する前提を docs に反映する
 - [ ] レートリミット未実装 / 暫定対応の扱いを明記する
-  - 初期リリースでは Cloudflare 側の制御を優先し、アプリ内 Redis レートリミットは後続対応とするかを決める
+  - 初期リリースでは Cloudflare 側の制御を優先し、アプリ内 Redis レートリミットは導入しない
 - [ ] 画像保存先は本番で Cloudflare R2 を必須とし、Cloud Run ローカル保存は不可と明記する
 - [ ] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
 - [ ] Cloud Run と Neon のリージョンを近接させる方針を docs に残す
-- [ ] Vercel Hobby を使う場合の利用条件を確認し、商用/継続公開なら Pro 移行判断をメモする
+- [ ] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
 
 ### 5. テスト・検証
 - [x] `cd frontend && pnpm lint`
@@ -245,6 +251,7 @@
 - [x] `cd frontend && pnpm e2e`
 - [x] `cd backend && uv run pytest`
 - [ ] `backend/Dockerfile` でローカル build が通ることを確認する
+  - `docker` コマンドがこの作業環境に無いため、実ビルド確認は未実施
 - [ ] `backend/Dockerfile` ベースで Cloud Run 相当の起動確認を行う
   - `0.0.0.0` で待ち受ける
   - `PORT` 指定で起動できる
@@ -267,7 +274,7 @@
 ## 未決事項（着手前に確定する）
 - NextAuth の callback URL / セッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法
 - NextAuth v5（beta）を MVP 後に v4 もしくは Better Auth へ移行する判断基準とタイミング
-- レートリミット: Redis を使うか、一時的に無効化するか
+- レートリミット: MVP は Cloudflare 側で扱い、Redis 導入は必要性が出た場合のみ再検討する
 - Docker Compose: サービス構成/ポート/環境変数のデフォルト値
 
 ## MVP 完成後に進める候補
