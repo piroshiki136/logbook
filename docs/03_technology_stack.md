@@ -37,7 +37,7 @@
 - 本番 DB：Neon に統一する
 - 独自ドメイン：初期リリースでは未取得。`vercel.app` / `run.app` の標準ドメインを利用する
 - 本番の公開構成は Vercel / Cloud Run / Neon を前提とし、他のホスティング先はこの docs のスコープ外とする
-- CDN/WAF/Rate Limit: MVP では Cloudflare（無料プラン）の WAF + IP ごとのレートリミットを優先し、アプリ内の Redis / `fastapi-limiter` は導入しない。将来、運用上の必要性が明確になった場合のみ後続対応として検討する。
+- CDN/WAF/Rate Limit: 本番の配信経路は Vercel / Cloud Run の標準構成を前提とし、Cloudflare など特定ベンダーの WAF/レートリミットには依存しない。MVP では Redis / `fastapi-limiter` による共有レートリミットは導入せず、公開 API の露出を最小化しつつ、必要になった時点で配信基盤の標準機能または Redis 等の共有ストアを使うアプリ内制御を追加する。
 
 ### ストレージ / バックアップ方針
 - 画像アップロード（本番）: Cloudflare R2（S3互換、無料枠あり）を使用し、オブジェクトキーは `articles/{yyyy}/{mm}/{uuidv4}.{ext}` に統一する。配信 URL は初期段階では R2 標準の公開 URL も許容し、独自ドメインは将来導入候補とする。

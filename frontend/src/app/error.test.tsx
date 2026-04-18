@@ -16,7 +16,7 @@ vi.mock("next/link", () => ({
   ),
 }))
 
-describe("(public) error page", () => {
+describe("app error page", () => {
   it("利用者向けのエラー文言と導線を表示する", () => {
     render(<Page error={new Error("boom")} reset={vi.fn()} />)
 

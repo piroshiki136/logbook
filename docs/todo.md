@@ -17,7 +17,7 @@ todo
 - CORS のデフォルト許可設定
   1. 現状は `["http://localhost:3000"]` をデフォルトにしているが、本番運用前に必須項目へ変更する（Field(... )化）。
   2. 必須化したら README/docs に環境変数設定を追記し、テンプレ `.env` にサンプル値を入れておく。
-- Cloudflare WAF/レートリミットの具体値と運用手順を docs に追記する。
+- 採用する配信基盤に合わせたレートリミット方針の具体値と運用手順を docs に追記する。
 - R2 バケット名・リージョンなど固定値と、バックアップ用ジョブの実行環境（例: GitHub Actions）の鍵管理手順を `infra/backup.md` にまとめる。
 - allow_methods, allow_headersを絞る
 例:
