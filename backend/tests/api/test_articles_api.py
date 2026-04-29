@@ -520,11 +520,11 @@ async def test_newer_older_orders_by_published_at(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
 
-    newest = _create_article(
+    earliest_published = _create_article(
         db_session,
         category_id=category.id,
-        slug="newest",
-        title="Newest",
+        slug="earliest-published",
+        title="Earliest Published",
         published_at=base_time,
         created_at=base_time,
         updated_at=base_time + timedelta(minutes=1),
@@ -538,11 +538,11 @@ async def test_newer_older_orders_by_published_at(client, db_session):
         created_at=base_time + timedelta(minutes=1),
         updated_at=base_time + timedelta(minutes=3),
     )
-    oldest = _create_article(
+    latest_published = _create_article(
         db_session,
         category_id=category.id,
-        slug="oldest",
-        title="Oldest",
+        slug="latest-published",
+        title="Latest Published",
         published_at=base_time + timedelta(minutes=4),
         created_at=base_time + timedelta(minutes=2),
         updated_at=base_time + timedelta(minutes=2),
@@ -553,8 +553,8 @@ async def test_newer_older_orders_by_published_at(client, db_session):
     payload = res.json()
 
     assert res.status_code == status.HTTP_200_OK
-    assert payload["data"]["newer"]["id"] == newest.id
-    assert payload["data"]["older"]["id"] == oldest.id
+    assert payload["data"]["newer"]["id"] == latest_published.id
+    assert payload["data"]["older"]["id"] == earliest_published.id
 
 
 async def test_newer_older_hides_draft_from_public(client, db_session):
