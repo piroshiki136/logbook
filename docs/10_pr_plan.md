@@ -21,7 +21,7 @@
 
 ## PR4: 記事系 API 完成
 - [x] JWT 検証ミドルウェア、slug 生成/重複チェック、下書き扱い、エラーフォーマット
-- [x] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、prev/next、画像アップロード（ローカル保存）を実装
+- [x] 記事 CRUD、タグ/カテゴリフィルタ、ページネーション、新旧記事、画像アップロード（ローカル保存）を実装
 - [x] タグ入力の正規化（表記ゆれ防止のため slug を正規化キーとして統一）
 - [x] TestClient で `get_db` を dependency_overrides し、テスト用 DB セッションを使う
 - [x] httpx + DB を用いた Pytest で 80% 目標カバー、必要に応じて docs/07 を更新
@@ -48,13 +48,13 @@
 - [x] データ取得: 詳細取得
 - [x] 記事詳細: Markdown 表示
 - [x] 記事詳細: タグ/カテゴリ表示（MVP: 遷移なし）
-- [x] データ取得: 前後記事取得（API クライアント関数は実装済み）
-- [x] 記事詳細: 前後記事ナビ
+- [x] データ取得: 新旧記事取得（API クライアント関数は実装済み）
+- [x] 記事詳細: 新旧記事ナビ
 - [x] テスト: ページネーションのユースケース
 
 ### PR6 補足（MVP スコープ調整）
 - フィルタバー（タグ/カテゴリ）は MVP から除外し、MVP 完成後に再導入する。
-- 理由: MVP では記事閲覧の主要導線（一覧・詳細・前後記事ナビ）を優先し、UI 複雑性とテスト範囲を抑える。
+- 理由: MVP では記事閲覧の主要導線（一覧・詳細・新旧記事ナビ）を優先し、UI 複雑性とテスト範囲を抑える。
 
 ### PR6 テスト実装方針（2026-03-06）
 - 単体テスト（Vitest）
@@ -62,10 +62,10 @@
   - `createPageHrefBuilder` のクエリ維持（`tags` / `categories` を保持した `page` 更新）
 - 結合テスト（Vitest + Testing Library）
   - `ArticlesPagination` の表示分岐（1ページ時非表示、先頭/末尾での無効化、リンク生成）
-  - `ArticlePrevNextNav` の表示分岐（前後なし/片側のみ/両側）
+  - `ArticleNewerOlderNav` の表示分岐（新旧なし/片側のみ/両側）
 - E2E（Playwright）
   - `/articles` のページ遷移（クエリ `?page=` と表示の一致）
-  - `/articles/[slug]` の前後記事ナビ遷移
+  - `/articles/[slug]` の新旧記事ナビ遷移
 - 完了条件
   - `cd frontend && pnpm lint`
   - `cd frontend && pnpm test`
@@ -122,11 +122,160 @@
   - `cd frontend && pnpm test`
   - `cd backend && uv run pytest`
 
+
+
+## PR8: MVP リリース準備
+ブランチ名: `feature/mvp-release-readiness`
+
+### 目的
+- [ ] MVP として外部公開できる状態かを、仕様・実装・運用の3観点で確認する
+- [ ] docs 間の MVP 定義のズレをなくし、「何ができればリリース可か」を明文化する
+
+### 本番前提のデプロイ構成
+- [x] フロントエンドは Vercel にデプロイし、初期リリースでは `https://<project>.vercel.app` を公開 URL とする
+- [x] バックエンドは Cloud Run にデプロイし、初期リリースでは `https://<service>-<hash>-<region>.run.app` を API ベース URL とする
+- [x] DB は Neon を利用し、Cloud Run 上に PostgreSQL を自前構築しない
+- [x] 独自ドメインは PR8 のスコープ外とし、OAuth / CORS / API 連携は `vercel.app` / `run.app` 前提で確定する
+- [x] 画像保存は Cloud Run ローカル保存を本番利用せず、Cloudflare R2 を前提にする
+- [x] 本番の配備先は Vercel / Cloud Run / Neon に統一し、他のホスティング案は PR8 のスコープ外とする
+- [x] バックエンドは Cloud Run へ安定して載せられるよう、`backend` に本番用 `Dockerfile` を追加する
+
+### 1. MVP スコープの確定
+- [x] `docs/02`, `docs/06`, `docs/07`, `docs/todo` の MVP / MVP後対応の記述を一致させる
+- [x] `/tags`, `/categories` の扱いを確定する
+- [x] タグ/カテゴリ一覧・フィルタを MVP 対象外にする場合は、公開しない / プレースホルダ文言を出す / 仕様から外す、のいずれかに統一する
+- [x] 管理画面の「記事作成・編集・公開/下書き切り替え」までを MVP 完了条件として明文化する
+
+### 2. リリース判定チェックリスト
+#### 2-1. 自動確認で担保する項目
+- [x] 公開側の記事一覧ページネーションが E2E で動作する
+- [x] 公開側の記事詳細と新旧記事ナビ遷移が E2E で動作する
+- [x] 公開側で下書き記事が一覧 API に含まれない
+- [x] 公開側で `publishedAt=null` の記事が一覧 API に含まれない
+- [x] `draft=true` を使う記事一覧 API が未認証で 401 を返す
+- [x] 認証必須の作成 / 更新 / 削除 API が未認証で 401、非管理者で 403 を返す
+- [x] 管理記事一覧のタブ切り替えとクエリ連動がフロントテストで担保される
+- [x] 管理記事の新規作成 / 編集フォームのバリデーションと `isDraft` 切り替えがフロントテストで担保される
+- [x] 管理用 Server Actions / API クライアントの認証エラー処理がテストで担保される
+- [x] `callbackUrl` 正規化と `ADMIN_ALLOWED_EMAILS` 判定がテストで担保される
+
+#### 2-1 現在の自動確認の到達点
+- [x] 公開側の記事一覧ページネーションが E2E で動作する
+- [x] 公開側の記事詳細と新旧記事ナビ遷移が E2E で動作する
+- [x] 公開側で下書き記事が一覧 API に含まれない
+- [x] 公開側で `publishedAt=null` の記事が一覧 API に含まれない
+- [x] `draft=true` を使う記事一覧 API が未認証で 401 を返す
+- [x] 認証必須の作成 / 更新 / 削除 API が未認証で 401、非管理者で 403 を返す
+- [x] 管理記事一覧のタブ切り替えとクエリ連動がフロントテストで担保される
+- [x] 管理記事の新規作成 / 編集フォームのバリデーションと `isDraft` 切り替えがフロントテストで担保される
+- [x] 管理用 Server Actions / API クライアントの認証エラー処理がテストで担保される
+- [x] `callbackUrl` 正規化と `ADMIN_ALLOWED_EMAILS` 判定がテストで担保される
+
+#### 2-2. 手動確認が必要な項目
+- [x] 公開側トップページ `/` の見え方と主要導線を確認する
+- [x] 公開側で存在しない slug や想定外エラー時の画面表示を確認する
+- [x] `/admin/login` から GitHub OAuth ログインできることを確認する
+- [x] 未ログイン時に `/admin` 配下で `/admin/login` へリダイレクトされることを確認する
+- [x] 非許可メール時に `/admin/forbidden` へ遷移することを確認する
+- [x] `/admin` から `/admin/articles`, `/admin/articles/new` へ遷移できることを確認する
+- [x] 新規作成後に編集画面へ遷移することを確認する
+- [x] 編集保存後に一覧 / 編集画面の内容が更新されることを確認する
+- [x] 下書き記事が公開画面の詳細 URL からも見えないことを確認する
+- [x] フロント・バックエンドのエラー表示が利用者向けに過不足ない文言で、内部情報を露出しないことを確認する
+
+#### 2-2 手動確認メモ
+- [x] `/` の見え方と主要導線は確認済み
+- [x] `/admin/login` の GitHub OAuth ログインは確認済み
+- [x] 未ログイン時の `/admin` 配下リダイレクトは確認済み
+- [x] 非許可メール時の `/admin/forbidden` 遷移は確認済み
+- [x] `/admin` から `/admin/articles`, `/admin/articles/new` への遷移は確認済み
+- [x] 新規作成後に `/admin/articles/[id]/edit` へ遷移することを確認済み
+- [x] 新規作成後は `edit?created=1` で通知表示され、先頭へスクロールすることを確認済み
+- [x] 編集保存後に内容更新が確認できることを確認済み
+- [x] 存在しない `slug` で `notFound()` を使い、記事詳細専用の 404 UI を表示する実装を追加した
+- [x] 公開側の `error.tsx` を利用者向け文言に差し替え、backend の 500 応答も汎用メッセージ化した
+- [x] 存在しない slug 時の表示は実装済み。実機で文言と導線を確認した
+- [x] エラー表示の妥当性確認は、実装ベースでは完了
+- [x] JWT エラー詳細を本番で返さない前提として `debug=false` の設定確認を別途行う
+
+### 3. 本番設定の確定
+- [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
+  - Python バージョンを固定する
+  - 依存関係のインストール手順を固定する
+  - `uvicorn` の起動コマンドを固定する
+  - Cloud Run の `PORT` 環境変数で待ち受ける
+- [x] Dockerfile を前提に、Cloud Run のデプロイ手順を README / docs に残す
+- [ ] 本番用の `CORS_ALLOW_ORIGINS` は必須設定にする方針で実装を修正する
+  - 現状の `backend/app/core/settings.py` は `http://localhost:3000` をデフォルト値にしているため、本番向けには未確定
+  - ローカル開発では `http://localhost:3000` を使い、本番では明示的な環境変数設定を必須にする
+  - Vercel の実 URL が未確定でも、この方針までは先に実装・文書化できる
+- [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
+  - この項目は frontend の Vercel URL 確定後でないと完了できない
+- [ ] Vercel に設定する必須環境変数を棚卸しする
+  - `NEXTAUTH_SECRET`
+  - `AUTH_GITHUB_ID`
+  - `AUTH_GITHUB_SECRET`
+  - `AUTH_URL` / `NEXTAUTH_URL`（`https://<project>.vercel.app`）
+  - `BACKEND_API_BASE`（`https://<cloud-run-service>.run.app`）
+  - `ASSET_BASE_URL`
+  - `ADMIN_ALLOWED_EMAILS`
+- [ ] Cloud Run に設定する必須環境変数を棚卸しする
+  - `DATABASE_URL`（Neon 接続文字列）
+  - `CORS_ALLOW_ORIGINS`
+  - `JWT_PUBLIC_KEY`
+  - `JWT_PRIVATE_KEY`
+  - `JWT_ISSUER`
+  - `JWT_AUDIENCE`
+  - `ADMIN_ALLOWED_EMAILS`
+  - `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`
+  - `FRONTEND_ASSERTION_ISSUER`
+  - `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
+- [ ] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
+- [ ] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
+- [ ] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
+
+### 4. セキュリティ・運用上の最低条件
+- [ ] FastAPI の `debug=false` を本番で強制し、エラー応答で DB エラー詳細や内部情報を出さないことを確認する
+- [ ] `ADMIN_ALLOWED_EMAILS` の運用方法を決め、大小文字差異を吸収する前提を docs に反映する
+- [ ] レートリミット未実装 / 暫定対応の扱いを明記する
+  - 初期リリースでは特定ベンダーの WAF/レートリミットに依存しない
+  - 実装しない場合は既知の制約として docs に明記し、必要時のみ配信基盤の標準機能または Redis ベースの共有レートリミットを導入する
+- [ ] 画像保存先は本番で Cloudflare R2 を必須とし、Cloud Run ローカル保存は不可と明記する
+- [ ] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
+- [ ] Cloud Run と Neon のリージョンを近接させる方針を docs に残す
+- [ ] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
+
+### 5. テスト・検証
+- [x] `cd frontend && pnpm lint`
+- [x] `cd frontend && pnpm format`
+- [x] `cd frontend && pnpm test`
+- [x] `cd frontend && pnpm e2e`
+- [x] `cd backend && uv run pytest`
+- [ ] `backend/Dockerfile` でローカル build が通ることを確認する
+  - `docker` コマンドがこの作業環境に無いため、実ビルド確認は未実施
+- [ ] `backend/Dockerfile` ベースで Cloud Run 相当の起動確認を行う
+  - `0.0.0.0` で待ち受ける
+  - `PORT` 指定で起動できる
+- [ ] 本番相当の env で最低限の手動確認項目を作成する
+  - `https://<project>.vercel.app` から `https://<cloud-run-service>.run.app` へ公開 API が疎通する
+  - `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
+  - 記事作成 / 編集 / 下書き切り替えが Cloud Run + Neon で成立する
+  - R2 にアップロードした画像 URL が公開画面から参照できる
+  - CORS エラーが発生しない
+  - `run.app` / `vercel.app` の URL が UI 文言やOG設定に漏れて困らないか確認する
+- [ ] 手動確認結果を PR に記録する
+
+### 6. リリース可否の最終判断
+- [ ] 「MVP として公開可能」の条件を docs に文章で残す
+  - 独自ドメインなしでも、`vercel.app` / `run.app` / Neon / R2 の構成で記事閲覧と管理画面運用が成立すること
+- [ ] 見送る項目がある場合は、Known Issues / MVP後対応として明記する
+- [ ] `dev` → `main` へ上げる前提条件を確認する
+
+
 ## 未決事項（着手前に確定する）
 - NextAuth の callback URL / セッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法
 - NextAuth v5（beta）を MVP 後に v4 もしくは Better Auth へ移行する判断基準とタイミング
-- 画像保存先: 開発は FastAPI ローカル、本番は R2 バケットの固定値（バケット名/リージョンなど）
-- レートリミット: Redis を使うか、一時的に無効化するか
+- レートリミット: MVP は特定ベンダー依存を避け、必要性が出た場合のみ配信基盤の標準機能または Redis ベースの共有制御を導入する
 - Docker Compose: サービス構成/ポート/環境変数のデフォルト値
 
 ## MVP 完成後に進める候補

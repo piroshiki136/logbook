@@ -7,7 +7,7 @@ type ArticleDetailDateTimeProps = {
 
 export function ArticleDetailDateTime(props: ArticleDetailDateTimeProps) {
   const { value, className } = props
-  const label = formatArticleDateTime(value)
+  const label = `${formatArticleDateTime(value)} 更新`
 
   return (
     <time className={className} dateTime={new Date(value).toISOString()}>

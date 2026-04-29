@@ -1,6 +1,6 @@
 import {
   getArticle,
-  getArticlePrevNext,
+  getArticleNewerOlder,
   getPublicArticles,
 } from "@/lib/api/articles"
 import { getHealth } from "@/lib/api/health"
@@ -12,8 +12,8 @@ export default async function Page() {
   const articleDetail = firstArticle
     ? await getArticle(firstArticle.slug)
     : null
-  const prevNext = firstArticle
-    ? await getArticlePrevNext(firstArticle.id)
+  const newerOlder = firstArticle
+    ? await getArticleNewerOlder(firstArticle.id)
     : null
 
   return (
@@ -36,8 +36,8 @@ export default async function Page() {
       </section>
 
       <section className="mt-6">
-        <h2 className="text-xl font-semibold">Article Prev/Next API</h2>
-        <pre className="mt-3">{JSON.stringify(prevNext, null, 2)}</pre>
+        <h2 className="text-xl font-semibold">Article Newer/Older API</h2>
+        <pre className="mt-3">{JSON.stringify(newerOlder, null, 2)}</pre>
       </section>
     </div>
   )

@@ -293,7 +293,7 @@ def test_get_article_draft_visible_for_admin(client, db_session):
     assert payload["data"]["isDraft"] is True
 
 
-def test_prev_next_orders_by_published_at(client, db_session):
+def test_newer_older_orders_by_published_at(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
 
@@ -323,15 +323,15 @@ def test_prev_next_orders_by_published_at(client, db_session):
     )
     _commit(db_session)
 
-    res = client.get(f"/api/articles/{middle.id}/prev-next")
+    res = client.get(f"/api/articles/{middle.id}/newer-older")
     payload = res.json()
 
     assert res.status_code == status.HTTP_200_OK
-    assert payload["data"]["prev"]["id"] == newest.id
-    assert payload["data"]["next"]["id"] == oldest.id
+    assert payload["data"]["newer"]["id"] == newest.id
+    assert payload["data"]["older"]["id"] == oldest.id
 
 
-def test_prev_next_hides_draft_from_public(client, db_session):
+def test_newer_older_hides_draft_from_public(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
 
@@ -346,5 +346,5 @@ def test_prev_next_hides_draft_from_public(client, db_session):
     )
     _commit(db_session)
 
-    res = client.get(f"/api/articles/{draft.id}/prev-next")
+    res = client.get(f"/api/articles/{draft.id}/newer-older")
     assert res.status_code == status.HTTP_404_NOT_FOUND

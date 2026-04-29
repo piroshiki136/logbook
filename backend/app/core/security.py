@@ -9,7 +9,6 @@ from jwt import PyJWTError
 
 from app.core.settings import get_settings
 
-settings = get_settings()
 logger = logging.getLogger(__name__)
 
 # Authorization: Bearer <token> を読むための仕組み
@@ -20,6 +19,7 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
     """
     JWT を検証して payload を返す
     """
+    settings = get_settings()
     try:
         payload = jwt.decode(
             token,
@@ -55,6 +55,7 @@ def verify_jwt_token(token: str) -> dict[str, Any]:
 
 
 def create_access_token(payload: dict[str, Any]) -> str:
+    settings = get_settings()
     if not settings.jwt_private_key:
         raise RuntimeError("JWT_PRIVATE_KEY is required for token issuance")
 
@@ -114,8 +115,9 @@ def get_optional_user(
 
 
 def is_admin_user(user: dict[str, Any]) -> bool:
+    settings = get_settings()
     email = user.get("email")
-    return email is not None and email in settings.admin_allowed_emails
+    return isinstance(email, str) and email.lower() in settings.admin_allowed_emails
 
 
 def require_admin(

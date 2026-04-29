@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import type { AnchorHTMLAttributes, ReactNode } from "react"
 import { vi } from "vitest"
-import { ArticlePrevNextCard } from "./article-prev-next-card"
+import { ArticleNewerOlderCard } from "./article-newer-older-card"
 
 vi.mock("next/link", () => ({
   default: ({
@@ -20,13 +20,13 @@ vi.mock("next/link", () => ({
   },
 }))
 
-describe("ArticlePrevNextCard", () => {
+describe("ArticleNewerOlderCard", () => {
   it("dateValue がない場合は日付を表示しない", () => {
     render(
-      <ArticlePrevNextCard
+      <ArticleNewerOlderCard
         id={10}
         href="/articles/no-date"
-        label="次の記事"
+        label="新しい記事"
         title="No Date Post"
       />,
     )

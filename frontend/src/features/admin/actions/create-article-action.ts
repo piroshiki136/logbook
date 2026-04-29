@@ -52,5 +52,5 @@ export const createArticleAction = async (
   }
 
   revalidatePath("/admin/articles")
-  redirect(`/admin/articles/${articleId}/edit`)
+  redirect(`/admin/articles/${articleId}/edit?created=1`)
 }

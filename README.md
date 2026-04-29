@@ -81,6 +81,20 @@ uv run python -m scripts.seed
 - Format: `cd backend && uv run ruff format .`
 - Format check: `cd backend && uv run ruff format --check .`
 
+### backend を Docker で起動する
+本番は `backend/Dockerfile` を使って Cloud Run へデプロイする前提。
+
+```bash
+docker build -t logbook-backend ./backend
+docker run --rm -p 8000:8000 --env-file ./backend/.env \
+  -e PORT=8000 \
+  logbook-backend
+```
+
+- コンテナは `uvicorn app.main:app --host 0.0.0.0 --port ${PORT}` で起動する
+- Cloud Run では `PORT` はプラットフォーム側から自動で渡される
+- 本番では `APP_MODE=prod` と `CORS_ALLOW_ORIGINS` を明示的に設定する
+
 ### テスト用環境変数（backend）
 pytest 実行時は自動で `SETTINGS_ENV=test` を設定し、`backend/.env.test` を参照する。最低限以下を用意する。
 ```

@@ -72,37 +72,37 @@ const server = createServer((req, res) => {
     return
   }
 
-  const prevNextMatch = pathname.match(/^\/api\/articles\/(\d+)\/prev-next$/)
-  if (req.method === "GET" && prevNextMatch) {
-    const id = Number(prevNextMatch[1])
+  const newerOlderMatch = pathname.match(/^\/api\/articles\/(\d+)\/newer-older$/)
+  if (req.method === "GET" && newerOlderMatch) {
+    const id = Number(newerOlderMatch[1])
     const currentIndex = articles.findIndex((article) => article.id === id)
     if (currentIndex === -1) {
       notFound(res, "Article not found")
       return
     }
 
-    const prev = currentIndex > 0 ? articles[currentIndex - 1] : null
-    const next = currentIndex < articles.length - 1 ? articles[currentIndex + 1] : null
+    const newer = currentIndex > 0 ? articles[currentIndex - 1] : null
+    const older = currentIndex < articles.length - 1 ? articles[currentIndex + 1] : null
 
     ok(res, {
-      prev: prev
+      newer: newer
         ? {
-            id: prev.id,
-            slug: prev.slug,
-            title: prev.title,
-            createdAt: prev.createdAt,
-            publishedAt: prev.publishedAt,
-            isDraft: prev.isDraft,
+            id: newer.id,
+            slug: newer.slug,
+            title: newer.title,
+            createdAt: newer.createdAt,
+            publishedAt: newer.publishedAt,
+            isDraft: newer.isDraft,
           }
         : null,
-      next: next
+      older: older
         ? {
-            id: next.id,
-            slug: next.slug,
-            title: next.title,
-            createdAt: next.createdAt,
-            publishedAt: next.publishedAt,
-            isDraft: next.isDraft,
+            id: older.id,
+            slug: older.slug,
+            title: older.title,
+            createdAt: older.createdAt,
+            publishedAt: older.publishedAt,
+            isDraft: older.isDraft,
           }
         : null,
     })

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { AdminArticleCard, ArticlesPagination } from "@/features/blog"
@@ -6,6 +7,7 @@ import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-buil
 import { parsePage } from "@/features/blog/lib/parse-page"
 import { getAdminArticles } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
+import { ApiError } from "@/lib/api/client"
 
 const formatError = () => "記事一覧の取得に失敗しました"
 
@@ -151,6 +153,15 @@ export default async function Page({ searchParams }: PageProps) {
       </main>
     )
   } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 401) {
+        redirect("/admin/login")
+      }
+      if (error.status === 403) {
+        redirect("/admin/forbidden")
+      }
+    }
+
     console.error(error)
 
     return (

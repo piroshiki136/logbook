@@ -4,8 +4,8 @@
 todo
 
 ## Docker 化直前
-- `docker-compose.yml` に frontend/backend/db/redis を定義し、ポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
-- `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` / `REDIS_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
+- `docker-compose.yml` に frontend/backend/db を定義し、必要なら追加サービスも含めてポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
+- `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
 - テスト/開発用の `/api/health` エンドポイントを本番で残すか削除するかを決める（残す場合は公開範囲と認証要否を明記する）。
 
 
@@ -17,7 +17,7 @@ todo
 - CORS のデフォルト許可設定
   1. 現状は `["http://localhost:3000"]` をデフォルトにしているが、本番運用前に必須項目へ変更する（Field(... )化）。
   2. 必須化したら README/docs に環境変数設定を追記し、テンプレ `.env` にサンプル値を入れておく。
-- Cloudflare WAF/レートリミットの具体値を FastAPI 側と同期させる運用手順を docs に追記する。
+- 採用する配信基盤に合わせたレートリミット方針の具体値と運用手順を docs に追記する。
 - R2 バケット名・リージョンなど固定値と、バックアップ用ジョブの実行環境（例: GitHub Actions）の鍵管理手順を `infra/backup.md` にまとめる。
 - allow_methods, allow_headersを絞る
 例:
@@ -36,23 +36,21 @@ app.add_middleware(
 ```
 - Renovateの導入
 ## MVP 完成後
+- 公開タグ一覧・カテゴリ一覧・フィルタを実装する
+  - 対象画面: `/tags`, `/categories`, `/articles`
+  - 内容: タグ一覧、カテゴリ一覧、タグ/カテゴリフィルタ UI
+  - 背景: MVP では記事閲覧の主要導線を優先し、taxonomy 関連の公開導線は後続対応にする
 - 管理タグ・カテゴリ管理を実装する
   - ブランチ名: `feature/pr7-admin-taxonomy`
   - タグ name 更新 API / UI
   - カテゴリ新規追加 API / UI
-- タグ・カテゴリ一覧ページを実装する
-  - 対象画面: `/tags`, `/categories`
+- taxonomy 実装時は以下を満たす
   - 現状: [tags/page.tsx](frontend/src/app/(public)/tags/page.tsx) と [categories/page.tsx](frontend/src/app/(public)/categories/page.tsx) は placeholder のみ
-  - 背景: `todo` 指摘 4 は MVP 後対応に変更
-- フィルタバー（タグ/カテゴリ）を再導入する
-  - 対象画面: `/articles`
-  - UI 要件: タグ複数選択・カテゴリ複数選択・選択中フィルタの解除
   - URL 連動: フィルタ状態をクエリパラメータへ反映し、リロード/共有時に復元できること
   - API 仕様: `docs/07` のクエリ形式（repeat 方式）と `docs/04`, `docs/06` の表記を一致させてから実装する
   - テスト観点: フィルタ適用、解除、複数選択、ページネーション併用時の挙動
-  - 背景: 2026-02-23 に MVP 優先のため一時除外した機能
 - アサーションJWTに `nbf` を追加するか検討する
-- jtiの仕様変更(Redis等)
-- JTI ストアを永続化して再起動時のリプレイ対策を強化する（Redis 等）
-- レートリミットを共有ストア（Redis 等）へ移行し、複数インスタンスでも有効化する
+- jti の仕様変更（必要になった場合の永続ストア導入を含む）
+- JTI ストアを永続化して再起動時のリプレイ対策を強化する必要があるかを運用後に判断する
+- レートリミットを共有ストアへ移行する必要があるかを、運用実績を見て判断する
 - `sub` の最大長と `github` 前提の形式チェックを他プロバイダ対応時に見直す

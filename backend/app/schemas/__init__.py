@@ -4,8 +4,8 @@ from .article import (
     ArticleDetail,
     ArticleListResponse,
     ArticleNeighbor,
+    ArticleNewerOlderResponse,
     ArticlePatch,
-    ArticlePrevNextResponse,
     ArticleSummary,
 )
 from .article_query import ArticleListQuery
@@ -24,9 +24,9 @@ __all__ = [
     "ArticleDetail",
     "ArticleListQuery",
     "ArticleListResponse",
+    "ArticleNewerOlderResponse",
     "ArticleNeighbor",
     "ArticlePatch",
-    "ArticlePrevNextResponse",
     "ArticleSummary",
     "TokenExchangeRequest",
     "TokenExchangeResponse",

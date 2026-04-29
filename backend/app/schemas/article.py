@@ -103,7 +103,7 @@ class ArticleListResponse(SchemaBase):
 
 
 class ArticleNeighbor(SchemaBase):
-    """前後の記事情報。"""
+    """近接する記事情報。"""
 
     id: int
     slug: str
@@ -113,8 +113,8 @@ class ArticleNeighbor(SchemaBase):
     is_draft: bool
 
 
-class ArticlePrevNextResponse(SchemaBase):
-    """前後の記事エンドポイントレスポンス。"""
+class ArticleNewerOlderResponse(SchemaBase):
+    """新旧記事エンドポイントレスポンス。"""
 
-    prev: ArticleNeighbor | None
-    next: ArticleNeighbor | None
+    newer: ArticleNeighbor | None
+    older: ArticleNeighbor | None
