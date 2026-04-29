@@ -7,6 +7,10 @@
 
 # 1. 公開側画面（Front）
 
+## 1.0 MVP スコープ外の公開画面
+- `/tags` と `/categories` は MVP では公開しない
+- タグ一覧・カテゴリ一覧・タグ/カテゴリフィルタは MVP 完成後に実装する
+
 ## 1.1 Home（トップページ）
 ### UI 構成
 - Hero セクション
@@ -40,10 +44,12 @@
 ### API
 - GET /api/articles?page=
 - 未認証の公開アクセスでは公開済み記事のみ取得する
+- API は `tags` / `categories` クエリによる絞り込みに対応する
 
 ### MVP スコープ注記
 - タグ/カテゴリのフィルタバーは MVP では実装しない。
 - フィルタ UI とクエリ連動（`tags` / `categories`）は MVP 完成後に再導入する。
+- `/tags`, `/categories` の一覧導線も MVP では提供しない。
 
 ---
 
@@ -54,17 +60,17 @@
 - カテゴリ
 - タグ（リンク付き）
 - 本文（Markdown → HTML）
-- 前の記事 / 次の記事（ナビゲーション）
+- 新しい記事 / 古い記事（ナビゲーション）
 
 ### 動作仕様
 - 日時は `YYYY年MM月DD日 HH:mm`（24時間表記）で表示する
 - MVP ではカテゴリ/タグは表示のみ（遷移なし）
-- 前の記事 / 次の記事クリックで該当記事へ遷移
+- 新しい記事 / 古い記事クリックで該当記事へ遷移
 
 ### API
 - GET /api/articles/{slug}
 - 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
-- GET /api/articles/{id}/prev-next
+- GET /api/articles/{id}/newer-older
 - 未認証の公開アクセスでは `isDraft=false` かつ `publishedAt!=null` の記事のみ取得する
 
 ---
@@ -194,6 +200,6 @@
 - articles.is_draft により制御
 - 管理画面ではバッジ表示＋タブ切替により UI サポート
 
-## 次・前の記事
-- API は `id` で対象記事を指定し、前後判定は `publishedAt` の降順で行う
-- `publishedAt` が同一または `null` の場合は `createdAt` 降順、さらに `id` 降順で決定する
+## 新旧記事
+- API は `id` で対象記事を指定し、新旧判定は `publishedAt` の降順で行う
+- `publishedAt` が同一の場合は `createdAt` 降順、さらに `id` 降順で決定する

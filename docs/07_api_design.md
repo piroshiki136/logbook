@@ -58,16 +58,16 @@
 - page?: number（デフォルト: 1）
 - limit?: number（デフォルト: 10、最大: 50）
 - draft?: boolean（管理APIのみ指定可。公開APIでは false 固定）
+- tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
+- categories?: string（repeat 方式。例: `?categories=web&categories=backend`）
 
 ## 補足
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は、全記事が updatedAt の降順、公開記事が publishedAt の降順、draft=true が updatedAt の降順
 - draft を指定した場合は管理者認証が必要（未認証は 401）
-
-## MVP 完成後に追加するクエリ
-- tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
-- categories?: string（repeat 方式。例: `?categories=web&categories=backend`）
+- tags / categories による公開記事フィルタは API として提供する
+- ただし MVP では公開フロントのフィルタ UI は提供せず、一覧画面の主要導線は page / limit を基本とする
 
 ## MVP 完成後の補足
 - tags / categories は同名パラメータの複数指定（repeat）のみ許可する
@@ -191,6 +191,10 @@
 ---
 
 # 6. タグ一覧 GET /api/tags
+## 位置づけ
+- MVP では公開画面から利用しない
+- 管理タグ機能や公開タグ一覧を実装する後続フェーズ向け API として扱う
+
 ## 補足
 - name の昇順で返す
 
@@ -232,6 +236,10 @@
 ---
 
 # 7. カテゴリ一覧 GET /api/categories
+## 位置づけ
+- MVP では公開画面から利用しない
+- 管理カテゴリ機能や公開カテゴリ一覧を実装する後続フェーズ向け API として扱う
+
 ## 補足
 - name の昇順で返す
 
@@ -310,28 +318,28 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
 
 ---
 
-# 9. 前後の記事取得 GET /api/articles/{id}/prev-next
-- id で対象記事を指定し、その記事の前後を返す（公開APIでは `isDraft=false` かつ `publishedAt!=null` のみ）
+# 9. 新旧記事取得 GET /api/articles/{id}/newer-older
+- id で対象記事を指定し、その記事より新しい記事と古い記事を返す（公開APIでは `isDraft=false` かつ `publishedAt!=null` のみ）
 - 管理APIでは認証が必要、ドラフトも取得可能
-- prev/next の判定は publishedAt の降順を基準にする
-- publishedAt が同一、または null の場合は createdAt の降順、さらに id の降順で決める
+- newer/older の判定は publishedAt の降順を基準にする
+- publishedAt が同一の場合は createdAt の降順、さらに id の降順で決める
 
 ## 200レスポンス
 {
   "success": true,
   "data": {
-    "prev": {
+    "newer": {
       "id": 11,
-      "slug": "prev-article",
-      "title": "前の記事",
+      "slug": "newer-article",
+      "title": "新しい記事",
       "createdAt": "...",
       "publishedAt": "...",
       "isDraft": false
     },
-    "next": {
+    "older": {
       "id": 13,
-      "slug": "next-article",
-      "title": "次の記事",
+      "slug": "older-article",
+      "title": "古い記事",
       "createdAt": "...",
       "publishedAt": "...",
       "isDraft": false
@@ -339,7 +347,7 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
   }
 }
 
-prev/next が存在しない場合は null を返す。
+newer/older が存在しない場合は null を返す。
 
 ---
 
@@ -387,9 +395,10 @@ prev/next が存在しない場合は null を返す。
 ---
 
 # レートリミット（目安）
-- 本番/ステージング: Cloudflare（無料枠）の WAF/レートリミットを有効化した上で、FastAPI 側でも Redis + `fastapi-limiter` で二重に制御する（公開 API 60 req/min、管理 API 30 req/min）。
-- ローカル開発の初期段階: Redis を起動せずに Cloudflare 相当の制御も掛からないため、`fastapi-limiter` を無効化したまま動かす。Redis を導入したタイミングで有効化フラグを切り替えられるように実装する。
-- 閾値は運用状況に応じて調整し、Cloudflare とアプリ側で設定を同期する。
+- MVP: Cloudflare など特定ベンダーの WAF/レートリミットを前提にしない。アプリ内の Redis + `fastapi-limiter` も初期リリースでは導入せず、公開 API の露出を絞る運用を優先する。
+- 補完策: 管理系 API は NextAuth による認証を必須にし、画像アップロードは管理API経由のみに制限する。加えて、アップロード容量制限・MIME 検証・監査ログを有効にする。
+- 将来対応: 認証系や公開 API で実運用上の必要性が出た場合のみ、配信基盤の標準レートリミット機能または Redis 等の共有ストアを用いたアプリ内制御を導入する。
+- 閾値は採用した配信基盤または共有ストアの仕様に合わせて定義し、docs と実装を同期する。
 
 ---
 
@@ -399,7 +408,7 @@ prev/next が存在しない場合は null を返す。
 - publishedAt の挙動（公開時セット、非公開でも保持、再公開で更新）
 - タグ/カテゴリの複数フィルタ
 - タグ/カテゴリの複数指定は repeat のみ（カンマ区切りは不可）
-- prev/next（publishedAt の降順、公開 API は公開のみ）
+- newer/older（publishedAt の降順、公開 API は公開のみ）
 - 認証保護（401/403 の挙動）
 - 画像アップロード（保存先・UUID・返却 URL）
 

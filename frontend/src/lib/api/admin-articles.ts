@@ -2,7 +2,7 @@ import { apiFetch } from "./client"
 import type {
   ArticleDetail,
   ArticleListItem,
-  ArticlePrevNext,
+  ArticleNewerOlder,
   CreateArticleInput,
   Paginated,
   UpdateArticleInput,
@@ -64,11 +64,11 @@ export const getAdminArticleById = async (
   return apiFetch<ArticleDetail>(`/api/articles/by-id/${articleId}`, { token })
 }
 
-export const getAdminArticlePrevNext = async (
+export const getAdminArticleNewerOlder = async (
   articleId: number,
   token: string,
-): Promise<ArticlePrevNext> => {
-  return apiFetch<ArticlePrevNext>(`/api/articles/${articleId}/prev-next`, {
+): Promise<ArticleNewerOlder> => {
+  return apiFetch<ArticleNewerOlder>(`/api/articles/${articleId}/newer-older`, {
     token,
   })
 }

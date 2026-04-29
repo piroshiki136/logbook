@@ -83,7 +83,7 @@ def unhandled_exception_handler(request: Request, exc: Exception) -> JSONRespons
         content=ErrorResponse(
             error={
                 "code": "INTERNAL_SERVER_ERROR",
-                "message": "Internal Server Error",
+                "message": "現在エラーが発生しています",
             },
         ).model_dump(),
     )

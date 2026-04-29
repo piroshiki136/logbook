@@ -17,12 +17,12 @@ test.describe("公開画面導線", () => {
     ).toBeVisible()
   })
 
-  test("記事詳細で前後記事ナビから遷移できる", async ({ page }) => {
+  test("記事詳細で新旧記事ナビから遷移できる", async ({ page }) => {
     await page.goto("/articles/post-2")
 
     await expect(page.locator("article > h1")).toHaveText("Post 2")
     await expect(
-      page.getByRole("navigation", { name: "前後の記事" }),
+      page.getByRole("navigation", { name: "新旧の記事" }),
     ).toBeVisible()
 
     await page.getByRole("link", { name: "Post 3" }).click()

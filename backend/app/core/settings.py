@@ -98,7 +98,9 @@ class Settings(BaseSettings):
         に変換する
         """
         return [
-            email.strip() for email in self.admin_allowed_emails_raw.split(",") if email.strip()
+            email.strip().lower()
+            for email in self.admin_allowed_emails_raw.split(",")
+            if email.strip()
         ]
 
     @field_validator("jwt_public_key", mode="before")

@@ -20,8 +20,8 @@ from app.schemas.article import (
     ArticleDetail,
     ArticleListResponse,
     ArticleNeighbor,
+    ArticleNewerOlderResponse,
     ArticlePatch,
-    ArticlePrevNextResponse,
     ArticleSummary,
 )
 from app.schemas.article_query import ArticleListQuery
@@ -232,9 +232,9 @@ def delete_article(*, article_id: int, db: Session) -> None:
     db.commit()
 
 
-def get_prev_next(
+def get_newer_older(
     *, article_id: int, db: Session, user: dict | None
-) -> ApiResponse[ArticlePrevNextResponse]:
+) -> ApiResponse[ArticleNewerOlderResponse]:
     is_admin = user is not None and is_admin_user(user)
 
     base_stmt = select(Article).where(Article.id == article_id)
@@ -267,8 +267,8 @@ def get_prev_next(
         select(scope_subquery.c.rn).where(scope_subquery.c.article_id == current.id)
     )
 
-    prev_article: Article | None = None
-    next_article: Article | None = None
+    newer_article: Article | None = None
+    older_article: Article | None = None
 
     if current_rn is not None:
         neighbor_rows = db.execute(
@@ -280,9 +280,9 @@ def get_prev_next(
 
         for article, rn in neighbor_rows:
             if rn == current_rn - 1:
-                prev_article = article
+                newer_article = article
             elif rn == current_rn + 1:
-                next_article = article
+                older_article = article
 
     def to_neighbor(article: Article | None) -> ArticleNeighbor | None:
         if article is None:
@@ -298,9 +298,9 @@ def get_prev_next(
 
     return ApiResponse(
         success=True,
-        data=ArticlePrevNextResponse(
-            prev=to_neighbor(prev_article),
-            next=to_neighbor(next_article),
+        data=ArticleNewerOlderResponse(
+            newer=to_neighbor(newer_article),
+            older=to_neighbor(older_article),
         ),
     )
 
