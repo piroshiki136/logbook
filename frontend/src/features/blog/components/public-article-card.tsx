@@ -6,12 +6,12 @@ type PublicArticleCardProps = {
   title: string
   category: string
   tags: string[]
-  updatedAt: string
+  publishedAt: string
   maxTags?: number
 }
 
 export function PublicArticleCard(props: PublicArticleCardProps) {
-  const { id, slug, title, category, tags, updatedAt, maxTags } = props
+  const { id, slug, title, category, tags, publishedAt, maxTags } = props
 
   return (
     <ArticleCardBase
@@ -21,7 +21,7 @@ export function PublicArticleCard(props: PublicArticleCardProps) {
       category={category}
       tags={tags}
       maxTags={maxTags}
-      dateValue={updatedAt}
+      dateValue={publishedAt}
     />
   )
 }

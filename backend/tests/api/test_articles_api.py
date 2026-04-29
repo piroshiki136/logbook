@@ -135,6 +135,40 @@ async def test_list_articles_excludes_non_draft_without_published_at(client, db_
     assert [item["slug"] for item in payload["data"]["items"]] == ["public-article"]
 
 
+async def test_list_articles_orders_public_by_published_at(client, db_session):
+    category = _create_category(db_session, name="Backend", slug="backend")
+    base_time = datetime(2024, 1, 1, tzinfo=UTC)
+
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="newer-published",
+        title="Newer Published",
+        published_at=base_time + timedelta(minutes=2),
+        created_at=base_time,
+        updated_at=base_time,
+    )
+    _create_article(
+        db_session,
+        category_id=category.id,
+        slug="older-published",
+        title="Older Published",
+        published_at=base_time + timedelta(minutes=1),
+        created_at=base_time + timedelta(minutes=1),
+        updated_at=base_time + timedelta(minutes=3),
+    )
+    _commit(db_session)
+
+    res = await client.get("/api/articles")
+    payload = res.json()
+
+    assert res.status_code == status.HTTP_200_OK
+    assert [item["slug"] for item in payload["data"]["items"]] == [
+        "newer-published",
+        "older-published",
+    ]
+
+
 async def test_list_articles_requires_admin_for_draft_filter(client):
     res = await client.get("/api/articles?draft=true")
     assert res.status_code == status.HTTP_401_UNAUTHORIZED
@@ -482,7 +516,7 @@ async def test_get_article_draft_visible_for_admin(client, db_session):
     assert payload["data"]["isDraft"] is True
 
 
-async def test_newer_older_orders_by_updated_at(client, db_session):
+async def test_newer_older_orders_by_published_at(client, db_session):
     category = _create_category(db_session, name="Backend", slug="backend")
     base_time = datetime(2024, 1, 1, tzinfo=UTC)
 
@@ -493,7 +527,7 @@ async def test_newer_older_orders_by_updated_at(client, db_session):
         title="Newest",
         published_at=base_time,
         created_at=base_time,
-        updated_at=base_time + timedelta(minutes=3),
+        updated_at=base_time + timedelta(minutes=1),
     )
     middle = _create_article(
         db_session,
@@ -502,7 +536,7 @@ async def test_newer_older_orders_by_updated_at(client, db_session):
         title="Middle",
         published_at=base_time + timedelta(minutes=2),
         created_at=base_time + timedelta(minutes=1),
-        updated_at=base_time + timedelta(minutes=2),
+        updated_at=base_time + timedelta(minutes=3),
     )
     oldest = _create_article(
         db_session,
@@ -511,7 +545,7 @@ async def test_newer_older_orders_by_updated_at(client, db_session):
         title="Oldest",
         published_at=base_time + timedelta(minutes=4),
         created_at=base_time + timedelta(minutes=2),
-        updated_at=base_time + timedelta(minutes=1),
+        updated_at=base_time + timedelta(minutes=2),
     )
     _commit(db_session)
 

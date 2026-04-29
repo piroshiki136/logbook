@@ -58,17 +58,16 @@
 - page?: number（デフォルト: 1）
 - limit?: number（デフォルト: 10、最大: 50）
 - draft?: boolean（管理APIのみ指定可。公開APIでは false 固定）
+- tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
+- categories?: string（repeat 方式。例: `?categories=web&categories=backend`）
 
 ## 補足
 - 記事は 1 記事 1 カテゴリ
 - 公開APIの並び順は publishedAt の降順（公開が新しい順）
 - 管理APIの並び順は、全記事が updatedAt の降順、公開記事が publishedAt の降順、draft=true が updatedAt の降順
 - draft を指定した場合は管理者認証が必要（未認証は 401）
-- tags / categories による公開記事フィルタは MVP では未提供とし、一覧 API は page / limit を基本とする
-
-## MVP 完成後に追加するクエリ
-- tags?: string（repeat 方式。例: `?tags=nextjs&tags=fastapi`）
-- categories?: string（repeat 方式。例: `?categories=web&categories=backend`）
+- tags / categories による公開記事フィルタは API として提供する
+- ただし MVP では公開フロントのフィルタ UI は提供せず、一覧画面の主要導線は page / limit を基本とする
 
 ## MVP 完成後の補足
 - tags / categories は同名パラメータの複数指定（repeat）のみ許可する
@@ -322,8 +321,8 @@ file: `image/png` / `image/jpeg` / `image/webp` / `image/gif`
 # 9. 新旧記事取得 GET /api/articles/{id}/newer-older
 - id で対象記事を指定し、その記事より新しい記事と古い記事を返す（公開APIでは `isDraft=false` かつ `publishedAt!=null` のみ）
 - 管理APIでは認証が必要、ドラフトも取得可能
-- newer/older の判定は updatedAt の降順を基準にする
-- updatedAt が同一の場合は createdAt の降順、さらに id の降順で決める
+- newer/older の判定は publishedAt の降順を基準にする
+- publishedAt が同一の場合は createdAt の降順、さらに id の降順で決める
 
 ## 200レスポンス
 {
@@ -409,7 +408,7 @@ newer/older が存在しない場合は null を返す。
 - publishedAt の挙動（公開時セット、非公開でも保持、再公開で更新）
 - タグ/カテゴリの複数フィルタ
 - タグ/カテゴリの複数指定は repeat のみ（カンマ区切りは不可）
-- newer/older（updatedAt の降順、公開 API は公開のみ）
+- newer/older（publishedAt の降順、公開 API は公開のみ）
 - 認証保護（401/403 の挙動）
 - 画像アップロード（保存先・UUID・返却 URL）
 

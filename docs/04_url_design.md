@@ -86,8 +86,9 @@ GET /api/articles?page=&limit=
 - limit（1ページあたり件数）
 - 未認証の公開アクセスでは公開済み記事のみを返す
 - `draft` は管理用途のみ指定可とし、公開側では `false` 固定とする
+- 公開 API は `tags` / `categories` による絞り込みにも対応するが、MVP では公開フロントのフィルタ UI は提供しない
 
-### 記事一覧フィルタ（MVP 完成後に追加）
+### 記事一覧フィルタ（API は提供済み、公開 UI は MVP 完成後に追加）
 GET /api/articles?page=&limit=&tags=&categories=
 
 - tags（複数タグ指定、repeat 方式）

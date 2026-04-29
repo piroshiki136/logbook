@@ -23,7 +23,7 @@ export function ArticleNewerOlderNav({
           href={`/articles/${newer.slug}`}
           label="新しい記事"
           title={newer.title}
-          dateValue={newer.publishedAt ?? newer.createdAt}
+          dateValue={newer.publishedAt}
         />
       )}
 
@@ -33,7 +33,7 @@ export function ArticleNewerOlderNav({
           href={`/articles/${older.slug}`}
           label="古い記事"
           title={older.title}
-          dateValue={older.publishedAt ?? older.createdAt}
+          dateValue={older.publishedAt}
         />
       )}
     </nav>

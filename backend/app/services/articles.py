@@ -250,7 +250,7 @@ def get_newer_older(
         )
 
     order_clause = (
-        Article.updated_at.desc(),
+        Article.published_at.desc().nullslast(),
         Article.created_at.desc(),
         Article.id.desc(),
     )

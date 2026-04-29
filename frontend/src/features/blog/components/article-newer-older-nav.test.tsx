@@ -70,13 +70,8 @@ describe("ArticleNewerOlderNav", () => {
     )
   })
 
-  it("publishedAt が null の場合は createdAt を表示に使う", () => {
-    render(
-      <ArticleNewerOlderNav
-        newer={{ ...newer, publishedAt: null }}
-        older={{ ...older, publishedAt: null }}
-      />,
-    )
+  it("publishedAt を表示に使う", () => {
+    render(<ArticleNewerOlderNav newer={newer} older={older} />)
 
     expect(screen.getByText("2026年01月01日")).toBeInTheDocument()
     expect(screen.getByText("2026年01月03日")).toBeInTheDocument()

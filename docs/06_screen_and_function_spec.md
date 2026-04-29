@@ -44,6 +44,7 @@
 ### API
 - GET /api/articles?page=
 - 未認証の公開アクセスでは公開済み記事のみ取得する
+- API は `tags` / `categories` クエリによる絞り込みに対応する
 
 ### MVP スコープ注記
 - タグ/カテゴリのフィルタバーは MVP では実装しない。
@@ -200,5 +201,5 @@
 - 管理画面ではバッジ表示＋タブ切替により UI サポート
 
 ## 新旧記事
-- API は `id` で対象記事を指定し、新旧判定は `updatedAt` の降順で行う
-- `updatedAt` が同一の場合は `createdAt` 降順、さらに `id` 降順で決定する
+- API は `id` で対象記事を指定し、新旧判定は `publishedAt` の降順で行う
+- `publishedAt` が同一の場合は `createdAt` 降順、さらに `id` 降順で決定する

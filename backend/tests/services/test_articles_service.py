@@ -360,7 +360,45 @@ def test_list_articles_filters_by_tags_and_categories(db_session):
     assert [item.title for item in response.data.items] == ["Backend"]
 
 
-def test_get_newer_older_uses_updated_order_and_excludes_drafts_for_public(db_session):
+def test_list_articles_orders_public_by_published_at(db_session):
+    _create_category(db_session, slug="backend", name="Backend")
+
+    first = article_service.create_article(
+        payload=ArticleCreate(
+            title="First",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+    second = article_service.create_article(
+        payload=ArticleCreate(
+            title="Second",
+            content="Hello",
+            category="backend",
+            is_draft=False,
+        ),
+        db=db_session,
+    )
+
+    base_time = datetime(2025, 1, 1, tzinfo=UTC)
+    first_article = _get_article(db_session, first.data.id)
+    second_article = _get_article(db_session, second.data.id)
+    first_article.published_at = base_time + timedelta(days=1)
+    second_article.published_at = base_time
+    first_article.updated_at = base_time
+    second_article.updated_at = base_time + timedelta(days=2)
+    db_session.commit()
+
+    query = ArticleListQuery(page=1, limit=10)
+    response = article_service.list_articles(query=query, db=db_session, user=None)
+
+    assert response.data is not None
+    assert [item.title for item in response.data.items] == ["First", "Second"]
+
+
+def test_get_newer_older_uses_published_order_and_excludes_drafts_for_public(db_session):
     _create_category(db_session, slug="backend", name="Backend")
 
     first = article_service.create_article(
@@ -414,11 +452,11 @@ def test_get_newer_older_uses_updated_order_and_excludes_drafts_for_public(db_se
         article.published_at = published_at if not article.is_draft else None
         article.created_at = published_at
         if article.id == first.data.id:
-            article.updated_at = base_time + timedelta(days=5)
+            article.updated_at = base_time
         elif article.id == second.data.id:
-            article.updated_at = base_time + timedelta(days=4)
+            article.updated_at = base_time + timedelta(days=5)
         elif article.id == third.data.id:
-            article.updated_at = base_time + timedelta(days=1)
+            article.updated_at = base_time + timedelta(days=4)
     db_session.commit()
 
     response = article_service.get_newer_older(

@@ -22,7 +22,7 @@ export default async function Page({ params }: Props) {
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <ArticleDetailDateTime
             className="shrink-0"
-            value={article.updatedAt}
+            value={article.publishedAt}
           />
           <span aria-hidden="true">・</span>
           <span className="shrink-0">{article.category}</span>
