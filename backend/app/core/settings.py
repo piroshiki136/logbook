@@ -1,10 +1,9 @@
-import json
 import os
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, computed_field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 def _env_file() -> str:
@@ -45,8 +44,8 @@ class Settings(BaseSettings):
         return self.env in ("local", "dev")
 
     # ---- CORS ----
-    # 例: CORS_ALLOW_ORIGINS='["http://localhost:3000"]'
-    cors_allow_origins: list[str] = Field(
+    # 例: CORS_ALLOW_ORIGINS='http://localhost:3000,https://example.com'
+    cors_allow_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:3000"],
         validation_alias="CORS_ALLOW_ORIGINS",
     )
@@ -54,15 +53,12 @@ class Settings(BaseSettings):
     @field_validator("cors_allow_origins", mode="before")
     @classmethod
     def parse_cors_origins(cls, value: str | list[str]):
-        """JSON 文字列やカンマ区切りを list[str] に変換する。"""
+        """単一値またはカンマ区切りの文字列を list[str] に変換する。"""
         if isinstance(value, list):
-            return value
+            return [origin.strip() for origin in value if origin.strip()]
         if not value:
             return []
-        value = value.strip()
-        if value.startswith("["):
-            return json.loads(value)
-        return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return [origin.strip() for origin in str(value).split(",") if origin.strip()]
 
     # ---- Database ----
     database_url: str = Field(..., validation_alias="DATABASE_URL")
