@@ -3,6 +3,8 @@ import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-buil
 import { parsePage } from "@/features/blog/lib/parse-page"
 import { getPublicArticles } from "@/lib/api/articles"
 
+export const dynamic = "force-dynamic"
+
 const formatError = () =>
   "記事一覧の取得に失敗しました。しばらくしてから再度お試しください。"
 

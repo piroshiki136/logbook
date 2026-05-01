@@ -9,6 +9,7 @@ import type { PublicArticleListItem } from "@/lib/api/types"
 
 const ERROR_MESSAGE =
   "最新記事の取得に失敗しました。しばらくしてから再度お試しください。"
+const LATEST_ARTICLES_REVALIDATE_SECONDS = 300
 
 export async function LatestArticlesSection() {
   const headingId = "latest-articles-heading"
@@ -17,7 +18,13 @@ export async function LatestArticlesSection() {
   let errorMessage: string | null = null
 
   try {
-    const data = await getPublicArticles({ limit: 3 })
+    const data = await getPublicArticles(
+      { limit: 3 },
+      {
+        cache: "force-cache",
+        next: { revalidate: LATEST_ARTICLES_REVALIDATE_SECONDS },
+      },
+    )
     items = data.items
   } catch (error) {
     console.error(error)
