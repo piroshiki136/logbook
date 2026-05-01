@@ -41,6 +41,11 @@ export type ArticleDetail = ArticleListItem & {
   content: string
 }
 
+export type PublicArticleDetail = ArticleDetail & {
+  publishedAt: string
+  isDraft: false
+}
+
 export type ArticleNeighbor = {
   id: number
   slug: string
@@ -53,6 +58,16 @@ export type ArticleNeighbor = {
 export type ArticleNewerOlder = {
   newer: ArticleNeighbor | null
   older: ArticleNeighbor | null
+}
+
+export type PublicArticleNeighbor = ArticleNeighbor & {
+  publishedAt: string
+  isDraft: false
+}
+
+export type PublicArticleNewerOlder = {
+  newer: PublicArticleNeighbor | null
+  older: PublicArticleNeighbor | null
 }
 
 export type CreateArticleInput = {

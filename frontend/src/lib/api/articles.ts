@@ -1,10 +1,10 @@
 import { apiFetch } from "./client"
 import type {
-  ArticleDetail,
   ArticleListItem,
-  ArticleNewerOlder,
   Paginated,
+  PublicArticleDetail,
   PublicArticleListItem,
+  PublicArticleNewerOlder,
 } from "./types"
 
 type PublicArticleListParams = {
@@ -63,12 +63,16 @@ export const getArticles = async (
   return apiFetch<Paginated<ArticleListItem>>(`/api/articles${query}`)
 }
 
-export const getArticle = async (slug: string): Promise<ArticleDetail> => {
-  return apiFetch<ArticleDetail>(`/api/articles/${slug}`)
+export const getArticle = async (
+  slug: string,
+): Promise<PublicArticleDetail> => {
+  return apiFetch<PublicArticleDetail>(`/api/articles/${slug}`)
 }
 
 export const getArticleNewerOlder = async (
   articleId: number,
-): Promise<ArticleNewerOlder> => {
-  return apiFetch<ArticleNewerOlder>(`/api/articles/${articleId}/newer-older`)
+): Promise<PublicArticleNewerOlder> => {
+  return apiFetch<PublicArticleNewerOlder>(
+    `/api/articles/${articleId}/newer-older`,
+  )
 }
