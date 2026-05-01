@@ -1,9 +1,9 @@
-import type { ArticleNeighbor } from "@/lib/api/types"
+import type { PublicArticleNeighbor } from "@/lib/api/types"
 import { ArticleNewerOlderCard } from "./article-newer-older-card"
 
 type ArticleNewerOlderNavProps = {
-  newer: ArticleNeighbor | null
-  older: ArticleNeighbor | null
+  newer: PublicArticleNeighbor | null
+  older: PublicArticleNeighbor | null
 }
 
 export function ArticleNewerOlderNav({
