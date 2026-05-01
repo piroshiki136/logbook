@@ -87,6 +87,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      baseline-browser-mapping:
+        specifier: ^2.10.24
+        version: 2.10.24
       jsdom:
         specifier: ^27.0.1
         version: 27.4.0
@@ -1716,6 +1719,11 @@ packages:
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
+
+  baseline-browser-mapping@2.10.24:
+    resolution: {integrity: sha512-I2NkZOOrj2XuguvWCK6OVh9GavsNjZjK908Rq3mIBK25+GD8vPX5w2WdxVqnQ7xx3SrZJiCiZFu+/Oz50oSYSA==}
+    engines: {node: '>=6.0.0'}
+    hasBin: true
 
   bidi-js@1.0.3:
     resolution: {integrity: sha512-RKshQI1R3YQ+n9YJz2QQ147P66ELpa1FQEg20Dk8oW9t2KgLbpDLLp9aGZ7y8WHSshDknG0bknqGw5/tyCs5tw==}
@@ -4167,6 +4175,8 @@ snapshots:
       '@babel/types': 7.28.5
 
   bail@2.0.2: {}
+
+  baseline-browser-mapping@2.10.24: {}
 
   bidi-js@1.0.3:
     dependencies:

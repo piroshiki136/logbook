@@ -7,6 +7,14 @@ import type {
   PublicArticleNewerOlder,
 } from "./types"
 
+type PublicApiFetchOptions = {
+  cache?: RequestCache
+  next?: {
+    revalidate?: number
+    tags?: string[]
+  }
+}
+
 type PublicArticleListParams = {
   page?: number
   limit?: number
@@ -51,9 +59,13 @@ const buildListParams = (params: ArticleListParams = {}) => {
 
 export const getPublicArticles = async (
   params: PublicArticleListParams = {},
+  options: PublicApiFetchOptions = {},
 ): Promise<Paginated<PublicArticleListItem>> => {
   const query = buildListParams(params)
-  return apiFetch<Paginated<PublicArticleListItem>>(`/api/articles${query}`)
+  return apiFetch<Paginated<PublicArticleListItem>>(`/api/articles${query}`, {
+    cache: options.cache,
+    next: options.next,
+  })
 }
 
 export const getArticles = async (

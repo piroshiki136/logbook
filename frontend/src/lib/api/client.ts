@@ -18,6 +18,10 @@ type ApiFetchOptions = {
   body?: Record<string, unknown> | FormData
   token?: string
   cache?: RequestCache
+  next?: {
+    revalidate?: number
+    tags?: string[]
+  }
 }
 
 const isApiSuccess = <T>(value: unknown): value is ApiSuccess<T> => {
@@ -70,6 +74,7 @@ export const apiFetch = async <T>(
     headers,
     body: requestBody,
     cache: options.cache ?? "no-store",
+    next: options.next,
   })
 
   const contentType = response.headers.get("content-type") ?? ""
