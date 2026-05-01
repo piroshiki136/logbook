@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import type { AnchorHTMLAttributes, ReactNode } from "react"
 import { vi } from "vitest"
+import type { PublicArticleNeighbor } from "@/lib/api/types"
 import { ArticleNewerOlderNav } from "./article-newer-older-nav"
 
 vi.mock("next/link", () => ({
@@ -21,7 +22,7 @@ vi.mock("next/link", () => ({
   },
 }))
 
-const newer = {
+const newer: PublicArticleNeighbor = {
   id: 1,
   slug: "first-post",
   title: "First Post",
@@ -30,7 +31,7 @@ const newer = {
   isDraft: false,
 }
 
-const older = {
+const older: PublicArticleNeighbor = {
   id: 3,
   slug: "third-post",
   title: "Third Post",
