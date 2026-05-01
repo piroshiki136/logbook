@@ -10,12 +10,25 @@ todo
 
 
 ## 本番準備
+- 現在の状態メモ（2026-05-01）
+  1. Vercel へのデプロイ作業は進行中
+  2. 本番用の環境変数は未投入のものがあり、順次追加中
+  3. 公開 URL は `https://logbook-flame.vercel.app` で確定
+  4. 本番 DB は Neon を使う予定だが、まだ作成していない
+  5. 本番用 JWT 鍵は未作成
+  6. `CORS_ALLOW_ORIGINS` は未設定だが、設定値は `https://logbook-flame.vercel.app` で確定
+- Vercel / Neon / JWT まわりの初期セットアップ
+  1. Neon プロジェクトと本番 DB を作成し、`DATABASE_URL` を確定する
+  2. 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成する
+  3. 必要なら `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` も本番用に生成し直す
+  4. Vercel frontend / backend に必要な環境変数を投入する
+  5. `CORS_ALLOW_ORIGINS=https://logbook-flame.vercel.app` を backend 環境変数に設定する（JSON 配列は使わない）
 - エラーハンドリングのユーザー向け表示ポリシー整理
   1. DomainError（想定内エラー）は仕様どおりの説明を返し、400/404 も UX 上必要な文言を表示できるようテンプレート化する。
   2. DB エラー詳細やスタックトレースは絶対に表示しない方針を FastAPI/Next.js 双方のエラーミドルウェアへ落とし込み、ログのみで確認する。
   3. unhandled 500 は一般的なメッセージのみ（例: 「現在エラーが発生しています」）に制限し、詳細は管理画面やログで確認できる導線を docs/07, frontend/backend 実装時に追記する。
 - CORS のデフォルト許可設定
-  1. 現状は `["http://localhost:3000"]` をデフォルトにしているが、本番運用前に必須項目へ変更する（Field(... )化）。
+  1. 現状は `http://localhost:3000` をデフォルトにしているが、本番運用前に必須項目へ変更する（Field(... )化）。
   2. 必須化したら README/docs に環境変数設定を追記し、テンプレ `.env` にサンプル値を入れておく。
 - 採用する配信基盤に合わせたレートリミット方針の具体値と運用手順を docs に追記する。
 - R2 バケット名・リージョンなど固定値と、バックアップ用ジョブの実行環境（例: GitHub Actions）の鍵管理手順を `infra/backup.md` にまとめる。

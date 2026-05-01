@@ -133,12 +133,12 @@
 
 ### 本番前提のデプロイ構成
 - [x] フロントエンドは Vercel にデプロイし、初期リリースでは `https://<project>.vercel.app` を公開 URL とする
-- [x] バックエンドは Cloud Run にデプロイし、初期リリースでは `https://<service>-<hash>-<region>.run.app` を API ベース URL とする
-- [x] DB は Neon を利用し、Cloud Run 上に PostgreSQL を自前構築しない
-- [x] 独自ドメインは PR8 のスコープ外とし、OAuth / CORS / API 連携は `vercel.app` / `run.app` 前提で確定する
-- [x] 画像保存は Cloud Run ローカル保存を本番利用せず、Cloudflare R2 を前提にする
-- [x] 本番の配備先は Vercel / Cloud Run / Neon に統一し、他のホスティング案は PR8 のスコープ外とする
-- [x] バックエンドは Cloud Run へ安定して載せられるよう、`backend` に本番用 `Dockerfile` を追加する
+- [x] バックエンドは Vercel にデプロイし、初期リリースでは `https://<project>.vercel.app/_/backend` を API ベース URL とする
+- [x] DB は Neon を利用し、Vercel 上に PostgreSQL を自前構築しない
+- [x] 独自ドメインは PR8 のスコープ外とし、OAuth / CORS / API 連携は `vercel.app` 前提で確定する
+- [x] 画像保存は Vercel ローカル保存を本番利用せず、Cloudflare R2 を前提にする
+- [x] 本番の配備先は Vercel / Neon に統一し、他のホスティング案は PR8 のスコープ外とする
+- [x] バックエンドの本番公開は Vercel 前提とし、ローカル/検証用に `backend/Dockerfile` を維持する
 
 ### 1. MVP スコープの確定
 - [x] `docs/02`, `docs/06`, `docs/07`, `docs/todo` の MVP / MVP後対応の記述を一致させる
@@ -199,29 +199,37 @@
 - [x] JWT エラー詳細を本番で返さない前提として `debug=false` の設定確認を別途行う
 
 ### 3. 本番設定の確定
+- 現在メモ（2026-05-01）
+  - Vercel へのデプロイ作業は進行中
+  - 本番用の環境変数は順次追加中
+  - 公開 URL は `https://logbook-flame.vercel.app` で確定
+  - Neon は採用予定だが、DB 自体はまだ未作成
+  - 本番用 JWT 鍵は未作成
+  - `CORS_ALLOW_ORIGINS` は未設定だが、設定値は `https://logbook-flame.vercel.app` で確定
 - [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
   - `uvicorn` の起動コマンドを固定する
-  - Cloud Run の `PORT` 環境変数で待ち受ける
-- [x] Dockerfile を前提に、Cloud Run のデプロイ手順を README / docs に残す
+  - コンテナ検証時は `PORT` 環境変数で待ち受ける
+- [x] Dockerfile はローカル検証用途として README / docs に残し、本番デプロイ先は Vercel に統一する
 - [ ] 本番用の `CORS_ALLOW_ORIGINS` は必須設定にする方針で実装を修正する
   - 現状の `backend/app/core/settings.py` は `http://localhost:3000` をデフォルト値にしているため、本番向けには未確定
   - ローカル開発では `http://localhost:3000` を使い、本番では明示的な環境変数設定を必須にする
   - Vercel の実 URL が未確定でも、この方針までは先に実装・文書化できる
 - [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
-  - この項目は frontend の Vercel URL 確定後でないと完了できない
+  - 公開 URL は `https://logbook-flame.vercel.app` で確定済み。あとは環境変数への投入のみ未完了
 - [ ] Vercel に設定する必須環境変数を棚卸しする
   - `NEXTAUTH_SECRET`
   - `AUTH_GITHUB_ID`
   - `AUTH_GITHUB_SECRET`
-  - `AUTH_URL` / `NEXTAUTH_URL`（`https://<project>.vercel.app`）
-  - `BACKEND_API_BASE`（`https://<cloud-run-service>.run.app`）
+  - `AUTH_URL` / `NEXTAUTH_URL`（`https://logbook-flame.vercel.app`）
+  - `NEXT_PUBLIC_API_BASE_URL`（`https://logbook-flame.vercel.app/_/backend`）
   - `ASSET_BASE_URL`
   - `ADMIN_ALLOWED_EMAILS`
-- [ ] Cloud Run に設定する必須環境変数を棚卸しする
-  - `DATABASE_URL`（Neon 接続文字列）
-  - `CORS_ALLOW_ORIGINS`
+  - 現状: まだ未投入の項目があり、順次追加中
+- [ ] Vercel backend に設定する必須環境変数を棚卸しする
+  - `DATABASE_URL`（Neon 接続文字列。現状は Neon DB 未作成）
+  - `CORS_ALLOW_ORIGINS`（`https://logbook-flame.vercel.app`。複数許可時はカンマ区切り。JSON 配列は使わない）
   - `JWT_PUBLIC_KEY`
   - `JWT_PRIVATE_KEY`
   - `JWT_ISSUER`
@@ -231,6 +239,7 @@
   - `FRONTEND_ASSERTION_ISSUER`
   - `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
 - [ ] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
+- [ ] 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成し、Vercel backend に設定する
 - [ ] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
 - [ ] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
 
@@ -240,9 +249,9 @@
 - [ ] レートリミット未実装 / 暫定対応の扱いを明記する
   - 初期リリースでは特定ベンダーの WAF/レートリミットに依存しない
   - 実装しない場合は既知の制約として docs に明記し、必要時のみ配信基盤の標準機能または Redis ベースの共有レートリミットを導入する
-- [ ] 画像保存先は本番で Cloudflare R2 を必須とし、Cloud Run ローカル保存は不可と明記する
+- [ ] 画像保存先は本番で Cloudflare R2 を必須とし、Vercel 実行環境のローカル保存は不可と明記する
 - [ ] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
-- [ ] Cloud Run と Neon のリージョンを近接させる方針を docs に残す
+- [ ] Vercel の実行リージョンと Neon のリージョンを近接させる方針を docs に残す
 - [ ] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
 
 ### 5. テスト・検証
@@ -253,21 +262,21 @@
 - [x] `cd backend && uv run pytest`
 - [ ] `backend/Dockerfile` でローカル build が通ることを確認する
   - `docker` コマンドがこの作業環境に無いため、実ビルド確認は未実施
-- [ ] `backend/Dockerfile` ベースで Cloud Run 相当の起動確認を行う
+- [ ] `backend/Dockerfile` ベースで本番相当の起動確認を行う
   - `0.0.0.0` で待ち受ける
   - `PORT` 指定で起動できる
 - [ ] 本番相当の env で最低限の手動確認項目を作成する
-  - `https://<project>.vercel.app` から `https://<cloud-run-service>.run.app` へ公開 API が疎通する
+  - `https://<project>.vercel.app` から `https://<project>.vercel.app/_/backend` へ公開 API が疎通する
   - `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
-  - 記事作成 / 編集 / 下書き切り替えが Cloud Run + Neon で成立する
+  - 記事作成 / 編集 / 下書き切り替えが Vercel + Neon で成立する
   - R2 にアップロードした画像 URL が公開画面から参照できる
   - CORS エラーが発生しない
-  - `run.app` / `vercel.app` の URL が UI 文言やOG設定に漏れて困らないか確認する
+  - `vercel.app` / `/_/backend` の URL が UI 文言やOG設定に漏れて困らないか確認する
 - [ ] 手動確認結果を PR に記録する
 
 ### 6. リリース可否の最終判断
 - [ ] 「MVP として公開可能」の条件を docs に文章で残す
-  - 独自ドメインなしでも、`vercel.app` / `run.app` / Neon / R2 の構成で記事閲覧と管理画面運用が成立すること
+  - 独自ドメインなしでも、`vercel.app` / `/_/backend` / Neon / R2 の構成で記事閲覧と管理画面運用が成立すること
 - [ ] 見送る項目がある場合は、Known Issues / MVP後対応として明記する
 - [ ] `dev` → `main` へ上げる前提条件を確認する
 
