@@ -43,7 +43,11 @@ const buildUrl = (path: string) => {
   if (!baseUrl) {
     throw new Error("NEXT_PUBLIC_API_BASE_URL is not set")
   }
-  return new URL(path, baseUrl)
+
+  const normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path
+
+  return new URL(normalizedPath, normalizedBaseUrl)
 }
 
 export const apiFetch = async <T>(
