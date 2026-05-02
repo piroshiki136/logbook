@@ -130,6 +130,8 @@ API レスポンスは tags を配列形式に変換して返す。
 ### 6.1 マイグレーション適用手順
 - 初回セットアップ時: `cd backend && uv run alembic upgrade head` を実行し、ERD と一致するテーブルを DB に作成する。
 - 以降、スキーマ変更のたびに新しいバージョンを `alembic upgrade head` で適用する（docs/10 PR3 以降の計画参照）。
+- 本番 Neon DB は作成済みで、現在の Alembic head まで適用済み。
+- 本番適用時は `DATABASE_URL` に Neon 接続文字列を設定した状態で `cd backend && uv run alembic upgrade head` を実行する。
 
 ### 6.2 データ保存ポリシー
 - 本文は Markdown のみ保存
