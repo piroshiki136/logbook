@@ -29,6 +29,8 @@
 ## データベース
 - PostgreSQL 15（ローカルは Docker Compose で起動）
 - 本番は Neon の PostgreSQL を利用する
+- 本番 backend は `DATABASE_URL` で Neon に接続する
+- Neon DB は作成済みで、Alembic マイグレーションを `head` まで適用済み
 
 ## インフラ
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
@@ -72,7 +74,7 @@
 - `FRONTEND_ASSERTION_KID`
 
 ### バックエンド（backend/.env）
-- 基本: `DATABASE_URL`（例: `postgresql+psycopg://user:pass@localhost:5432/logbook`）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
+- 基本: `DATABASE_URL`（ローカル例: `postgresql+psycopg://user:pass@localhost:5432/logbook` / 本番: Neon 接続文字列）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`
 - CORS: `CORS_ALLOW_ORIGINS`（単一値の例: `https://logbook-flame.vercel.app`。複数値の例: `https://logbook-flame.vercel.app,http://localhost:3000`。JSON 配列は使わない）
 - 認証連携: `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`、`FRONTEND_ASSERTION_ISSUER`
 - 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`, `UPLOAD_IMAGE_MAX_BYTES`
@@ -87,3 +89,4 @@
 - Redis は MVP では導入しない。複数インスタンスでの共有レートリミットや永続ストアが本当に必要になった場合のみ採用を再検討する。
 - Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db、必要に応じて追加サービス、ボリューム（DB/`backend/uploads`）、ポートを整理する。
 - 本番 URL は独自ドメイン未取得のため、`frontend=.vercel.app`、`backend=/_/backend`、`db=Neon` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。
+- 本番 DB の初期セットアップは完了済み。以降のスキーマ変更は Alembic migration を追加し、Neon に `uv run alembic upgrade head` を適用してから本番アプリを更新する。

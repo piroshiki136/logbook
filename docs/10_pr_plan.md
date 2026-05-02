@@ -199,13 +199,18 @@
 - [x] JWT エラー詳細を本番で返さない前提として `debug=false` の設定確認を別途行う
 
 ### 3. 本番設定の確定
-- 現在メモ（2026-05-01）
+- 現在メモ（2026-05-02）
   - Vercel へのデプロイ作業は進行中
   - 本番用の環境変数は順次追加中
   - 公開 URL は `https://logbook-flame.vercel.app` で確定
-  - Neon は採用予定だが、DB 自体はまだ未作成
+  - Neon DB は作成済み
+  - backend の `DATABASE_URL` は Neon 接続文字列で連携済み
+  - Neon DB へ Alembic マイグレーションを `head` まで適用済み
   - 本番用 JWT 鍵は未作成
-  - `CORS_ALLOW_ORIGINS` は未設定だが、設定値は `https://logbook-flame.vercel.app` で確定
+  - `CORS_ALLOW_ORIGINS` は `https://logbook-flame.vercel.app` で設定済み
+- 進捗メモ（2026-05-02）
+  - 本番環境で `GET /api/health` の疎通確認ができた
+  - Neon / `DATABASE_URL` を含む本番 DB 設定は完了済み
 - [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
@@ -228,7 +233,7 @@
   - `ADMIN_ALLOWED_EMAILS`
   - 現状: まだ未投入の項目があり、順次追加中
 - [ ] Vercel backend に設定する必須環境変数を棚卸しする
-  - `DATABASE_URL`（Neon 接続文字列。現状は Neon DB 未作成）
+  - `DATABASE_URL`（Neon 接続文字列。設定済み）
   - `CORS_ALLOW_ORIGINS`（`https://logbook-flame.vercel.app`。複数許可時はカンマ区切り。JSON 配列は使わない）
   - `JWT_PUBLIC_KEY`
   - `JWT_PRIVATE_KEY`
@@ -238,6 +243,7 @@
   - `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`
   - `FRONTEND_ASSERTION_ISSUER`
   - `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
+- [x] Neon DB に Alembic マイグレーションを `head` まで適用する
 - [ ] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
 - [ ] 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成し、Vercel backend に設定する
 - [ ] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
