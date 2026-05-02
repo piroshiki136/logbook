@@ -21,6 +21,10 @@ todo
   1. 本番環境で `GET /api/health` の疎通確認ができた
   2. backend の `DATABASE_URL` は Neon 接続文字列で連携済み
   3. Neon DB へ Alembic マイグレーションを `head` まで適用済み
+- 進捗メモ（2026-05-03）
+  1. Vercel ビルド時の `ApiError: REQUEST_FAILED 404` は、`NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持する修正で解消済み
+  2. 本番 GitHub OAuth 認証は、`AUTH_URL=https://logbook-flame.vercel.app/api/auth` と GitHub callback URL 設定で成立確認済み
+  3. 次は未設定の本番環境変数を生成し、Vercel frontend / backend へ登録する
 - Vercel / Neon / JWT まわりの初期セットアップ
   1. Neon プロジェクトと本番 DB を作成し、`DATABASE_URL` を確定する（完了済み）
   2. 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成する
@@ -52,30 +56,22 @@ app.add_middleware(
 )
 ```
 
-環境変数
+未設定の環境変数
   フロント側:
 
-  AUTH_SECRET=本番専用に生成したAuth.js署名用シークレット
-  AUTH_GITHUB_ID=GitHub OAuth App の Client ID
-  AUTH_GITHUB_SECRET=GitHub OAuth App の Client Secret
-  AUTH_URL=https://logbook-flame.vercel.app/api/auth
-  NEXT_PUBLIC_API_BASE_URL=https://logbook-flame.vercel.app/_/backend
   FRONTEND_ASSERTION_PRIVATE_KEY=RS256署名用の秘密鍵
   FRONTEND_ASSERTION_KID=鍵ID 任意だが設定推奨
 
-  GitHub OAuth App の Authorization callback URL:
-  https://logbook-flame.vercel.app/api/auth/callback/github
-
   バックエンド側:
 
-  DATABASE_URL=DB接続URL
-  ADMIN_ALLOWED_EMAILS=フロントと同じ管理者メール
   FRONTEND_ASSERTION_PUBLIC_KEY=上の秘密鍵に対応する公開鍵
   JWT_PRIVATE_KEY=バックエンドJWT署名用の秘密鍵
   JWT_PUBLIC_KEY=JWT_PRIVATE_KEYに対応する公開鍵
-  JWT_ALGORITHM=RS256
-  JWT_ISSUER=logbook
-  JWT_AUDIENCE=logbook
+
+  登録後の確認:
+  1. Vercel で frontend / backend を再デプロイする
+  2. `/admin/login` から GitHub 認証できることを確認する
+  3. 管理画面から記事作成 / 編集 / 下書き切り替えができることを確認する
 
 
 - Renovateの導入

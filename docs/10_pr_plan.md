@@ -211,6 +211,10 @@
 - 進捗メモ（2026-05-02）
   - 本番環境で `GET /api/health` の疎通確認ができた
   - Neon / `DATABASE_URL` を含む本番 DB 設定は完了済み
+- 進捗メモ（2026-05-03）
+  - Vercel ビルド時の `ApiError: REQUEST_FAILED 404` は、`NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持する修正で解消済み
+  - 本番 GitHub OAuth 認証は、`AUTH_URL=https://logbook-flame.vercel.app/api/auth` と GitHub callback URL 設定で成立確認済み
+  - 次は未設定の本番環境変数を生成し、Vercel frontend / backend へ登録する
 - [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
@@ -221,8 +225,8 @@
   - 現状の `backend/app/core/settings.py` は `http://localhost:3000` をデフォルト値にしているため、本番向けには未確定
   - ローカル開発では `http://localhost:3000` を使い、本番では明示的な環境変数設定を必須にする
   - Vercel の実 URL が未確定でも、この方針までは先に実装・文書化できる
-- [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
-  - 公開 URL は `https://logbook-flame.vercel.app` で確定済み。あとは環境変数への投入のみ未完了
+- [x] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
+  - `CORS_ALLOW_ORIGINS=https://logbook-flame.vercel.app` で設定済み
 - [ ] Vercel に設定する必須環境変数を棚卸しする
   - `AUTH_SECRET`（本番専用に生成。`NEXTAUTH_SECRET` は互換用で新規設定はしない）
   - `AUTH_GITHUB_ID`
@@ -249,6 +253,9 @@
 - [x] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
   - `AUTH_URL=https://logbook-flame.vercel.app/api/auth`
   - GitHub OAuth callback URL: `https://logbook-flame.vercel.app/api/auth/callback/github`
+- [ ] 未設定の本番環境変数を生成し、Vercel frontend / backend へ登録する
+  - frontend: `FRONTEND_ASSERTION_PRIVATE_KEY`, `FRONTEND_ASSERTION_KID`
+  - backend: `FRONTEND_ASSERTION_PUBLIC_KEY`, `JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`
 - [ ] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
 
 ### 4. セキュリティ・運用上の最低条件
@@ -275,8 +282,8 @@
   - `0.0.0.0` で待ち受ける
   - `PORT` 指定で起動できる
 - [ ] 本番相当の env で最低限の手動確認項目を作成する
-  - `https://<project>.vercel.app` から `https://<project>.vercel.app/_/backend` へ公開 API が疎通する
-  - `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
+  - [x] `https://logbook-flame.vercel.app` から `https://logbook-flame.vercel.app/_/backend` へ公開 API が疎通する
+  - [x] `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
   - 記事作成 / 編集 / 下書き切り替えが Vercel + Neon で成立する
   - R2 にアップロードした画像 URL が公開画面から参照できる
   - CORS エラーが発生しない
