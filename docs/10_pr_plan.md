@@ -224,10 +224,10 @@
 - [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
   - 公開 URL は `https://logbook-flame.vercel.app` で確定済み。あとは環境変数への投入のみ未完了
 - [ ] Vercel に設定する必須環境変数を棚卸しする
-  - `NEXTAUTH_SECRET`
+  - `AUTH_SECRET`（本番専用に生成。`NEXTAUTH_SECRET` は互換用で新規設定はしない）
   - `AUTH_GITHUB_ID`
   - `AUTH_GITHUB_SECRET`
-  - `AUTH_URL` / `NEXTAUTH_URL`（`https://logbook-flame.vercel.app`）
+  - `AUTH_URL`（`https://logbook-flame.vercel.app/api/auth`。`NEXTAUTH_URL` は互換用で新規設定はしない）
   - `NEXT_PUBLIC_API_BASE_URL`（`https://logbook-flame.vercel.app/_/backend`）
   - `ASSET_BASE_URL`
   - `ADMIN_ALLOWED_EMAILS`
@@ -246,7 +246,9 @@
 - [x] Neon DB に Alembic マイグレーションを `head` まで適用する
 - [ ] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
 - [ ] 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成し、Vercel backend に設定する
-- [ ] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
+- [x] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
+  - `AUTH_URL=https://logbook-flame.vercel.app/api/auth`
+  - GitHub OAuth callback URL: `https://logbook-flame.vercel.app/api/auth/callback/github`
 - [ ] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
 
 ### 4. セキュリティ・運用上の最低条件
@@ -264,6 +266,7 @@
 - [x] `cd frontend && pnpm lint`
 - [x] `cd frontend && pnpm format`
 - [x] `cd frontend && pnpm test`
+- [x] `NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持して API URL を組み立てる単体テストを追加する
 - [x] `cd frontend && pnpm e2e`
 - [x] `cd backend && uv run pytest`
 - [ ] `backend/Dockerfile` でローカル build が通ることを確認する
@@ -288,7 +291,7 @@
 
 
 ## 未決事項（着手前に確定する）
-- NextAuth の callback URL / セッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法
+- NextAuth のセッション戦略、`ADMIN_ALLOWED_EMAILS` の管理方法
 - NextAuth v5（beta）を MVP 後に v4 もしくは Better Auth へ移行する判断基準とタイミング
 - レートリミット: MVP は特定ベンダー依存を避け、必要性が出た場合のみ配信基盤の標準機能または Redis ベースの共有制御を導入する
 - Docker Compose: サービス構成/ポート/環境変数のデフォルト値

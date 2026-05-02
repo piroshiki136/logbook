@@ -61,17 +61,18 @@
 
 ## 環境変数（ローカル/本番で共通化するキー）
 ### フロントエンド（frontend/.env.local）
-- `NEXTAUTH_SECRET`
+- `AUTH_SECRET`（Auth.js の署名用シークレット。本番専用に生成する）
 - `AUTH_GITHUB_ID`
 - `AUTH_GITHUB_SECRET`
-- `NEXTAUTH_URL`（例: `http://localhost:3000`）
+- `AUTH_URL`（例: ローカル `http://localhost:3000/api/auth` / 本番 `https://logbook-flame.vercel.app/api/auth`）
+- `NEXTAUTH_SECRET` / `NEXTAUTH_URL`（互換用。新規設定は `AUTH_SECRET` / `AUTH_URL` に統一する）
 - `NEXT_PUBLIC_API_BASE_URL`（例: ローカル `http://localhost:8000` / 本番 `https://<project>.vercel.app/_/backend`）
 - `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
-- `AUTH_SECRET`（Auth.js の署名用シークレット）
-- `AUTH_URL`（アプリの正しいURL。OAuthのコールバックURLやリダイレクト先生成に使用）
 - `ADMIN_ALLOWED_EMAILS`
 - `FRONTEND_ASSERTION_PRIVATE_KEY`
 - `FRONTEND_ASSERTION_KID`
+
+GitHub OAuth App の Authorization callback URL は、ローカルでは `http://localhost:3000/api/auth/callback/github`、本番では `https://logbook-flame.vercel.app/api/auth/callback/github` を登録する。
 
 ### バックエンド（backend/.env）
 - 基本: `DATABASE_URL`（ローカル例: `postgresql+psycopg://user:pass@localhost:5432/logbook` / 本番: Neon 接続文字列）、`JWT_PUBLIC_KEY`（NextAuth が RS256 で署名したトークンの公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`

@@ -54,6 +54,8 @@ API: GET /api/articles/{id}/newer-older
 /admin/login
 - `callbackUrl` が `/admin` 配下の場合のみ、その URL へ遷移する
 - `callbackUrl` 未指定または `/admin` 配下以外の場合は `/admin` へ遷移する
+- NextAuth の `basePath` は `/api/auth`。`AUTH_URL` はローカル `http://localhost:3000/api/auth`、本番 `https://logbook-flame.vercel.app/api/auth` に統一する
+- GitHub OAuth App の Authorization callback URL は本番 `https://logbook-flame.vercel.app/api/auth/callback/github`、ローカル `http://localhost:3000/api/auth/callback/github` を登録する
 
 ### 権限なし
 /admin/forbidden

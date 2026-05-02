@@ -51,6 +51,33 @@ app.add_middleware(
     ],
 )
 ```
+
+環境変数
+  フロント側:
+
+  AUTH_SECRET=本番専用に生成したAuth.js署名用シークレット
+  AUTH_GITHUB_ID=GitHub OAuth App の Client ID
+  AUTH_GITHUB_SECRET=GitHub OAuth App の Client Secret
+  AUTH_URL=https://logbook-flame.vercel.app/api/auth
+  NEXT_PUBLIC_API_BASE_URL=https://logbook-flame.vercel.app/_/backend
+  FRONTEND_ASSERTION_PRIVATE_KEY=RS256署名用の秘密鍵
+  FRONTEND_ASSERTION_KID=鍵ID 任意だが設定推奨
+
+  GitHub OAuth App の Authorization callback URL:
+  https://logbook-flame.vercel.app/api/auth/callback/github
+
+  バックエンド側:
+
+  DATABASE_URL=DB接続URL
+  ADMIN_ALLOWED_EMAILS=フロントと同じ管理者メール
+  FRONTEND_ASSERTION_PUBLIC_KEY=上の秘密鍵に対応する公開鍵
+  JWT_PRIVATE_KEY=バックエンドJWT署名用の秘密鍵
+  JWT_PUBLIC_KEY=JWT_PRIVATE_KEYに対応する公開鍵
+  JWT_ALGORITHM=RS256
+  JWT_ISSUER=logbook
+  JWT_AUDIENCE=logbook
+
+
 - Renovateの導入
 ## MVP 完成後
 - 公開タグ一覧・カテゴリ一覧・フィルタを実装する
