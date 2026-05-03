@@ -201,29 +201,36 @@
 ### 3. 本番設定の確定
 - 現在メモ（2026-05-02）
   - Vercel へのデプロイ作業は進行中
-  - 本番用の環境変数は順次追加中
+  - 本番用の鍵と環境変数は投入済み
   - 公開 URL は `https://logbook-flame.vercel.app` で確定
   - Neon DB は作成済み
   - backend の `DATABASE_URL` は Neon 接続文字列で連携済み
   - Neon DB へ Alembic マイグレーションを `head` まで適用済み
-  - 本番用 JWT 鍵は未作成
+  - 本番用 JWT 鍵は作成・登録済み
   - `CORS_ALLOW_ORIGINS` は `https://logbook-flame.vercel.app` で設定済み
 - 進捗メモ（2026-05-02）
   - 本番環境で `GET /api/health` の疎通確認ができた
   - Neon / `DATABASE_URL` を含む本番 DB 設定は完了済み
+- 進捗メモ（2026-05-03）
+  - Vercel ビルド時の `ApiError: REQUEST_FAILED 404` は、`NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持する修正で解消済み
+  - 本番 GitHub OAuth 認証は、`AUTH_URL=https://logbook-flame.vercel.app/api/auth` と GitHub callback URL 設定で成立確認済み
+  - 未設定の本番環境変数は 2026-05-04 に Vercel frontend / backend へ登録済み
+- 進捗メモ（2026-05-04）
+  - `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の本番用鍵ペアを生成し、Vercel frontend / backend へ登録済み
+  - `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` の本番用鍵ペアを生成し、Vercel backend へ登録済み
 - [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
   - `uvicorn` の起動コマンドを固定する
   - コンテナ検証時は `PORT` 環境変数で待ち受ける
 - [x] Dockerfile はローカル検証用途として README / docs に残し、本番デプロイ先は Vercel に統一する
-- [ ] 本番用の `CORS_ALLOW_ORIGINS` は必須設定にする方針で実装を修正する
+- [x] 本番用の `CORS_ALLOW_ORIGINS` は必須設定にする方針で実装を修正する
   - 現状の `backend/app/core/settings.py` は `http://localhost:3000` をデフォルト値にしているため、本番向けには未確定
   - ローカル開発では `http://localhost:3000` を使い、本番では明示的な環境変数設定を必須にする
   - Vercel の実 URL が未確定でも、この方針までは先に実装・文書化できる
-- [ ] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
-  - 公開 URL は `https://logbook-flame.vercel.app` で確定済み。あとは環境変数への投入のみ未完了
-- [ ] Vercel に設定する必須環境変数を棚卸しする
+- [x] Vercel デプロイ後に確定した公開 URL を `CORS_ALLOW_ORIGINS` に設定し、少なくとも `https://<project>.vercel.app` を含める
+  - `CORS_ALLOW_ORIGINS=https://logbook-flame.vercel.app` で設定済み
+- [x] Vercel に設定する必須環境変数を棚卸しする
   - `AUTH_SECRET`（本番専用に生成。`NEXTAUTH_SECRET` は互換用で新規設定はしない）
   - `AUTH_GITHUB_ID`
   - `AUTH_GITHUB_SECRET`
@@ -231,8 +238,8 @@
   - `NEXT_PUBLIC_API_BASE_URL`（`https://logbook-flame.vercel.app/_/backend`）
   - `ASSET_BASE_URL`
   - `ADMIN_ALLOWED_EMAILS`
-  - 現状: まだ未投入の項目があり、順次追加中
-- [ ] Vercel backend に設定する必須環境変数を棚卸しする
+  - 現状: 本番用の必須環境変数は登録済み
+- [x] Vercel backend に設定する必須環境変数を棚卸しする
   - `DATABASE_URL`（Neon 接続文字列。設定済み）
   - `CORS_ALLOW_ORIGINS`（`https://logbook-flame.vercel.app`。複数許可時はカンマ区切り。JSON 配列は使わない）
   - `JWT_PUBLIC_KEY`
@@ -243,22 +250,28 @@
   - `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`
   - `FRONTEND_ASSERTION_ISSUER`
   - `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`
+  - `APP_MODE=prod`（設定済み）
 - [x] Neon DB に Alembic マイグレーションを `head` まで適用する
-- [ ] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
-- [ ] 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成し、Vercel backend に設定する
+- [x] `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の生成・配布・設定手順を整理する
+- [x] 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成し、Vercel backend に設定する
 - [x] `AUTH_URL` と GitHub OAuth callback URL を `vercel.app` 前提で確定し、ドキュメントに残す
   - `AUTH_URL=https://logbook-flame.vercel.app/api/auth`
   - GitHub OAuth callback URL: `https://logbook-flame.vercel.app/api/auth/callback/github`
-- [ ] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
+- [x] 未設定の本番環境変数を生成し、Vercel frontend / backend へ登録する
+  - frontend: `FRONTEND_ASSERTION_PRIVATE_KEY`（`FRONTEND_ASSERTION_KID` は任意）
+  - backend: `FRONTEND_ASSERTION_PUBLIC_KEY`, `JWT_PRIVATE_KEY`, `JWT_PUBLIC_KEY`
+- [x] `/api/health` は本番で公開してもよいが、疎通確認専用の最小レスポンスに限定し、DB 詳細や環境情報を返さない方針を決める
 
 ### 4. セキュリティ・運用上の最低条件
-- [ ] FastAPI の `debug=false` を本番で強制し、エラー応答で DB エラー詳細や内部情報を出さないことを確認する
-- [ ] `ADMIN_ALLOWED_EMAILS` の運用方法を決め、大小文字差異を吸収する前提を docs に反映する
+- [x] FastAPI の `debug=false` を本番で強制し、エラー応答で DB エラー詳細や内部情報を出さないことを確認する
+  - Vercel backend に `APP_MODE=prod` を設定済み
+- [x] `ADMIN_ALLOWED_EMAILS` の運用方法を決め、大小文字差異を吸収する前提を docs に反映する
 - [ ] レートリミット未実装 / 暫定対応の扱いを明記する
   - 初期リリースでは特定ベンダーの WAF/レートリミットに依存しない
   - 実装しない場合は既知の制約として docs に明記し、必要時のみ配信基盤の標準機能または Redis ベースの共有レートリミットを導入する
-- [ ] 画像保存先は本番で Cloudflare R2 を必須とし、Vercel 実行環境のローカル保存は不可と明記する
-- [ ] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
+- [x] 画像保存先は MVP 後に必要になった時点で検討し、Vercel 実行環境のローカル保存は永続化前提にしないと明記する
+- [x] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
+  - MVP では Neon の標準バックアップ / 復旧機能に依存し、独自の `pg_dump` 定期バックアップや R2 退避ジョブは導入しない
 - [ ] Vercel の実行リージョンと Neon のリージョンを近接させる方針を docs に残す
 - [ ] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
 
@@ -269,14 +282,9 @@
 - [x] `NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持して API URL を組み立てる単体テストを追加する
 - [x] `cd frontend && pnpm e2e`
 - [x] `cd backend && uv run pytest`
-- [ ] `backend/Dockerfile` でローカル build が通ることを確認する
-  - `docker` コマンドがこの作業環境に無いため、実ビルド確認は未実施
-- [ ] `backend/Dockerfile` ベースで本番相当の起動確認を行う
-  - `0.0.0.0` で待ち受ける
-  - `PORT` 指定で起動できる
 - [ ] 本番相当の env で最低限の手動確認項目を作成する
-  - `https://<project>.vercel.app` から `https://<project>.vercel.app/_/backend` へ公開 API が疎通する
-  - `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
+  - [x] `https://logbook-flame.vercel.app` から `https://logbook-flame.vercel.app/_/backend` へ公開 API が疎通する
+  - [x] `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
   - 記事作成 / 編集 / 下書き切り替えが Vercel + Neon で成立する
   - R2 にアップロードした画像 URL が公開画面から参照できる
   - CORS エラーが発生しない
@@ -300,5 +308,5 @@
 ブランチ名: `feature/pr7-admin-taxonomy`
 
 - [ ] 管理タグ: タグ一覧、表示名（name）編集 UI、更新 API を追加する
-- [ ] 管理カテゴリ: カテゴリ新規追加 UI と作成 API を追加する
+- [x] 管理カテゴリ: 記事作成画面からカテゴリ新規追加 UI を追加する
 - [ ] 管理記事: 画像アップロード連携を実装する

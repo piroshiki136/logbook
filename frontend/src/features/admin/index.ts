@@ -1,4 +1,5 @@
 export { createArticleAction } from "./actions/create-article-action"
+export { createCategoryAction } from "./actions/create-category-action"
 export { updateArticleAction } from "./actions/update-article-action"
 export { AdminAuthCard } from "./components/admin-auth-card"
 export { ArticleCreatedNotice } from "./components/article-created-notice"
