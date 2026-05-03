@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useActionState, useState } from "react"
+import { useActionState, useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import {
@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import type { Category } from "@/lib/api/types"
+import type { CreateCategoryActionState } from "../actions/create-category-action"
 import {
   type ArticleFormErrors,
   type ArticleFormFieldName,
@@ -34,6 +35,9 @@ type CreateArticleFormProps = {
     state: CreateArticleFormState,
     formData: FormData,
   ) => Promise<CreateArticleFormState>
+  createCategoryAction: (
+    formData: FormData,
+  ) => Promise<CreateCategoryActionState>
 }
 
 const initialState: CreateArticleFormState = {
@@ -44,8 +48,20 @@ const initialState: CreateArticleFormState = {
 export function CreateArticleForm({
   categories,
   action,
+  createCategoryAction,
 }: CreateArticleFormProps) {
+  const [categoryOptions, setCategoryOptions] = useState(categories)
   const [visibility, setVisibility] = useState<"published" | "draft">("draft")
+  const [isCategoryCreatorOpen, setIsCategoryCreatorOpen] = useState(false)
+  const [categoryName, setCategoryName] = useState("")
+  const [categoryState, setCategoryState] = useState<CreateCategoryActionState>(
+    {
+      ok: false,
+      message: "",
+      category: null,
+    },
+  )
+  const [isCategoryPending, startCategoryTransition] = useTransition()
   const [fieldErrors, setFieldErrors] = useState<ArticleFormErrors>({})
   const [touchedFields, setTouchedFields] = useState<
     Partial<Record<ArticleFormFieldName, boolean>>
@@ -113,6 +129,35 @@ export function CreateArticleForm({
     }
   }
 
+  const handleCategoryCreate = () => {
+    const formData = new FormData()
+    formData.set("name", categoryName)
+
+    startCategoryTransition(async () => {
+      const nextState = await createCategoryAction(formData)
+      setCategoryState(nextState)
+
+      if (nextState.ok && nextState.category) {
+        const createdCategory = nextState.category
+        setCategoryOptions((currentCategories) => {
+          if (
+            currentCategories.some(
+              (category) => category.id === createdCategory.id,
+            )
+          ) {
+            return currentCategories
+          }
+
+          return [...currentCategories, createdCategory].sort((a, b) =>
+            a.name.localeCompare(b.name),
+          )
+        })
+        setCategoryName("")
+        setIsCategoryCreatorOpen(false)
+      }
+    })
+  }
+
   return (
     <form
       action={formAction}
@@ -163,19 +208,76 @@ export function CreateArticleForm({
       </FieldGroup>
 
       <Field>
-        <FieldLabel htmlFor="category">カテゴリ</FieldLabel>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <FieldLabel htmlFor="category">カテゴリ</FieldLabel>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={() => {
+              setIsCategoryCreatorOpen((isOpen) => !isOpen)
+              setCategoryState({ ok: false, message: "", category: null })
+            }}
+          >
+            新しいカテゴリを追加
+          </Button>
+        </div>
         <FieldContent>
+          {isCategoryCreatorOpen ? (
+            <div className="flex flex-col gap-3 rounded-md border p-3">
+              <FieldLabel htmlFor="new-category-name">カテゴリ名</FieldLabel>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Input
+                  id="new-category-name"
+                  value={categoryName}
+                  disabled={isPending || isCategoryPending}
+                  maxLength={100}
+                  onChange={(event) => {
+                    setCategoryName(event.target.value)
+                    if (categoryState.message) {
+                      setCategoryState({
+                        ok: false,
+                        message: "",
+                        category: null,
+                      })
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  disabled={isPending || isCategoryPending}
+                  onClick={handleCategoryCreate}
+                >
+                  {isCategoryPending ? "追加中..." : "追加"}
+                </Button>
+              </div>
+              <FieldDescription>
+                slug はカテゴリ名から自動生成されます。
+              </FieldDescription>
+              {categoryState.message ? (
+                categoryState.ok ? (
+                  <p className="text-sm text-emerald-600">
+                    {categoryState.message}
+                  </p>
+                ) : (
+                  <FieldError>{categoryState.message}</FieldError>
+                )
+              ) : null}
+            </div>
+          ) : null}
+
           <select
             id="category"
             name="category"
             disabled={isPending}
-            defaultValue={categories[0]?.slug ?? ""}
+            defaultValue={categoryOptions[0]?.slug ?? ""}
             aria-invalid={fieldErrors.category ? "true" : "false"}
             onBlur={handleFieldBlur}
             onChange={handleFieldChange}
             className="border-input dark:bg-input/30 h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
-            {categories.map((category) => (
+            {categoryOptions.map((category) => (
               <option key={category.id} value={category.slug}>
                 {category.name}
               </option>

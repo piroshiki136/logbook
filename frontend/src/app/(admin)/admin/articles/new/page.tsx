@@ -1,6 +1,10 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { CreateArticleForm, createArticleAction } from "@/features/admin"
+import {
+  CreateArticleForm,
+  createArticleAction,
+  createCategoryAction,
+} from "@/features/admin"
 import { getCategories } from "@/lib/api/categories"
 
 export default async function Page() {
@@ -25,6 +29,7 @@ export default async function Page() {
           <CreateArticleForm
             categories={categories}
             action={createArticleAction}
+            createCategoryAction={createCategoryAction}
           />
         </section>
       </div>
