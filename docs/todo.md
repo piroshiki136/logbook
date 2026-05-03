@@ -1,81 +1,16 @@
 # TODO / 未決事項まとめ
 
 各ドキュメントに散在する未決事項を集約する。解決後は該当ドキュメント側も更新し、このリストから削除する。
-todo
-
-## Docker 化直前
-- `docker-compose.yml` に frontend/backend/db を定義し、必要なら追加サービスも含めてポート・環境変数・ボリューム（`backend/uploads`、DB データ）を整理する。
-- `ASSET_BASE_URL` / `UPLOAD_ROOT` / `DATABASE_URL` のコンテナ用値を決め、共有する env ファイルの扱い方針を決定する。
-- テスト/開発用の `/api/health` エンドポイントを本番で残すか削除するかを決める（残す場合は公開範囲と認証要否を明記する）。
-
 
 ## 本番準備
-- 現在の状態メモ（2026-05-02）
-  1. Vercel へのデプロイ作業は進行中
-  2. 本番用の環境変数は未投入のものがあり、順次追加中
-  3. 公開 URL は `https://logbook-flame.vercel.app` で確定
-  4. 本番 DB は Neon で作成済み
-  5. 本番用 JWT 鍵は未作成
-  6. `CORS_ALLOW_ORIGINS` は設定済み
-- 進捗メモ（2026-05-02）
-  1. 本番環境で `GET /api/health` の疎通確認ができた
-  2. backend の `DATABASE_URL` は Neon 接続文字列で連携済み
-  3. Neon DB へ Alembic マイグレーションを `head` まで適用済み
-- 進捗メモ（2026-05-03）
-  1. Vercel ビルド時の `ApiError: REQUEST_FAILED 404` は、`NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持する修正で解消済み
-  2. 本番 GitHub OAuth 認証は、`AUTH_URL=https://logbook-flame.vercel.app/api/auth` と GitHub callback URL 設定で成立確認済み
-  3. 次は未設定の本番環境変数を生成し、Vercel frontend / backend へ登録する
-- Vercel / Neon / JWT まわりの初期セットアップ
-  1. Neon プロジェクトと本番 DB を作成し、`DATABASE_URL` を確定する（完了済み）
-  2. 本番用 `JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY` を生成する
-  3. 必要なら `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` も本番用に生成し直す
-  4. Vercel frontend / backend に必要な環境変数を投入する
-  5. `CORS_ALLOW_ORIGINS=https://logbook-flame.vercel.app` を backend 環境変数に設定する（完了済み）
-- エラーハンドリングのユーザー向け表示ポリシー整理
-  1. DomainError（想定内エラー）は仕様どおりの説明を返し、400/404 も UX 上必要な文言を表示できるようテンプレート化する。
-  2. DB エラー詳細やスタックトレースは絶対に表示しない方針を FastAPI/Next.js 双方のエラーミドルウェアへ落とし込み、ログのみで確認する。
-  3. unhandled 500 は一般的なメッセージのみ（例: 「現在エラーが発生しています」）に制限し、詳細は管理画面やログで確認できる導線を docs/07, frontend/backend 実装時に追記する。
-- CORS のデフォルト許可設定
-  1. 現状は `http://localhost:3000` をデフォルトにしているが、本番運用前に必須項目へ変更する（Field(... )化）。本番用に変更済み
-  2. 必須化したら README/docs に環境変数設定を追記し、テンプレ `.env` にサンプル値を入れておく。
-- 採用する配信基盤に合わせたレートリミット方針の具体値と運用手順を docs に追記する。
-- R2 バケット名・リージョンなど固定値と、バックアップ用ジョブの実行環境（例: GitHub Actions）の鍵管理手順を `infra/backup.md` にまとめる。
-- allow_methods, allow_headersを絞る
-例:
-```py
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.cors_allow_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allow_headers=[
-        "Authorization",
-        "Content-Type",
-        "Accept",
-    ],
-)
-```
-
-未設定の環境変数
-  フロント側:
-
-  FRONTEND_ASSERTION_PRIVATE_KEY=RS256署名用の秘密鍵
-  FRONTEND_ASSERTION_KID=鍵ID 任意だが設定推奨
-
-  バックエンド側:
-
-  FRONTEND_ASSERTION_PUBLIC_KEY=上の秘密鍵に対応する公開鍵
-  JWT_PRIVATE_KEY=バックエンドJWT署名用の秘密鍵
-  JWT_PUBLIC_KEY=JWT_PRIVATE_KEYに対応する公開鍵
-
-  登録後の確認:
-  1. Vercel で frontend / backend を再デプロイする
-  2. `/admin/login` から GitHub 認証できることを確認する
-  3. 管理画面から記事作成 / 編集 / 下書き切り替えができることを確認する
-
-
 - Renovateの導入
+
 ## MVP 完成後
+- auth.jsを変更する(ベータ版のため、better-authなどに。移行時考える)
+- vercelのbackend, dbのリージョンを確認して同じ地域にする
+- DB 接続や API 応答が遅い場合でも通信中と分かるローディング UI を整備する
+  - 対象: 公開記事一覧、記事詳細、管理記事一覧、記事作成/編集など API 依存画面
+  - 目的: Neon など外部 DB への接続待ちで画面が止まって見えないようにする
 - 公開タグ一覧・カテゴリ一覧・フィルタを実装する
   - 対象画面: `/tags`, `/categories`, `/articles`
   - 内容: タグ一覧、カテゴリ一覧、タグ/カテゴリフィルタ UI
