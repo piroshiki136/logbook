@@ -95,6 +95,10 @@ export type Category = {
   icon: string | null
 }
 
+export type CreateCategoryInput = {
+  name: string
+}
+
 export type UploadImageResponse = {
   url: string
 }

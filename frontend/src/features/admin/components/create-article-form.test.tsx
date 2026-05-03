@@ -29,9 +29,27 @@ const action = async (
   _formData: FormData,
 ): Promise<CreateArticleFormState> => state
 
+const createCategoryAction = async (_formData: FormData) => ({
+  ok: true,
+  message: "カテゴリを追加しました",
+  category: {
+    id: 3,
+    name: "Testing",
+    slug: "testing",
+    color: null,
+    icon: null,
+  },
+})
+
 describe("CreateArticleForm", () => {
   it("初期状態は非公開で、isDraft に true を入れる", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     expect(screen.getByRole("button", { name: "非公開" })).toHaveAttribute(
       "data-variant",
@@ -41,7 +59,13 @@ describe("CreateArticleForm", () => {
   })
 
   it("公開を選ぶと hidden の isDraft を false に切り替える", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     fireEvent.click(screen.getByRole("button", { name: "公開" }))
 
@@ -53,7 +77,13 @@ describe("CreateArticleForm", () => {
   })
 
   it("slug 入力欄は任意で、自動生成の説明を表示する", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     expect(screen.getByLabelText("slug")).not.toBeRequired()
     expect(
@@ -62,7 +92,13 @@ describe("CreateArticleForm", () => {
   })
 
   it("未入力のまま送信すると項目ごとのエラーを表示する", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     fireEvent.change(screen.getByLabelText("カテゴリ"), {
       target: { value: "" },
@@ -75,7 +111,13 @@ describe("CreateArticleForm", () => {
   })
 
   it("不正な slug を入力すると slug のエラーを表示する", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     fireEvent.change(screen.getByLabelText("slug"), {
       target: { value: "Invalid Slug" },
@@ -86,7 +128,13 @@ describe("CreateArticleForm", () => {
   })
 
   it("先頭ハイフンの slug を入力すると個別のエラーを表示する", () => {
-    render(<CreateArticleForm categories={categories} action={action} />)
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
 
     fireEvent.change(screen.getByLabelText("slug"), {
       target: { value: "-invalid" },
@@ -96,5 +144,48 @@ describe("CreateArticleForm", () => {
     expect(
       screen.getByText("slug の先頭や末尾にハイフンは使えません"),
     ).toBeInTheDocument()
+  })
+
+  it("カテゴリ追加ボタンからカテゴリ名入力欄を表示する", () => {
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "新しいカテゴリを追加" }),
+    )
+
+    expect(screen.getByLabelText("カテゴリ名")).toBeInTheDocument()
+    expect(
+      screen.getByText("slug はカテゴリ名から自動生成されます。"),
+    ).toBeInTheDocument()
+  })
+
+  it("カテゴリ作成成功後に追加欄を閉じ、選択肢へ追加するが自動選択しない", async () => {
+    render(
+      <CreateArticleForm
+        categories={categories}
+        action={action}
+        createCategoryAction={createCategoryAction}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "新しいカテゴリを追加" }),
+    )
+    fireEvent.change(screen.getByLabelText("カテゴリ名"), {
+      target: { value: "Testing" },
+    })
+    fireEvent.click(screen.getByRole("button", { name: "追加" }))
+
+    expect(await screen.findByRole("option", { name: "Testing" })).toHaveValue(
+      "testing",
+    )
+    expect(screen.queryByLabelText("カテゴリ名")).not.toBeInTheDocument()
+    expect(screen.getByLabelText("カテゴリ")).toHaveValue("backend")
   })
 })
