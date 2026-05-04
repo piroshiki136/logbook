@@ -4,6 +4,14 @@ import { ArticleNewerOlderNav } from "@/features/blog/components/article-newer-o
 import { MarkdownContent } from "@/features/blog/components/markdown-content"
 import { getArticle, getArticleNewerOlder } from "@/lib/api/articles"
 import { ApiError } from "@/lib/api/client"
+import {
+  getPublicArticleTag,
+  PUBLIC_ARTICLE_NEIGHBORS_TAG,
+  PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+  PUBLIC_ARTICLES_TAG,
+} from "@/lib/cache/public-articles"
+
+export const revalidate = 300
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -13,8 +21,20 @@ export default async function Page({ params }: Props) {
   const { slug } = await params
 
   try {
-    const article = await getArticle(slug)
-    const newerOlder = await getArticleNewerOlder(article.id)
+    const article = await getArticle(slug, {
+      cache: "force-cache",
+      next: {
+        revalidate: PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+        tags: [PUBLIC_ARTICLES_TAG, getPublicArticleTag(slug)],
+      },
+    })
+    const newerOlder = await getArticleNewerOlder(article.id, {
+      cache: "force-cache",
+      next: {
+        revalidate: PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+        tags: [PUBLIC_ARTICLES_TAG, PUBLIC_ARTICLE_NEIGHBORS_TAG],
+      },
+    })
 
     return (
       <article className="mx-auto w-full max-w-3xl px-4 py-10">

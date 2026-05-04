@@ -3,6 +3,7 @@ import { createArticleAction } from "./create-article-action"
 
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
   redirect: vi.fn(),
   createAdminArticle: vi.fn(),
   getAdminToken: vi.fn(),
@@ -12,6 +13,7 @@ vi.mock("server-only", () => ({}))
 
 vi.mock("next/cache", () => ({
   revalidatePath: mocks.revalidatePath,
+  revalidateTag: mocks.revalidateTag,
 }))
 
 vi.mock("next/navigation", () => ({
@@ -33,7 +35,7 @@ describe("createArticleAction", () => {
 
   it("FormData を API 向け payload に変換して記事を作成し、編集画面へ遷移する", async () => {
     mocks.getAdminToken.mockResolvedValue("token")
-    mocks.createAdminArticle.mockResolvedValue({ id: 42 })
+    mocks.createAdminArticle.mockResolvedValue({ id: 42, slug: "new-title" })
     mocks.redirect.mockImplementation((path: string) => {
       throw new Error(`NEXT_REDIRECT:${path}`)
     })
@@ -63,6 +65,19 @@ describe("createArticleAction", () => {
       "token",
     )
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/articles")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/", "page")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/articles", "page")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith(
+      "/articles/new-title",
+      "page",
+    )
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("articles", { expire: 0 })
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("article-neighbors", {
+      expire: 0,
+    })
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("article:new-title", {
+      expire: 0,
+    })
     expect(mocks.redirect).toHaveBeenCalledWith(
       "/admin/articles/42/edit?created=1",
     )

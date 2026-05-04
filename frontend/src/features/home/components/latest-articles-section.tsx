@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button"
 import { PublicArticleCard } from "@/features/blog"
 import { getPublicArticles } from "@/lib/api/articles"
 import type { PublicArticleListItem } from "@/lib/api/types"
+import {
+  PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+  PUBLIC_ARTICLES_TAG,
+} from "@/lib/cache/public-articles"
 
 const ERROR_MESSAGE =
   "最新記事の取得に失敗しました。しばらくしてから再度お試しください。"
-const LATEST_ARTICLES_REVALIDATE_SECONDS = 300
 
 export async function LatestArticlesSection() {
   const headingId = "latest-articles-heading"
@@ -22,7 +25,10 @@ export async function LatestArticlesSection() {
       { limit: 3 },
       {
         cache: "force-cache",
-        next: { revalidate: LATEST_ARTICLES_REVALIDATE_SECONDS },
+        next: {
+          revalidate: PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+          tags: [PUBLIC_ARTICLES_TAG],
+        },
       },
     )
     items = data.items
