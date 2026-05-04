@@ -129,7 +129,7 @@
 
 ### 目的
 - [ ] MVP として外部公開できる状態かを、仕様・実装・運用の3観点で確認する
-- [ ] docs 間の MVP 定義のズレをなくし、「何ができればリリース可か」を明文化する
+- [x] docs 間の MVP 定義のズレをなくし、「何ができればリリース可か」を明文化する
 
 ### 本番前提のデプロイ構成
 - [x] フロントエンドは Vercel にデプロイし、初期リリースでは `https://<project>.vercel.app` を公開 URL とする
@@ -218,6 +218,10 @@
 - 進捗メモ（2026-05-04）
   - `FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY` の本番用鍵ペアを生成し、Vercel frontend / backend へ登録済み
   - `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` の本番用鍵ペアを生成し、Vercel backend へ登録済み
+  - 本番環境で記事作成 / 編集 / 下書き切り替えが Vercel + Neon 構成で成立することを確認済み
+  - CORS 設定を行い、本番環境から backend API へ接続できることを確認済み
+  - 本番 backend は `APP_MODE=prod` で動作させる
+  - 公開 UI / metadata のコード上、`vercel.app` / `/_/backend` は利用者向け文言や OGP 設定に出していないことを確認済み
 - [x] `backend/Dockerfile` を作成し、本番用の実行条件を固定する
   - Python バージョンを固定する
   - 依存関係のインストール手順を固定する
@@ -266,36 +270,52 @@
 - [x] FastAPI の `debug=false` を本番で強制し、エラー応答で DB エラー詳細や内部情報を出さないことを確認する
   - Vercel backend に `APP_MODE=prod` を設定済み
 - [x] `ADMIN_ALLOWED_EMAILS` の運用方法を決め、大小文字差異を吸収する前提を docs に反映する
-- [ ] レートリミット未実装 / 暫定対応の扱いを明記する
+- [x] レートリミット未実装 / 暫定対応の扱いを明記する
   - 初期リリースでは特定ベンダーの WAF/レートリミットに依存しない
-  - 実装しない場合は既知の制約として docs に明記し、必要時のみ配信基盤の標準機能または Redis ベースの共有レートリミットを導入する
+  - `docs/03` / `docs/07` に、MVP では共有レートリミットを導入せず、`/api/auth/token` のアプリ内簡易制限を維持する方針を記載済み
+  - 異常なアクセスや負荷が確認された場合のみ、Vercel 側の保護機能または Redis ベースの共有レートリミットを導入する
 - [x] 画像保存先は MVP 後に必要になった時点で検討し、Vercel 実行環境のローカル保存は永続化前提にしないと明記する
 - [x] Neon の復旧方針と、追加で `pg_dump` を R2 に退避する運用を採るかを決める
   - MVP では Neon の標準バックアップ / 復旧機能に依存し、独自の `pg_dump` 定期バックアップや R2 退避ジョブは導入しない
-- [ ] Vercel の実行リージョンと Neon のリージョンを近接させる方針を docs に残す
-- [ ] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
+- [x] Vercel の実行リージョンと Neon のリージョンを近接させる方針を docs に残す
+  - Vercel / Neon ともに Singapore リージョンへ揃え、DB アクセス遅延を抑える
+- [x] Vercel の利用プラン条件を確認し、継続公開時に適切なプランを判断できるようメモする
+  - 初期リリースは Hobby プランを使用する
+  - 個人・非商用運用の間は無料枠で継続する
+  - 収益化・商用利用・チーム運用が必要になった時点で Pro 以上への移行を再判断する
 
 ### 5. テスト・検証
 - [x] `cd frontend && pnpm lint`
 - [x] `cd frontend && pnpm format`
 - [x] `cd frontend && pnpm test`
 - [x] `NEXT_PUBLIC_API_BASE_URL` の `/_/backend` パスを維持して API URL を組み立てる単体テストを追加する
+- [x] 公開記事一覧・公開記事詳細を ISR 化し、記事作成・更新時に `revalidatePath` / `revalidateTag` で公開キャッシュを再検証する
+- [x] `tsconfig.json` から開発用 `.next/dev/types` を除外し、古い route validator が本番 build の型検査に混入しないようにする
+- [x] `cd frontend && pnpm exec tsc --noEmit`
 - [x] `cd frontend && pnpm e2e`
 - [x] `cd backend && uv run pytest`
-- [ ] 本番相当の env で最低限の手動確認項目を作成する
+- [x] 本番相当の env で最低限の手動確認項目を作成する
   - [x] `https://logbook-flame.vercel.app` から `https://logbook-flame.vercel.app/_/backend` へ公開 API が疎通する
   - [x] `/admin/login` の GitHub OAuth が `vercel.app` ドメインで成立する
-  - 記事作成 / 編集 / 下書き切り替えが Vercel + Neon で成立する
-  - R2 にアップロードした画像 URL が公開画面から参照できる
-  - CORS エラーが発生しない
-  - `vercel.app` / `/_/backend` の URL が UI 文言やOG設定に漏れて困らないか確認する
+  - [x] 記事作成 / 編集 / 下書き切り替えが Vercel + Neon で成立する
+  - [x] 画像アップロード連携は MVP 対象外として、本番手動確認の必須項目から外す
+  - [x] CORS エラーが発生しない
+  - [x] `vercel.app` / `/_/backend` の URL が UI 文言やOG設定に漏れて困らないか確認する
 - [ ] 手動確認結果を PR に記録する
+  - 次の PR 本文に、本番環境で確認済みの公開 API 疎通、GitHub OAuth、記事作成 / 編集 / 下書き切り替え、CORS、UI / metadata の URL 表示確認を記録する
 
 ### 6. リリース可否の最終判断
-- [ ] 「MVP として公開可能」の条件を docs に文章で残す
-  - 独自ドメインなしでも、`vercel.app` / `/_/backend` / Neon / R2 の構成で記事閲覧と管理画面運用が成立すること
-- [ ] 見送る項目がある場合は、Known Issues / MVP後対応として明記する
-- [ ] `dev` → `main` へ上げる前提条件を確認する
+- [x] 「MVP として公開可能」の条件を docs に文章で残す
+  - 独自ドメインなしでも、`vercel.app` / `/_/backend` / Neon の構成で記事閲覧と管理画面運用が成立すること
+  - 画像アップロード連携は MVP 対象外とし、必要になった時点で R2 などの外部ストレージを検討する
+- [x] 見送る項目がある場合は、Known Issues / MVP後対応として明記する
+  - 公開タグ一覧・カテゴリ一覧・フィルタ、画像アップロード連携、共有レートリミット、NextAuth v5 beta からの移行は MVP 後対応として `docs/02` / `docs/03` / `docs/todo` に記載済み
+- [x] `dev` → `main` へ上げる前提条件を確認する
+  - `docs/09_git_workflow.md` の方針に従い、`dev` で lint / テスト / 動作確認を完了させてから `main` へマージする
+  - `main` は本番用ブランチとし、デプロイは `main` から行う
+  - `dev` → `main` マージ直後に `vYYYY.MM.DD` 形式の本番タグを付ける
+  - 同日に複数リリースする場合は `vYYYY.MM.DD-a` / `vYYYY.MM.DD-b` のように英字サフィックスを付ける
+  - PR8 では frontend lint / test / tsc、backend pytest、必要な E2E、本番手動確認、Known Issues の docs 記録を前提条件とする
 
 
 ## 未決事項（着手前に確定する）
