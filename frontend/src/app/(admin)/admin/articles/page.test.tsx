@@ -128,7 +128,7 @@ describe("/admin/articles page", () => {
   it("取得失敗時はエラーメッセージを表示する", async () => {
     mocks.getAdminToken.mockRejectedValue(new Error("AUTH_REQUIRED"))
 
-    render(await Page({ searchParams: Promise.resolve(undefined) }))
+    render(await Page({ searchParams: Promise.resolve({}) }))
 
     expect(screen.getByText("記事一覧の取得に失敗しました")).toBeInTheDocument()
   })
