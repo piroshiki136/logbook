@@ -77,14 +77,23 @@ export const getArticles = async (
 
 export const getArticle = async (
   slug: string,
+  options: PublicApiFetchOptions = {},
 ): Promise<PublicArticleDetail> => {
-  return apiFetch<PublicArticleDetail>(`/api/articles/${slug}`)
+  return apiFetch<PublicArticleDetail>(`/api/articles/${slug}`, {
+    cache: options.cache,
+    next: options.next,
+  })
 }
 
 export const getArticleNewerOlder = async (
   articleId: number,
+  options: PublicApiFetchOptions = {},
 ): Promise<PublicArticleNewerOlder> => {
   return apiFetch<PublicArticleNewerOlder>(
     `/api/articles/${articleId}/newer-older`,
+    {
+      cache: options.cache,
+      next: options.next,
+    },
   )
 }

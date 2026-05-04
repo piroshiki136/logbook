@@ -3,6 +3,8 @@ import { updateArticleAction } from "./update-article-action"
 
 const mocks = vi.hoisted(() => ({
   revalidatePath: vi.fn(),
+  revalidateTag: vi.fn(),
+  getAdminArticleById: vi.fn(),
   updateAdminArticle: vi.fn(),
   getAdminToken: vi.fn(),
 }))
@@ -11,9 +13,11 @@ vi.mock("server-only", () => ({}))
 
 vi.mock("next/cache", () => ({
   revalidatePath: mocks.revalidatePath,
+  revalidateTag: mocks.revalidateTag,
 }))
 
 vi.mock("@/lib/api/admin-articles", () => ({
+  getAdminArticleById: mocks.getAdminArticleById,
   updateAdminArticle: mocks.updateAdminArticle,
 }))
 
@@ -28,7 +32,8 @@ describe("updateArticleAction", () => {
 
   it("FormData を API 向け payload に変換して記事を更新する", async () => {
     mocks.getAdminToken.mockResolvedValue("token")
-    mocks.updateAdminArticle.mockResolvedValue(undefined)
+    mocks.getAdminArticleById.mockResolvedValue({ slug: "old-slug" })
+    mocks.updateAdminArticle.mockResolvedValue({ slug: "updated-slug" })
 
     const formData = new FormData()
     formData.set("id", "42")
@@ -45,6 +50,7 @@ describe("updateArticleAction", () => {
     )
 
     expect(mocks.getAdminToken).toHaveBeenCalled()
+    expect(mocks.getAdminArticleById).toHaveBeenCalledWith(42, "token")
     expect(mocks.updateAdminArticle).toHaveBeenCalledWith(
       42,
       {
@@ -59,6 +65,26 @@ describe("updateArticleAction", () => {
     )
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/articles")
     expect(mocks.revalidatePath).toHaveBeenCalledWith("/admin/articles/42/edit")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/", "page")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith("/articles", "page")
+    expect(mocks.revalidatePath).toHaveBeenCalledWith(
+      "/articles/old-slug",
+      "page",
+    )
+    expect(mocks.revalidatePath).toHaveBeenCalledWith(
+      "/articles/updated-slug",
+      "page",
+    )
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("articles", { expire: 0 })
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("article-neighbors", {
+      expire: 0,
+    })
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("article:old-slug", {
+      expire: 0,
+    })
+    expect(mocks.revalidateTag).toHaveBeenCalledWith("article:updated-slug", {
+      expire: 0,
+    })
     expect(result).toEqual({ ok: true, message: "記事を更新しました" })
   })
 
@@ -72,12 +98,14 @@ describe("updateArticleAction", () => {
     )
 
     expect(mocks.getAdminToken).not.toHaveBeenCalled()
+    expect(mocks.getAdminArticleById).not.toHaveBeenCalled()
     expect(mocks.updateAdminArticle).not.toHaveBeenCalled()
     expect(result).toEqual({ ok: false, message: "記事IDが不正です" })
   })
 
   it("API エラー時はメッセージを返す", async () => {
     mocks.getAdminToken.mockResolvedValue("token")
+    mocks.getAdminArticleById.mockResolvedValue({ slug: "slug" })
     mocks.updateAdminArticle.mockRejectedValue(
       new ApiError("REQUEST_FAILED", "更新に失敗しました", 400),
     )
@@ -115,12 +143,14 @@ describe("updateArticleAction", () => {
       formData,
     )
 
+    expect(mocks.getAdminArticleById).not.toHaveBeenCalled()
     expect(mocks.updateAdminArticle).not.toHaveBeenCalled()
     expect(result).toEqual({ ok: false, message: "記事の更新に失敗しました" })
   })
 
   it("認証エラーをそのままフォームに返す", async () => {
     mocks.getAdminToken.mockResolvedValue("token")
+    mocks.getAdminArticleById.mockResolvedValue({ slug: "slug" })
     mocks.updateAdminArticle.mockRejectedValue(
       new ApiError("AUTH_FORBIDDEN", "管理者権限がありません", 403),
     )

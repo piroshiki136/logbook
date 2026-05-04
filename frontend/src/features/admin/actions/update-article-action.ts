@@ -2,9 +2,13 @@
 
 import { revalidatePath } from "next/cache"
 import type { ArticleEditorFormState } from "@/features/admin/components/article-editor-form"
-import { updateAdminArticle } from "@/lib/api/admin-articles"
+import {
+  getAdminArticleById,
+  updateAdminArticle,
+} from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 import { ApiError } from "@/lib/api/client"
+import { revalidatePublicArticleCache } from "@/lib/cache/public-article-revalidation"
 
 const parseTags = (value: FormDataEntryValue | null) => {
   if (typeof value !== "string") return []
@@ -42,9 +46,14 @@ export const updateArticleAction = async (
 
   try {
     const token = await getAdminToken()
-    await updateAdminArticle(articleId, payload, token)
+    const previousArticle = await getAdminArticleById(articleId, token)
+    const article = await updateAdminArticle(articleId, payload, token)
     revalidatePath("/admin/articles")
     revalidatePath(`/admin/articles/${articleId}/edit`)
+    revalidatePublicArticleCache({
+      slug: article.slug,
+      previousSlug: previousArticle.slug,
+    })
 
     return {
       ok: true,

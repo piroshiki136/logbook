@@ -75,7 +75,7 @@ describe("LatestArticlesSection", () => {
       { limit: 3 },
       {
         cache: "force-cache",
-        next: { revalidate: 300 },
+        next: { revalidate: 300, tags: ["articles"] },
       },
     )
     expect(
