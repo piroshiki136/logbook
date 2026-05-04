@@ -8,7 +8,7 @@ export function AboutMeSection() {
     <section aria-label="自己紹介" className="py-12">
       <h2 className="text-2xl font-semibold tracking-tight">About Me</h2>
       <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground">
-        情報学部3年の <span className="font-medium text-foreground">shiki</span>{" "}
+        情報学部4年の <span className="font-medium text-foreground">shiki</span>{" "}
         です。AtCoder をきっかけにプログラミングを始め、 Python を中心に
         Web開発と
         <br className="hidden lg:block" />
