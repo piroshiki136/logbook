@@ -2,8 +2,12 @@ import { ArticlesPagination, PublicArticleCard } from "@/features/blog"
 import { createPageHrefBuilder } from "@/features/blog/lib/create-page-href-builder"
 import { parsePage } from "@/features/blog/lib/parse-page"
 import { getPublicArticles } from "@/lib/api/articles"
+import {
+  PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+  PUBLIC_ARTICLES_TAG,
+} from "@/lib/cache/public-articles"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
 
 const formatError = () =>
   "記事一覧の取得に失敗しました。しばらくしてから再度お試しください。"
@@ -34,12 +38,21 @@ export default async function Page({ searchParams }: PageProps) {
     const tags = parseListParam(resolvedSearchParams?.tags)
     const categories = parseListParam(resolvedSearchParams?.categories)
 
-    const data = await getPublicArticles({
-      page,
-      limit: DEFAULT_LIMIT,
-      ...(tags.length > 0 ? { tags } : {}),
-      ...(categories.length > 0 ? { categories } : {}),
-    })
+    const data = await getPublicArticles(
+      {
+        page,
+        limit: DEFAULT_LIMIT,
+        ...(tags.length > 0 ? { tags } : {}),
+        ...(categories.length > 0 ? { categories } : {}),
+      },
+      {
+        cache: "force-cache",
+        next: {
+          revalidate: PUBLIC_ARTICLES_REVALIDATE_SECONDS,
+          tags: [PUBLIC_ARTICLES_TAG],
+        },
+      },
+    )
     const totalPages = Math.max(1, Math.ceil(data.total / data.limit))
     const hrefBuilder = createPageHrefBuilder(resolvedSearchParams, "/articles")
 

@@ -6,6 +6,7 @@ import type { CreateArticleFormState } from "@/features/admin/components/create-
 import { createAdminArticle } from "@/lib/api/admin-articles"
 import { getAdminToken } from "@/lib/api/admin-auth"
 import { ApiError } from "@/lib/api/client"
+import { revalidatePublicArticleCache } from "@/lib/cache/public-article-revalidation"
 
 const parseTags = (value: FormDataEntryValue | null) => {
   if (typeof value !== "string") return []
@@ -32,11 +33,13 @@ export const createArticleAction = async (
   }
 
   let articleId: number
+  let articleSlug: string
 
   try {
     const token = await getAdminToken()
     const article = await createAdminArticle(payload, token)
     articleId = article.id
+    articleSlug = article.slug
   } catch (error) {
     if (error instanceof ApiError) {
       return {
@@ -52,5 +55,6 @@ export const createArticleAction = async (
   }
 
   revalidatePath("/admin/articles")
+  revalidatePublicArticleCache({ slug: articleSlug })
   redirect(`/admin/articles/${articleId}/edit?created=1`)
 }
