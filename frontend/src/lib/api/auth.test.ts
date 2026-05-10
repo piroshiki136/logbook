@@ -39,6 +39,7 @@ describe("auth api helpers", () => {
         format: "pem",
       },
     })
+    // テスト内で生成する一時鍵。実環境の秘密鍵は使用しない。
     process.env.FRONTEND_ASSERTION_PRIVATE_KEY = privateKey
     process.env.FRONTEND_ASSERTION_KID = "test-kid"
   })

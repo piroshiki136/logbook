@@ -43,11 +43,7 @@ Next.js（フロント）＋ FastAPI（バックエンド）の分離構成で�
 - Vercel 上に PostgreSQL を自前で建てず、DB は必ずマネージドサービスを利用する
 - 本番構成は当面、Vercel / Neon を前提として変更しない
 
-## 現在のデプロイ状況メモ（2026-05-04 時点）
-- Vercel へのデプロイ作業は進行中
-- 本番用の鍵と環境変数は Vercel frontend / backend へ登録済み
-- 公開 URL は `https://logbook-flame.vercel.app` で確定した
-- 本番 DB は Neon で作成済み。backend は `DATABASE_URL` で Neon に接続する
-- Neon DB には Alembic マイグレーションを `head` まで適用済み
-- 本番用 JWT 鍵（`JWT_PUBLIC_KEY` / `JWT_PRIVATE_KEY`）と frontend assertion 用鍵（`FRONTEND_ASSERTION_PRIVATE_KEY` / `FRONTEND_ASSERTION_PUBLIC_KEY`）は作成・登録済み
-- `CORS_ALLOW_ORIGINS` は `https://logbook-flame.vercel.app` で設定済み
+## 公開運用メモ
+- 本番の実 URL、DB 接続文字列、鍵、許可メールはリポジトリに記載せず、ホスティングサービス側の環境変数で管理する。
+- 本番 DB はマネージド PostgreSQL を利用し、スキーマ変更は Alembic マイグレーションで管理する。
+- 本番の CORS 許可オリジンは実デプロイ URL に合わせて明示的に設定する。

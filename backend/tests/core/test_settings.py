@@ -13,29 +13,29 @@ def build_settings(**overrides):
 
 def test_cors_allow_origins_accepts_single_origin_string():
     settings = build_settings(
-        CORS_ALLOW_ORIGINS="https://logbook-flame.vercel.app",
+        CORS_ALLOW_ORIGINS="https://example.com",
     )
 
-    assert settings.cors_allow_origins == ["https://logbook-flame.vercel.app"]
+    assert settings.cors_allow_origins == ["https://example.com"]
 
 
 def test_cors_allow_origins_accepts_comma_separated_origins():
     settings = build_settings(
-        CORS_ALLOW_ORIGINS="https://logbook-flame.vercel.app, http://localhost:3000",
+        CORS_ALLOW_ORIGINS="https://example.com, http://localhost:3000",
     )
 
     assert settings.cors_allow_origins == [
-        "https://logbook-flame.vercel.app",
+        "https://example.com",
         "http://localhost:3000",
     ]
 
 
 def test_cors_allow_origins_ignores_blank_entries():
     settings = build_settings(
-        CORS_ALLOW_ORIGINS="https://logbook-flame.vercel.app, , http://localhost:3000 ",
+        CORS_ALLOW_ORIGINS="https://example.com, , http://localhost:3000 ",
     )
 
     assert settings.cors_allow_origins == [
-        "https://logbook-flame.vercel.app",
+        "https://example.com",
         "http://localhost:3000",
     ]
