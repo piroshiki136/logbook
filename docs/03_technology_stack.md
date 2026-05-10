@@ -31,7 +31,7 @@
 - PostgreSQL 15（ローカルは Docker Compose で起動）
 - 本番は Neon の PostgreSQL を利用する
 - 本番 backend は `DATABASE_URL` で Neon に接続する
-- Neon DB は作成済みで、Alembic マイグレーションを `head` まで適用済み
+- 本番 DB の作成状況や接続文字列はリポジトリに記載せず、ホスティングサービス側で管理する
 
 ## インフラ
 - Docker Compose（Next.js、FastAPI、PostgreSQL の開発環境統合）
@@ -40,7 +40,7 @@
 - 本番 DB：Neon に統一する
 - 独自ドメイン：初期リリースでは未取得。`vercel.app` の標準ドメインを利用する
 - 本番の公開構成は Vercel / Neon を前提とし、他のホスティング先はこの docs のスコープ外とする
-- 本番リージョン: Vercel の実行リージョンと Neon のリージョンは、DB アクセス遅延を抑えるため Singapore に揃える
+- 本番リージョン: Vercel の実行リージョンと Neon のリージョンは、DB アクセス遅延を抑えるため近接させる
 - Vercel 利用プラン: 初期リリースは Hobby プランを使う。個人・非商用運用の間は無料枠で継続し、収益化・商用利用・チーム運用が必要になった時点で Pro 以上を再判断する。
 - CDN/WAF/Rate Limit: 本番の配信経路は Vercel の標準構成を前提とし、Cloudflare など特定ベンダーの WAF/レートリミットには依存しない。MVP では Redis / `fastapi-limiter` による共有レートリミットは導入しない。公開 API は読み取り中心、書き込み API は管理者認証で保護し、管理者は少人数運用を前提とする。従量課金リスクが低いため、初期リリースでは Vercel / backend のログ確認で運用し、異常なアクセスや負荷が確認された場合のみ Vercel 側の保護機能または Redis 等を使った共有制御を検討する。`/api/auth/token` のアプリ内簡易制限は既存実装として維持する。
 
@@ -66,7 +66,7 @@
 - `AUTH_SECRET`（Auth.js の署名用シークレット。本番専用に生成する）
 - `AUTH_GITHUB_ID`
 - `AUTH_GITHUB_SECRET`
-- `AUTH_URL`（例: ローカル `http://localhost:3000/api/auth` / 本番 `https://logbook-flame.vercel.app/api/auth`）
+- `AUTH_URL`（例: ローカル `http://localhost:3000/api/auth` / 本番 `https://<project>.vercel.app/api/auth`）
 - `NEXTAUTH_SECRET` / `NEXTAUTH_URL`（互換用。新規設定は `AUTH_SECRET` / `AUTH_URL` に統一する）
 - `NEXT_PUBLIC_API_BASE_URL`（例: ローカル `http://localhost:8000` / 本番 `https://<project>.vercel.app/_/backend`）
 - `ASSET_BASE_URL`（例: `http://localhost:8000/uploads`）
@@ -74,11 +74,11 @@
 - `FRONTEND_ASSERTION_PRIVATE_KEY`
 - `FRONTEND_ASSERTION_KID`（任意）
 
-GitHub OAuth App の Authorization callback URL は、ローカルでは `http://localhost:3000/api/auth/callback/github`、本番では `https://logbook-flame.vercel.app/api/auth/callback/github` を登録する。
+GitHub OAuth App の Authorization callback URL は、ローカルでは `http://localhost:3000/api/auth/callback/github`、本番では `https://<project>.vercel.app/api/auth/callback/github` を登録する。
 
 ### バックエンド（backend/.env）
 - 基本: `DATABASE_URL`（ローカル例: `postgresql+psycopg://user:pass@localhost:5432/logbook` / 本番: Neon 接続文字列）、`JWT_PUBLIC_KEY`（バックエンドJWTの検証用公開鍵。`\n` で改行可）、`JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` で改行可）、`JWT_ALGORITHM`（省略時は `RS256`）、`JWT_ISSUER` / `JWT_AUDIENCE`、`ADMIN_ALLOWED_EMAILS`（frontend と同じ値を設定する）
-- CORS: `CORS_ALLOW_ORIGINS`（単一値の例: `https://logbook-flame.vercel.app`。複数値の例: `https://logbook-flame.vercel.app,http://localhost:3000`。JSON 配列は使わない）
+- CORS: `CORS_ALLOW_ORIGINS`（単一値の例: `https://<project>.vercel.app`。複数値の例: `https://<project>.vercel.app,http://localhost:3000`。JSON 配列は使わない）
 - 認証連携: `FRONTEND_ASSERTION_PUBLIC_KEY` または `FRONTEND_ASSERTION_JWKS_URL`、`FRONTEND_ASSERTION_ISSUER`
 - 画像/R2 用: `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `S3_BUCKET`, `ASSET_BASE_URL`, `UPLOAD_IMAGE_MAX_BYTES`
 - バックアップ/R2 用: `DB_BACKUP_BUCKET`, `DB_BACKUP_RETENTION_DAYS=7`, `R2_BACKUP_ENDPOINT`, `R2_BACKUP_REGION`, `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`
@@ -98,5 +98,5 @@ GitHub OAuth App の Authorization callback URL は、ローカルでは `http:/
 ## メモ（段階的導入）
 - Redis は MVP では導入しない。複数インスタンスでの共有レートリミットや永続ストアが本当に必要になった場合のみ採用を再検討する。
 - Docker Compose はローカルで API/DB がひと通り動いた段階で作成し、frontend/backend/db、必要に応じて追加サービス、ボリューム（DB/`backend/uploads`）、ポートを整理する。
-- 本番 URL は独自ドメイン未取得のため、`frontend=.vercel.app`、`backend=/_/backend`、`db=Neon` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。
-- 本番 DB の初期セットアップは完了済み。以降のスキーマ変更は Alembic migration を追加し、Neon に `uv run alembic upgrade head` を適用してから本番アプリを更新する。
+- 本番 URL は独自ドメイン未取得の間、`frontend=.vercel.app`、`backend=/_/backend`、`db=Neon` を前提に CORS、OAuth コールバック URL、API ベース URL を設定する。
+- 以降のスキーマ変更は Alembic migration を追加し、本番 DB に `uv run alembic upgrade head` を適用してから本番アプリを更新する。
