@@ -1,18 +1,39 @@
 # logbook
 
-Next.js (App Router) と FastAPI で作るログブックアプリ。初期実装は docs/10_pr_plan.md の PR1（ドキュメント/環境整備）から着手する。
+Next.js (App Router) と FastAPI で作るログブックアプリ。公開記事の閲覧と、GitHub OAuth で保護した管理画面からの記事作成・編集に対応する。
+
+## 公開 URL
+- https://logbook-flame.vercel.app
+
+## 主な機能
+- 公開記事の一覧・詳細表示
+- Markdown 記事の表示
+- 新旧記事ナビゲーション
+- GitHub OAuth による管理画面認証
+- 記事の作成・編集
+- 下書き / 公開状態の切り替え
+- カテゴリ作成とタグ管理の土台
+
+## 技術スタック
+- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui
+- Backend: FastAPI, SQLAlchemy, Alembic, Pydantic
+- Auth: Auth.js, GitHub OAuth, JWT
+- Database: PostgreSQL
+- Testing: Vitest, Testing Library, Playwright, Pytest
+- Lint / Format: Biome, Ruff
+- Deploy: Vercel
 
 ## 必要環境
-- Node.js 20.9 以上、pnpm
+- Node.js 22 以上、pnpm
 - Python 3.12 系、uv
-- PostgreSQL（後続 PR で接続予定）
+- PostgreSQL
 - Git
 
 ## 環境変数
 - frontend（`.env.local` など）
   - `AUTH_SECRET`（Auth.js の署名用シークレット。本番専用に生成する）
   - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`（NextAuth GitHub）
-  - `AUTH_URL`（NextAuth の認証ベース URL。ローカルは `http://localhost:3000/api/auth`、本番は `https://logbook-flame.vercel.app/api/auth`）
+  - `AUTH_URL`（NextAuth の認証ベース URL。ローカルは `http://localhost:3000/api/auth`、本番は `https://<project>.vercel.app/api/auth`）
   - `NEXTAUTH_SECRET` / `NEXTAUTH_URL`（互換用。新規設定は `AUTH_SECRET` / `AUTH_URL` に統一する）
   - `NEXT_PUBLIC_API_BASE_URL`（ローカルは `http://localhost:8000`、本番は `https://<project>.vercel.app/_/backend` を想定）
   - `ADMIN_ALLOWED_EMAILS`（管理画面の許可メール。カンマ区切り。backend と同じ値を設定する）
@@ -22,19 +43,20 @@ Next.js (App Router) と FastAPI で作るログブックアプリ。初期実�
   - `APP_MODE`（`local` / `dev` / `stg` / `prod`。debug/log レベル判定に利用）
   - `SETTINGS_ENV`（`.env` 読み分け用。`test` の場合は `backend/.env.test` を読む）
   - `DATABASE_URL`（PostgreSQL 接続）
+  - `CORS_ALLOW_ORIGINS`（許可するフロントエンド Origin。カンマ区切り）
   - `JWT_PUBLIC_KEY`（バックエンドJWTの検証用公開鍵。`\n` 区切り可）
   - `JWT_PRIVATE_KEY`（バックエンドJWTの署名用秘密鍵。`\n` 区切り可）
   - `JWT_ALGORITHM`（省略時は `RS256`）
   - `JWT_ISSUER` / `JWT_AUDIENCE`（検証用の識別子。既定値は `logbook`）
   - `ADMIN_ALLOWED_EMAILS`（必須。カンマ区切り。frontend と同じ値を設定する）
-  - `FRONTEND_ASSERTION_PUBLIC_KEY`（アサーションJWTの公開鍵。`\n` 区切り可）
-  - `FRONTEND_ASSERTION_JWKS_URL`（アサーションJWTの JWKS URL）
+  - `FRONTEND_ASSERTION_PUBLIC_KEY`（アサーションJWTの公開鍵。`\n` 区切り可。`FRONTEND_ASSERTION_JWKS_URL` とどちらか一方を設定する）
+  - `FRONTEND_ASSERTION_JWKS_URL`（アサーションJWTの JWKS URL。`FRONTEND_ASSERTION_PUBLIC_KEY` とどちらか一方を設定する）
   - `FRONTEND_ASSERTION_ISSUER`（アサーションJWTの `iss`。既定値は `logbook-frontend`）
   - `UPLOAD_ROOT`（画像保存先ディレクトリ。相対パスは `backend/` 配下を基準に解決）
   - `ASSET_BASE_URL`（画像配信用のベース URL。開発は `http://localhost:8000/uploads`）
   - `UPLOAD_IMAGE_MAX_BYTES`（画像アップロードの最大サイズ）
-- `.env.example` / `.env.local.example` にキーのみ記載し、実値は各自で設定する。
-- GitHub OAuth App の Authorization callback URL は、ローカルでは `http://localhost:3000/api/auth/callback/github`、本番では `https://logbook-flame.vercel.app/api/auth/callback/github` を登録する。
+- `frontend/.env.example` / `backend/.env.example` にキーのみ記載し、実値は各自で設定する。
+- GitHub OAuth App の Authorization callback URL は、ローカルでは `http://localhost:3000/api/auth/callback/github`、本番では `https://<project>.vercel.app/api/auth/callback/github` を登録する。
 
 ## セットアップと起動
 ### frontend
@@ -95,8 +117,8 @@ docker run --rm -p 8000:8000 --env-file ./backend/.env \
 - コンテナは `uvicorn app.main:app --host 0.0.0.0 --port ${PORT}` で起動する
 - Vercel への本番デプロイではこの Docker 起動手順は使わない
 - 本番では `APP_MODE=prod` と `CORS_ALLOW_ORIGINS` を明示的に設定する
-  - 例: `CORS_ALLOW_ORIGINS=https://logbook-flame.vercel.app`
-  - 複数許可する場合は `https://logbook-flame.vercel.app,http://localhost:3000` のようにカンマ区切りにする
+  - 例: `CORS_ALLOW_ORIGINS=https://<project>.vercel.app`
+  - 複数許可する場合は `https://<project>.vercel.app,http://localhost:3000` のようにカンマ区切りにする
   - JSON 配列形式は使わない
 
 ### テスト用環境変数（backend）
@@ -115,7 +137,6 @@ backend の CI では以下の Repository Secrets を参照する。
 - `ADMIN_ALLOWED_EMAILS`
 
 ## ディレクトリ構成メモ
-- `frontend/` Next.js 15 App Router、Tailwind、shadcn/ui（予定）
+- `frontend/` Next.js 16 App Router、Tailwind、shadcn/ui
 - `backend/` FastAPI + SQLAlchemy、Alembic、pytest
 - `docs/` 仕様/ルール（01〜10）、作業計画と未決事項
-- `infra/` Docker/シード/バックアップ関連（今後追加）

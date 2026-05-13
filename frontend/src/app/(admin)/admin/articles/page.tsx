@@ -77,12 +77,13 @@ const articleTabs = [
 ] as const
 
 export default async function Page({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams
+  const page = parsePage(resolvedSearchParams?.page)
+  const draft = getDraftFilter(resolvedSearchParams?.draft)
+  const tags = parseListParam(resolvedSearchParams?.tags)
+  const categories = parseListParam(resolvedSearchParams?.categories)
+
   try {
-    const resolvedSearchParams = await searchParams
-    const page = parsePage(resolvedSearchParams?.page)
-    const draft = getDraftFilter(resolvedSearchParams?.draft)
-    const tags = parseListParam(resolvedSearchParams?.tags)
-    const categories = parseListParam(resolvedSearchParams?.categories)
     const token = await getAdminToken()
     const data = await getAdminArticles(
       {
