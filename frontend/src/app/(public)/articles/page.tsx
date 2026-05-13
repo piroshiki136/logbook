@@ -31,13 +31,13 @@ const parseListParam = (raw?: string | string[]) => {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  try {
-    const resolvedSearchParams = await searchParams
-    const page = parsePage(resolvedSearchParams?.page)
-    // MVPではフィルタUIは未提供だが、URL直打ちの互換性とMVP後の再導入準備として受け付ける。
-    const tags = parseListParam(resolvedSearchParams?.tags)
-    const categories = parseListParam(resolvedSearchParams?.categories)
+  const resolvedSearchParams = await searchParams
+  const page = parsePage(resolvedSearchParams?.page)
+  // MVPではフィルタUIは未提供だが、URL直打ちの互換性とMVP後の再導入準備として受け付ける。
+  const tags = parseListParam(resolvedSearchParams?.tags)
+  const categories = parseListParam(resolvedSearchParams?.categories)
 
+  try {
     const data = await getPublicArticles(
       {
         page,
